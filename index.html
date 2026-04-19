@@ -18,38 +18,40 @@ body{background:#000033;color:#fff}
 .sidebar-right{width:220px;min-width:220px;background:#000044;border-left:1px solid #1a1a5e;display:flex;flex-direction:column;height:100%;overflow:hidden}
 .center-area{flex:1;overflow:auto;display:flex;justify-content:center;padding:20px;min-width:0}
 .a4-canvas{width:210mm;min-width:210mm;min-height:297mm;background:#fff;color:#000;position:relative;padding:8mm;font-family:'Inter',sans-serif;flex-shrink:0}
-.pool-item{padding:5px 10px;margin:2px 6px;border-radius:4px;cursor:grab;font-size:12px;font-weight:600;color:#fff;user-select:none;display:flex;align-items:center;gap:6px;position:relative}
+.pool-item{padding:5px 10px;margin:2px 6px;border-radius:4px;cursor:grab;font-size:12px;font-weight:600;color:#fff;user-select:none;display:flex;align-items:center;gap:6px;position:relative;transition:transform 150ms ease,opacity 150ms ease;text-transform:uppercase !important}
 .pool-item:active{cursor:grabbing;opacity:.8}
 .pool-item .grip{opacity:.4;font-size:10px}
+.pool-item .nm{text-transform:uppercase !important}
 .zone-box{border:2px solid #ddd;border-radius:6px;min-height:80px;margin-bottom:8px;overflow:hidden;break-inside:avoid}
-.zone-label{background:#6b7280;color:#fff;padding:3px 8px;font-weight:700;font-size:11px;cursor:text}
+.zone-label{background:#6b7280;color:#fff;padding:3px 8px;font-weight:700;font-size:24px;cursor:text;display:block;margin-bottom:12px}
 .zone-inner{padding:4px}
 .zone-title{color:#2563eb;font-weight:700;font-size:13px;cursor:text;outline:none;min-height:16px}
 .zone-subtitle{color:#ef4444;font-weight:700;font-style:italic;font-size:11px;cursor:text;outline:none;min-height:14px}
-.zone-names{min-height:30px;display:flex;flex-direction:column;gap:1px}
-.canvas-name{padding:2px 6px;border-radius:3px;font-size:10px;font-weight:600;color:#fff;cursor:grab;user-select:none;display:flex;align-items:center;gap:4px;position:relative}
+.zone-names{min-height:30px;display:flex;flex-direction:column;gap:1px;padding:0 4px}
+.canvas-name{padding:4px 8px;border-radius:3px;font-size:10px;font-weight:600;color:#fff;cursor:grab;user-select:none;display:flex;align-items:center;gap:4px;position:relative;transition:transform 300ms cubic-bezier(0.34,1.56,0.64,1),opacity 200ms ease,background-color 200ms ease,color 200ms ease,margin-top 300ms cubic-bezier(0.34,1.56,0.64,1),margin-bottom 300ms cubic-bezier(0.34,1.56,0.64,1);margin:2px 0;width:100%;text-transform:uppercase !important}
 .canvas-name:active{cursor:grabbing}
 .canvas-name .num{min-width:14px;text-align:right;opacity:.8;font-size:9px}
-.canvas-name .nm{flex:1}
+.canvas-name .nm{flex:1;text-transform:uppercase !important}
 .canvas-name .del{opacity:0;cursor:pointer;font-size:10px;padding:0 2px}
 .canvas-name:hover .del{opacity:.7}
-.canvas-subheading{padding:6px 10px;margin:2px 0;border-radius:3px;font-size:11px;font-weight:700;color:#000;user-select:none;display:flex;align-items:center;gap:4px;position:relative;background:#9ca3af;width:calc(100% - 4px);cursor:grab;border:none}
+.canvas-placeholder{height:28px;background:#3b82f6;border:2px dashed #60a5fa;border-radius:4px;margin:4px 0;opacity:0.4;transition:opacity 200ms ease;pointer-events:none}
+.canvas-subheading{padding:6px 10px;margin:2px 0;border-radius:3px;font-size:11px;font-weight:700;color:#000;user-select:none;display:flex;align-items:center;gap:4px;position:relative;background:#9ca3af;width:100%;cursor:grab;border:none;transition:transform 200ms cubic-bezier(0.25,0.46,0.45,0.94),opacity 200ms ease;text-transform:uppercase !important}
 .canvas-subheading:active{cursor:grabbing}
 .canvas-subheading .num{display:none}
-.canvas-subheading .nm{flex:1;font-style:italic}
+.canvas-subheading .nm{flex:1;font-style:italic;text-transform:uppercase !important}
 .canvas-subheading .del{opacity:0;cursor:pointer;font-size:10px;padding:0 2px}
 .canvas-subheading:hover .del{opacity:.7}
-.pool-subheading{padding:5px 10px;margin:2px 6px;border-radius:4px;cursor:grab;font-size:12px;font-weight:600;color:#999;user-select:none;display:flex;align-items:center;gap:6px;position:relative;background:transparent;border:1px solid #666;font-style:italic}
+.standby-names .canvas-subheading{background:#9ca3af;color:#000;border:1px solid #9ca3af;text-transform:uppercase !important}
+.standby-names .canvas-name{background:#E5E7EB !important;color:#000 !important;font-weight:700;border:1px solid #d1d5db;padding:4px 8px;text-transform:uppercase !important}
+.pool-subheading{padding:5px 10px;margin:2px 6px;border-radius:4px;cursor:grab;font-size:12px;font-weight:600;color:#999;user-select:none;display:flex;align-items:center;gap:6px;position:relative;background:transparent;border:1px solid #666;font-style:italic;transition:transform 150ms ease,opacity 150ms ease;text-transform:uppercase !important}
 .pool-subheading:active{cursor:grabbing;opacity:.8}
 .pool-subheading .grip{opacity:.4;font-size:10px}
-.pool-subheading .nm{flex:1;outline:none}
-.pool-subheading{padding:5px 10px;margin:2px 6px;border-radius:4px;cursor:grab;font-size:12px;font-weight:600;color:#999;user-select:none;display:flex;align-items:center;gap:6px;position:relative;background:transparent;border:1px solid #666;font-style:italic}
-.pool-subheading:active{cursor:grabbing;opacity:.8}
-.pool-subheading .grip{opacity:.4;font-size:10px}
-.pool-subheading .nm{flex:1;outline:none}
+.pool-subheading .nm{flex:1;outline:none;text-transform:uppercase !important}
 .standby-box{border:2px solid #999;border-radius:6px;min-height:60px;margin-top:8px}
 .standby-header{background:#6b7280;color:#fff;padding:3px 8px;font-weight:700;font-size:11px}
 .standby-names{min-height:30px;padding:4px;display:flex;flex-direction:column;gap:1px}
+.standby-names .canvas-name{background:#E5E7EB;color:#000;font-weight:700;border:1px solid #d1d5db;padding:4px 8px}
+.standby-names .canvas-name:hover .del{opacity:.5}
 .drop-hover{background:#e0e7ff !important}
 .drag-ghost{opacity:.5}
 .color-popup{position:fixed;z-index:9999;background:#1e1e2e;border:1px solid #444;border-radius:8px;padding:8px;display:flex;gap:6px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
@@ -95,12 +97,7 @@ input:focus,select:focus{outline:none}
         </div>
        </div>
       </div>
-      <div style="padding-top:8px;text-align:right">
-       <div style="position:relative;display:inline-block">
-        <div id="dateFormatted" style="font-size:16px;color:#CC0000;font-weight:700;user-select:none;padding:4px 8px;border-radius:4px;transition:all 0.2s;display:inline-block;pointer-events:none" title="Click to change date">
-         MINGGU, 19 APRIL 26
-        </div><input type="date" id="dateInput" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;display:block !important;margin:0;padding:0;border:none;background:transparent">
-       </div>
+      <div style="padding-top:8px;text-align:right;position:relative;display:inline-block"><span id="header-date-label" style="color:#ef4444;font-size:24px;font-weight:bold;font-family:inherit;text-transform:uppercase;display:block;height:28px;line-height:28px;pointer-events:none">RABU, 31 MARET 26</span> <input type="date" id="header-date-input" style="position:absolute;top:0;left:0;right:0;bottom:0;background:transparent;border:none;color:transparent;font-size:24px;font-weight:bold;font-family:inherit;cursor:pointer;padding:0 8px;outline:none;opacity:0.001;width:100%;height:100%" title="Click to change date">
       </div>
      </div><!-- ZONES GRID -->
      <div class="zones-grid" id="zonesGrid"></div><!-- STANDBY -->
@@ -140,7 +137,7 @@ input:focus,select:focus{outline:none}
 // ---- DATA ----
 const COLORS = {
   blue:'#2563eb', yellow:'#FFD700', orange:'#FF8C00', red:'#CC0000',
-  green:'#16a34a', pink:'#db2777', gray:'#6b7280'
+  green:'#16a34a', pink:'#db2777', gray:'#6b7280', purple:'#a855f7'
 };
 const COLOR_LIST = ['red','blue','yellow','green','pink','orange'];
 const COLOR_HEX = COLOR_LIST.map(c=>COLORS[c]);
@@ -187,58 +184,38 @@ INITIAL_POOL.forEach(g=>{
 const daySelect = document.getElementById('daySelect');
 for(let i=1;i<=40;i++){const o=document.createElement('option');o.value=i;o.textContent=i;daySelect.appendChild(o);}
 
-// Date
-const dateInput = document.getElementById('dateInput');
-dateInput.value = new Date().toISOString().split('T')[0];
+// Date input - set to today and make showPicker work
+const dateInp = document.getElementById('header-date-input');
+const dateLabel = document.getElementById('header-date-label');
 
-// Date formatter with Indonesian locale
-function formatDateIndo(dateStr) {
-  const date = new Date(dateStr + 'T00:00:00');
+// Format tanggal ke Bahasa Indonesia
+function formatDateIndonesian(dateString) {
+  const date = new Date(dateString + 'T00:00:00');
   const days = ['MINGGU', 'SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT', 'SABTU'];
   const months = ['JANUARI', 'FEBRUARI', 'MARET', 'APRIL', 'MEI', 'JUNI', 'JULI', 'AGUSTUS', 'SEPTEMBER', 'OKTOBER', 'NOVEMBER', 'DESEMBER'];
   
   const dayName = days[date.getDay()];
-  const dayNum = String(date.getDate()).padStart(2, '0');
+  const dayNum = date.getDate();
   const monthName = months[date.getMonth()];
-  const yearShort = String(date.getFullYear()).slice(-2);
+  const yearLast2 = String(date.getFullYear()).slice(-2);
   
-  return `${dayName}, ${dayNum} ${monthName} ${yearShort}`;
+  return `${dayName}, ${dayNum} ${monthName} ${yearLast2}`;
 }
 
-// Update formatted date on page load
-function updateDateDisplay() {
-  document.getElementById('dateFormatted').textContent = formatDateIndo(dateInput.value);
-}
+// Set tanggal hari ini
+const today = new Date().toISOString().split('T')[0];
+dateInp.value = today;
+dateLabel.textContent = formatDateIndonesian(today);
 
-// Trigger date picker when clicking on date text
-const dateDisplay = document.getElementById('dateFormatted');
-dateDisplay.addEventListener('click', function() {
-  const dateInputEl = document.getElementById('dateInput');
-  dateInputEl.click();
+// Update label saat tanggal berubah
+dateInp.addEventListener('change', function() {
+  dateLabel.textContent = formatDateIndonesian(this.value);
 });
 
-// Handle date input change - triggered when user selects from date picker
-dateInput.addEventListener('change', function() {
-  if(this.value) {
-    document.getElementById('dateFormatted').textContent = formatDateIndo(this.value);
-  }
+// Trigger date picker on click
+dateInp.addEventListener('click', function() {
+  if(this.showPicker) this.showPicker();
 });
-
-// Hover effects on date text
-dateDisplay.addEventListener('mouseenter', function() {
-  this.style.opacity = '0.7';
-  this.style.textDecoration = 'underline';
-  this.style.textDecorationColor = '#CC0000';
-  this.style.textDecorationThickness = '1px';
-  this.style.textUnderlineOffset = '3px';
-});
-
-dateDisplay.addEventListener('mouseleave', function() {
-  this.style.opacity = '1';
-  this.style.textDecoration = 'none';
-});
-
-updateDateDisplay();
 
 // ---- POOL RENDER ----
 function renderPool(){
@@ -258,7 +235,7 @@ function renderPool(){
         node.innerHTML='<span class="grip">⠿</span><span class="nm" contenteditable="true" style="user-select:all"></span>';
         node.querySelector('.nm').addEventListener('click',e=>e.stopPropagation());
         node.querySelector('.nm').addEventListener('blur',()=>{
-          const newText = node.querySelector('.nm').textContent.trim();
+          const newText = node.querySelector('.nm').textContent.trim().toUpperCase();
           if(newText) p.name = newText;
           else renderPool(); // Re-render if emptied
         });
@@ -272,7 +249,7 @@ function renderPool(){
     node.style.background=p.type === 'subheading' ? 'transparent' : p.color;
     node.style.color=p.type === 'subheading' ? '' : getContrastTextColor(p.color);
     node.style.fontWeight=p.type === 'subheading' ? '' : '700';
-    node.querySelector('.nm').textContent=p.name;
+    node.querySelector('.nm').textContent=p.name.toUpperCase();
   });
 }
 
@@ -420,20 +397,73 @@ function onCanvasDragStart(e){
     dragData={type:'single',id,source:'canvas',srcEl:src};
   }
   e.dataTransfer.effectAllowed='move';
+  
+  // Add live placeholder effect on all drop zones
+  document.addEventListener('dragover',onCanvasDragOver);
+}
+
+function onCanvasDragOver(e){
+  if(!dragData || dragData.source !== 'canvas') return;
+  e.preventDefault();
+  
+  // Find target drop zone
+  const dropZone = e.target.closest('.zone-names, .standby-names');
+  if(!dropZone) return;
+  
+  const children = [...dropZone.children].filter(ch => !ch.classList.contains('canvas-placeholder'));
+  const clientY = e.clientY;
+  
+  // Remove existing placeholder
+  dropZone.querySelectorAll('.canvas-placeholder').forEach(p=>p.remove());
+  
+  // Find insert position and create placeholder
+  let insertBefore = null;
+  for(const ch of children){
+    const cr=ch.getBoundingClientRect();
+    if(clientY < cr.top + cr.height/3){
+      insertBefore=ch;
+      break;
+    }
+  }
+  
+  const placeholder = document.createElement('div');
+  placeholder.className = 'canvas-placeholder';
+  
+  if(insertBefore){
+    dropZone.insertBefore(placeholder, insertBefore);
+  } else {
+    dropZone.appendChild(placeholder);
+  }
 }
 
 function handleDrop(targetEl, e){
   if(!dragData) return;
   const ids = dragData.type==='multi' ? dragData.ids : [dragData.id];
-  // Find insert position
+  
+  // Find insert position dengan deteksi area atas yang lebih sensitive
   const rect = targetEl.getBoundingClientRect();
-  const children = [...targetEl.children];
+  const children = [...targetEl.children].filter(ch => !ch.classList.contains('canvas-placeholder'));
   let insertBefore = null;
   const clientY = e.clientY || (e.changedTouches && e.changedTouches[0].clientY) || 0;
+  
+  // Deteksi posisi drop dengan cara:
+  // 1. Jika di atas setengah dari elemen pertama → insert di awal (insertBefore = first child)
+  // 2. Jika di bawah setengah dari elemen, cari elemen berikutnya
+  // 3. Jika tidak ada elemen berikutnya atau di bawah semua → append di akhir (insertBefore = null)
+  
   for(const ch of children){
     const cr=ch.getBoundingClientRect();
-    if(clientY < cr.top + cr.height/2){insertBefore=ch;break;}
+    // Gunakan 1/3 dari atas untuk deteksi yang lebih sensitive di area atas
+    if(clientY < cr.top + cr.height/3){
+      insertBefore=ch;
+      break;
+    }
   }
+
+  const isStandby = targetEl.id === 'standbyNames';
+  
+  // Remove any existing placeholder first
+  document.querySelectorAll('.canvas-placeholder').forEach(p=>p.remove());
 
   ids.forEach(id=>{
     let entry;
@@ -442,12 +472,26 @@ function handleDrop(targetEl, e){
       const poolIdx=poolNames.findIndex(p=>p.id===id);
       if(poolIdx>=0){
         entry=poolNames.splice(poolIdx,1)[0];
+        // Store original color before changing to standby color
+        if(isStandby && entry.type === 'worker'){
+          if(!entry.originalColor) entry.originalColor = entry.color;
+          entry.inStandby = true;
+        }
       }
     } else {
       // Coming from canvas (zone or standby)
       const existing=dragData.srcEl?.querySelector(`[data-id="${id}"]`);
       if(existing){
-        entry={id, name:existing.querySelector('.nm').textContent, color:existing.dataset.color};
+        entry={id, name:existing.querySelector('.nm').textContent, color:existing.dataset.color || existing.dataset.originalColor, type:existing.dataset.type, originalColor:existing.dataset.originalColor};
+        if(entry.type === 'worker'){
+          // Track original color for restoration when leaving standby
+          if(isStandby){
+            if(!entry.originalColor) entry.originalColor = entry.color;
+            entry.inStandby = true;
+          } else if(!isStandby && entry.originalColor){
+            entry.inStandby = false;
+          }
+        }
         existing.remove();
       }
     }
@@ -458,6 +502,9 @@ function handleDrop(targetEl, e){
     }
   });
 
+  // Remove any lingering placeholders
+  document.querySelectorAll('.canvas-placeholder').forEach(p=>p.remove());
+  
   selectedIds.clear();
   renderPool();
   renumberAll();
@@ -472,13 +519,13 @@ function createCanvasName(entry){
     d.dataset.id=entry.id;
     d.dataset.type='subheading';
     d.draggable=true;
-    d.innerHTML=`<span class="num"></span><span class="nm" contenteditable="true">${entry.name}</span><span class="del" title="Remove">✕</span>`;
+    d.innerHTML=`<span class="num"></span><span class="nm" contenteditable="true">${entry.name.toUpperCase()}</span><span class="del" title="Remove">✕</span>`;
     
     // Allow inline editing
     d.querySelector('.nm').addEventListener('click',e=>e.stopPropagation());
     d.querySelector('.nm').addEventListener('blur',()=>{
-      const newText = d.querySelector('.nm').textContent.trim();
-      if(!newText) d.querySelector('.nm').textContent = entry.name;
+      const newText = d.querySelector('.nm').textContent.trim().toUpperCase();
+      if(!newText) d.querySelector('.nm').textContent = entry.name.toUpperCase();
       else entry.name = newText;
     });
     
@@ -514,15 +561,30 @@ function createCanvasName(entry){
     d.className='canvas-name';
     d.dataset.id=entry.id;
     d.dataset.type='worker';
-    d.dataset.color=entry.color;
+    d.dataset.originalColor=entry.originalColor || entry.color;
     d.draggable=true;
-    d.style.background=entry.color;
-    d.style.color=getContrastTextColor(entry.color);
+    
+    // Apply color based on whether it's in standby or not
+    const isInStandby = entry.inStandby || false;
+    if(isInStandby){
+      d.style.background='#E5E7EB';
+      d.style.color='#000';
+      d.dataset.color='#E5E7EB';
+    } else {
+      d.style.background=entry.color;
+      d.style.color=getContrastTextColor(entry.color);
+      d.dataset.color=entry.color;
+    }
     d.style.fontWeight='700';
+    
     d.innerHTML=`<span class="num"></span><span class="nm">${entry.name}</span><span class="del" title="Remove">✕</span>`;
     d.addEventListener('dragstart',onCanvasDragStart);
     d.addEventListener('touchstart',onTouchStart,{passive:false});
-    d.addEventListener('dblclick',e=>openColorPicker(e,d));
+    d.addEventListener('dblclick',e=>{
+      // Prevent color picking while in standby
+      if(isInStandby) return;
+      openColorPicker(e,d);
+    });
     d.addEventListener('click',e=>{
       if(e.target.closest('.del'))return;
       if(e.shiftKey || e.ctrlKey){
@@ -542,25 +604,23 @@ function createCanvasName(entry){
     });
     d.querySelector('.del').addEventListener('click',()=>{
       const name=d.querySelector('.nm').textContent;
-      const color=d.dataset.color;
+      const originalColor=d.dataset.originalColor || d.dataset.color;
       selectedIds.delete(entry.id);
       d.remove();
       
-      // Restore to pool - find original category and re-insert
-      const colorName = Object.keys(COLORS).find(k=>COLORS[k]===color) || 'gray';
-      const originalCat = INITIAL_POOL.find(g=>COLORS[g.cat]===color);
-      
-      poolNames.push({id:entry.id, name, type:'worker', color});
+      // Restore to pool with original color
+      poolNames.push({id:entry.id, name, type:'worker', color:originalColor});
       
       // Sort to maintain original category order and within-category insertion order
-      const catOrder={blue:0,yellow:1,orange:2,red:3,gray:4};
+      const catOrder={blue:0,yellow:1,orange:2,red:3,green:4,pink:5,purple:6,gray:7};
       poolNames.sort((a,b)=>{
         const catA=Object.keys(COLORS).find(k=>COLORS[k]===a.color)||'gray';
         const catB=Object.keys(COLORS).find(k=>COLORS[k]===b.color)||'gray';
-        const oa=catOrder[catA]||4, ob=catOrder[catB]||4;
+        const oa=catOrder[catA]||7, ob=catOrder[catB]||7;
         if(oa!==ob) return oa-ob;
         
         // Within same category, maintain insertion order from INITIAL_POOL
+        const originalCat = INITIAL_POOL.find(g=>COLORS[g.cat]===a.color);
         if(oa===catOrder[catA]){
           const origIdxA = originalCat?.names.indexOf(a.name) ?? 999;
           const origIdxB = originalCat?.names.indexOf(b.name) ?? 999;
@@ -583,18 +643,19 @@ function renumberAll(){
     const items=[...z.querySelectorAll('.canvas-name')];
     const groups={};
     items.forEach(it=>{
+      // Skip subheadings - don't create groups for them
+      if(it.dataset.type === 'subheading') return;
       const c=it.dataset.color;
       if(!groups[c])groups[c]=[];
       groups[c].push(it);
     });
-    // Sort groups by first appearance
+    // Number workers by color group, skip subheadings entirely
     items.forEach(it=>{
-      const c=it.dataset.color;
-      // Skip numbering for subheadings
       if(it.dataset.type === 'subheading'){
         it.querySelector('.num').textContent='';
         return;
       }
+      const c=it.dataset.color;
       const idx=groups[c].indexOf(it);
       it.querySelector('.num').textContent=(idx+1)+'.';
     });
@@ -785,7 +846,7 @@ document.getElementById('addForm').addEventListener('submit',e=>{
   e.preventDefault();
   const inp=document.getElementById('addInput');
   const type=document.getElementById('addType').value;
-  const v=inp.value.trim();
+  const v=inp.value.trim().toUpperCase();
   if(!v)return;
   
   if(type === 'subheading'){
@@ -874,6 +935,13 @@ renderPool();
 addZone();addZone();
 updateCounts();
 lucide.createIcons();
+
+// Clean up drag listeners on drag end
+document.addEventListener('dragend',()=>{
+  dragData=null;
+  document.removeEventListener('dragover',onCanvasDragOver);
+  document.querySelectorAll('.canvas-placeholder').forEach(p=>p.remove());
+});
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9eee72ab859cea81',t:'MTc3NjYyODMyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9eeea648c58858f8',t:'MTc3NjYzMDQ0Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
