@@ -3,797 +3,274 @@
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IBOL Production Team Manager</title>
+  <title>Digital Callsheet Planner</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
   <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
-  <script>
-tailwind.config = {
-  theme: {
-    extend: {
-      fontFamily: {
-        heading: ['"Bebas Neue"', 'sans-serif'],
-        body: ['"Source Sans 3"', 'sans-serif']
-      }
-    }
-  }
-}
-</script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&amp;family=Outfit:wght@300;400;600;700&amp;display=swap" rel="stylesheet">
   <style>
-html, body { height: 100%; margin: 0; overflow: hidden; }
 * { box-sizing: border-box; }
-.app-root { height: 100%; overflow: hidden; background: #0a0e1a; }
-
-/* Scrollbars */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
-
-/* DND */
-.dragging { opacity: 0.4; transform: scale(0.95); }
-.drag-over { background: rgba(59,130,246,0.15) !important; border: 2px dashed #3b82f6 !important; }
-.name-chip { cursor: grab; user-select: none; transition: all 0.15s ease; }
-.name-chip:active { cursor: grabbing; }
-.name-chip.selected { ring: 2px; outline: 2px solid #60a5fa; outline-offset: 1px; }
-.name-chip:hover { filter: brightness(1.1); transform: translateY(-1px); }
-
-/* Color classes */
-.chip-blue { background: #3b82f6; color: #fff; }
-.chip-yellow { background: #eab308; color: #1a1a1a; }
-.chip-orange { background: #f97316; color: #fff; }
-.chip-red { background: #ef4444; color: #fff; }
-.chip-grey { background: #6b7280; color: #fff; }
-.chip-green { background: #22c55e; color: #fff; }
-.chip-pink { background: #ec4899; color: #fff; }
-
-/* A4 Canvas */
-.a4-canvas {
-  width: 794px; min-height: 1123px; background: #fff;
-  font-family: 'Source Sans 3', sans-serif;
-  position: relative;
-}
-
-/* Zone grid */
-.zone-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 8px; }
-.zone-wrapper { break-inside: avoid; }
-
-/* Editable fields */
-.editable-field { border: none; outline: none; background: transparent; }
-.editable-field:focus { background: rgba(0,0,0,0.05); border-radius: 2px; }
-
-/* Color picker popup */
-.color-picker-popup {
-  position: fixed; z-index: 9999; background: #1e293b;
-  border-radius: 8px; padding: 8px; display: flex; gap: 6px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-}
-.color-dot {
-  width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
-  border: 2px solid transparent; transition: all 0.15s;
-}
-.color-dot:hover { transform: scale(1.2); border-color: #fff; }
-
-/* Print-safe */
-@media print { .no-print { display: none !important; } }
-
-/* Touch helpers */
-@media (pointer: coarse) {
-  .name-chip { padding: 6px 10px !important; min-height: 36px; }
-}
-
-/* Standby table */
-.standby-container { border: 2px solid #374151; background: #f9fafb; }
+html, body { height: 100%; margin: 0; overflow: hidden; font-family: 'Outfit', sans-serif; }
+.app-wrapper { height: 100%; width: 100%; display: flex; background: #000033; }
+.pool-sidebar { width: 20%; min-width: 180px; height: 100%; overflow-y: auto; padding: 10px; border-right: 1px solid #1a1a5e; }
+.canvas-area { flex: 1; height: 100%; overflow: auto; padding: 20px; display: flex; justify-content: center; }
+.right-sidebar { width: 20%; min-width: 180px; height: 100%; overflow-y: auto; padding: 10px; border-left: 1px solid #1a1a5e; }
+.a4-canvas { width: 794px; min-height: 1123px; background: white; box-shadow: 0 4px 20px rgba(0,0,0,0.5); padding: 20px; position: relative; }
+.name-block { padding: 4px 8px; margin: 2px 0; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: grab; color: white; user-select: none; display: flex; align-items: center; gap: 4px; }
+.name-block.blue { background: #2563eb; }
+.name-block.yellow { background: #ca8a04; }
+.name-block.orange { background: #ea580c; }
+.name-block.red { background: #dc2626; }
+.name-block.grey { background: #6b7280; }
+.name-block.green { background: #16a34a; }
+.name-block.pink { background: #db2777; }
+.name-block .num { font-family: 'JetBrains Mono', monospace; font-size: 10px; opacity: 0.8; min-width: 14px; }
+.zone-container { border: 2px solid #e5e7eb; margin: 8px 4px; padding: 6px; border-radius: 6px; min-height: 80px; }
+.zone-title-outer { font-size: 11px; font-weight: 700; color: #6b7280; text-align: center; }
+.zone-title-inner { font-size: 11px; font-weight: 700; color: #2563eb; text-align: center; }
+.zone-title-sub { font-size: 10px; font-weight: 700; color: #ef4444; font-style: italic; text-align: center; }
+.zone-drop { min-height: 40px; padding: 2px; }
+.sortable-ghost { opacity: 0.4; }
+.sortable-chosen { box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+.standby-table { border: 2px dashed #6b7280; margin-top: 12px; padding: 8px; border-radius: 6px; }
+.color-picker-popup { position: absolute; background: white; border: 1px solid #ccc; border-radius: 8px; padding: 8px; display: flex; gap: 6px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+.color-picker-popup span { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
+.color-picker-popup span:hover { border-color: #333; transform: scale(1.2); }
+.pool-sidebar::-webkit-scrollbar, .canvas-area::-webkit-scrollbar, .right-sidebar::-webkit-scrollbar { width: 6px; }
+.pool-sidebar::-webkit-scrollbar-thumb, .canvas-area::-webkit-scrollbar-thumb, .right-sidebar::-webkit-scrollbar-thumb { background: #4a4a8a; border-radius: 3px; }
+[contenteditable]:focus { outline: 1px dashed #2563eb; border-radius: 2px; }
+.marquee { position: fixed; border: 2px dashed #2563eb; background: rgba(37,99,235,0.1); pointer-events: none; z-index: 9999; }
 </style>
   <style>body { box-sizing: border-box; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
- <body class="h-full">
-  <div class="app-root flex flex-col h-full font-body">
-   <!-- Top bar -->
-   <header class="flex items-center justify-between px-4 py-2 bg-[#0f1629] border-b border-white/10 shrink-0">
-    <div class="flex items-center gap-2">
-     <i data-lucide="clapperboard" class="w-6 h-6 text-blue-400"></i>
-     <h1 class="font-heading text-xl text-white tracking-wider">IBOL TEAM MANAGER</h1>
+ <body>
+  <div class="app-wrapper" id="app"><!-- Left Sidebar -->
+   <div class="pool-sidebar">
+    <h3 class="text-white text-sm font-bold mb-2 uppercase tracking-wide">Pool List</h3>
+    <div id="pool-list"></div>
+    <div class="mt-3 flex gap-1"><input id="new-name-input" type="text" placeholder="Add name..." class="flex-1 text-xs px-2 py-1 rounded bg-white/10 text-white border border-white/20 focus:outline-none focus:border-blue-400"> <button id="add-name-btn" class="bg-blue-600 text-white text-xs px-2 py-1 rounded hover:bg-blue-500"><i data-lucide="plus" style="width:12px;height:12px;"></i></button>
     </div>
-    <div class="flex items-center gap-2 text-xs text-white/50">
-     <i data-lucide="grip-vertical" class="w-4 h-4"></i> <span>Drag &amp; Drop Enabled</span>
+   </div><!-- Center Canvas -->
+   <div class="canvas-area">
+    <div class="a4-canvas" id="a4-canvas"><!-- Header -->
+     <div style="display:flex;align-items:center;gap:12px;border-bottom:2px solid #000;padding-bottom:8px;">
+      <div style="height:60px;width:60px;display:flex;align-items:center;justify-content:center;"><img src="https://drive.google.com/uc?export=view&amp;id=1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" alt="Logo" style="max-height:60px;max-width:60px;" loading="lazy" onerror="this.style.background='#1a1a5e';this.style.borderRadius='8px';this.alt='IBOL';">
+      </div>
+      <div style="flex:1;text-align:center;"><span id="main-title" style="font-size:36px;font-weight:700;font-family:'Outfit',sans-serif;">I.B.O.L</span> <span style="margin-left:12px;font-size:36px;font-weight:700;" id="day-label">DAY</span> <select id="day-selector" style="font-size:36px;font-weight:700;border:none;outline:none;background:transparent;cursor:pointer;appearance:none;-webkit-appearance:none;"></select>
+      </div>
+     </div>
+     <div id="date-display" style="font-size:20px;color:#ef4444;text-align:center;margin:6px 0;font-weight:600;"></div><!-- Zones Grid -->
+     <div id="zones-grid" style="display:flex;flex-wrap:wrap;gap:8px;"></div><!-- Standby Table -->
+     <div class="standby-table" id="standby-table">
+      <div style="font-size:11px;font-weight:700;color:#6b7280;text-align:center;margin-bottom:4px;">
+       STANDBY
+      </div>
+      <div id="standby-drop" class="zone-drop"></div>
+     </div><!-- Totals -->
+     <div id="totals-display" style="position:absolute;bottom:16px;right:16px;font-weight:700;font-size:12px;text-align:right;"></div>
     </div>
-   </header><!-- Main 3-col layout -->
-   <div class="flex flex-1 overflow-hidden">
-    <!-- COL 1: Pool List -->
-    <aside id="pool-sidebar" class="w-64 shrink-0 bg-[#0f1629] border-r border-white/10 flex flex-col overflow-hidden">
-     <div class="p-3 border-b border-white/10">
-      <h2 class="text-sm font-bold text-white/80 uppercase tracking-wider flex items-center gap-2"><i data-lucide="users" class="w-4 h-4 text-blue-400"></i> Worker Pool</h2>
-      <p id="pool-count" class="text-xs text-white/40 mt-1">0 workers available</p>
-     </div>
-     <div id="pool-list" class="flex-1 overflow-y-auto p-2 space-y-1">
-     </div>
-     <div class="p-3 border-t border-white/10">
-      <div class="flex gap-2">
-       <input id="new-name-input" type="text" placeholder="Add new name..." class="flex-1 bg-white/10 text-white text-sm px-3 py-2 rounded-lg border border-white/10 focus:border-blue-400 focus:outline-none placeholder-white/30"> <button id="add-name-btn" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition-colors"> <i data-lucide="plus" class="w-4 h-4"></i> </button>
-      </div>
-     </div>
-    </aside><!-- COL 2: A4 Canvas -->
-    <main class="flex-1 overflow-auto p-4 flex justify-center" style="background: #0d1220;">
-     <div class="inline-block">
-      <div id="a4-canvas" class="a4-canvas shadow-2xl">
-       <!-- Canvas Header -->
-       <div class="flex items-center justify-between px-4 pt-4 pb-2 border-b-2 border-gray-300">
-        <div style="height:80px;width:120px;" class="flex items-center justify-center overflow-hidden">
-         <img src="https://lh3.googleusercontent.com/d/1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" alt="IBOL Logo" style="max-height:80px;width:auto;" loading="lazy" onerror="console.error('Logo failed:', this.src); this.style.display='none'; this.parentElement.innerHTML='<div style=&quot;font-size:24px;font-weight:bold;color:#3b82f6;&quot;>IBOL</div>';">
-        </div>
-        <div class="text-center flex-1">
-         <div id="canvas-title" class="font-heading text-[40px] leading-none tracking-wider text-gray-900">
-          I.B.O.L
-         </div>
-         <div class="flex items-center justify-center gap-1 mt-1">
-          <span id="canvas-day-label" class="font-heading text-[40px] leading-none text-gray-900">DAY</span> <input id="day-input" type="number" min="1" max="40" value="1" class="editable-field font-heading text-[40px] leading-none text-gray-900 w-16 text-center" style="border:none;outline:none;">
-         </div>
-        </div>
-        <div id="canvas-date" class="text-right" style="font-size:24px;color:#ef4444;font-weight:700;">
-        </div>
-       </div><!-- Zone Grid -->
-       <div id="zone-grid" class="zone-grid">
-       </div><!-- Standby + Totals row -->
-       <div class="flex items-end justify-between px-4 pb-4 mt-2">
-        <!-- Standby Container -->
-        <div class="w-1/2">
-         <div class="text-sm font-bold text-gray-500 mb-1">
-          STANDBY
-         </div>
-         <div id="standby-zone" class="standby-container rounded-lg p-2 min-h-[60px]" data-zone-id="standby">
-         </div>
-        </div><!-- Totals -->
-        <div class="text-right">
-         <div class="text-sm font-bold text-gray-800">
-          TOTAL PEKERJA: <span id="total-pekerja" class="text-blue-600">0</span>
-         </div>
-         <div class="text-sm font-bold text-gray-800">
-          TOTAL STANDBY: <span id="total-standby" class="text-orange-500">0</span>
-         </div>
-        </div>
-       </div>
-      </div>
-     </div>
-    </main><!-- COL 3: Tools -->
-    <aside class="w-56 shrink-0 bg-[#0f1629] border-l border-white/10 flex flex-col overflow-y-auto">
-     <div class="p-3 border-b border-white/10">
-      <h2 class="text-sm font-bold text-white/80 uppercase tracking-wider flex items-center gap-2"><i data-lucide="settings" class="w-4 h-4 text-blue-400"></i> Tools</h2>
-     </div>
-     <div class="p-3 space-y-3">
-      <button id="add-zone-btn" class="w-full flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white py-2 px-3 rounded-lg text-sm font-semibold transition-colors"> <i data-lucide="plus-square" class="w-4 h-4"></i> Add Zone </button> <button id="download-btn" class="w-full flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white py-2 px-3 rounded-lg text-sm font-semibold transition-colors"> <i data-lucide="download" class="w-4 h-4"></i> Download JPEG </button>
-      <hr class="border-white/10">
-      <div class="text-xs text-white/40 space-y-2">
-       <p><strong class="text-white/60">Drag</strong> names from Pool → Zones</p>
-       <p><strong class="text-white/60">Shift+Click</strong> for multi-select</p>
-       <p><strong class="text-white/60">Double-click</strong> name on canvas to change color</p>
-       <p><strong class="text-white/60">Click</strong> zone titles to edit</p>
-      </div>
-      <hr class="border-white/10">
-      <h3 class="text-xs font-bold text-white/60 uppercase">Zones</h3>
-      <div id="zone-list-panel" class="space-y-1"></div>
-     </div>
-    </aside>
+   </div><!-- Right Sidebar -->
+   <div class="right-sidebar">
+    <h3 class="text-white text-sm font-bold mb-3 uppercase tracking-wide">Controls</h3><button id="add-zone-btn" class="w-full bg-emerald-600 text-white text-xs font-bold py-2 px-3 rounded mb-2 hover:bg-emerald-500 flex items-center justify-center gap-1"> <i data-lucide="plus-square" style="width:14px;height:14px;"></i> Add Zone </button> <button id="download-btn" class="w-full bg-amber-600 text-white text-xs font-bold py-2 px-3 rounded mb-2 hover:bg-amber-500 flex items-center justify-center gap-1"> <i data-lucide="download" style="width:14px;height:14px;"></i> Download JPEG </button>
+    <div class="mt-4 text-white/60 text-xs">
+     <p class="mb-1">• Drag names to zones</p>
+     <p class="mb-1">• Double-click name to change color</p>
+     <p class="mb-1">• Click zone titles to edit</p>
+     <p class="mb-1">• Max 3 zones per row</p>
+    </div>
    </div>
-  </div><!-- Color picker popup (hidden) -->
-  <div id="color-picker" class="color-picker-popup" style="display:none;">
-   <div class="color-dot" style="background:#ef4444;" data-color="red"></div>
-   <div class="color-dot" style="background:#3b82f6;" data-color="blue"></div>
-   <div class="color-dot" style="background:#eab308;" data-color="yellow"></div>
-   <div class="color-dot" style="background:#22c55e;" data-color="green"></div>
-   <div class="color-dot" style="background:#ec4899;" data-color="pink"></div>
-   <div class="color-dot" style="background:#f97316;" data-color="orange"></div>
+  </div><!-- Color Picker -->
+  <div id="color-picker" class="color-picker-popup" style="display:none;"><span style="background:#2563eb;" data-color="blue"></span> <span style="background:#ca8a04;" data-color="yellow"></span> <span style="background:#ea580c;" data-color="orange"></span> <span style="background:#dc2626;" data-color="red"></span> <span style="background:#16a34a;" data-color="green"></span> <span style="background:#db2777;" data-color="pink"></span>
   </div>
   <script>
-// ===== STATE =====
-const COLOR_ORDER = ['blue','yellow','orange','red','green','pink','grey'];
-const COLOR_CLASSES = {blue:'chip-blue',yellow:'chip-yellow',orange:'chip-orange',red:'chip-red',grey:'chip-grey',green:'chip-green',pink:'chip-pink'};
+const defaultConfig = {
+  main_title: 'I.B.O.L',
+  day_label: 'DAY',
+  background_color: '#000033',
+  surface_color: '#ffffff',
+  text_color: '#1f2937',
+  primary_color: '#2563eb',
+  accent_color: '#ea580c'
+};
 
-let nextId = 1;
-function mkWorker(name, color) { return { id: nextId++, name, color }; }
+let config = { ...defaultConfig };
 
-const initialWorkers = [
-  ...['Fredy Chidotz','Deni Sandy','Hamdan','Iman Udeng','Pingki Sopian'].map(n=>mkWorker(n,'blue')),
-  ...['Adi Susanto','Alif','Ikhwani','Yudi','Fahmi','Aditya Arisandi','Kikin','Samsul Hidayat'].map(n=>mkWorker(n,'yellow')),
-  ...['Supriyadi','Hendri','Basori','Acep','Edi','Sudarmansyah','Ryan Hermawan','Iwan A. Setiawan'].map(n=>mkWorker(n,'orange')),
-  ...['Heri Suherman','Ismail','Rahmat','Rendi','Dafa','Anggi Yanuar','Caryana','Pryambudi','Asep A. Setiawan','Sandi Permana','Aditiya A. Aziz','Wawan Kurniawan','Rizki N. Huda','M. Dian Saputra'].map(n=>mkWorker(n,'red'))
+window.elementSdk.init({
+  defaultConfig,
+  onConfigChange: async (c) => {
+    config = { ...defaultConfig, ...c };
+    document.getElementById('main-title').textContent = config.main_title;
+    document.getElementById('day-label').textContent = config.day_label;
+  },
+  mapToCapabilities: (c) => ({
+    recolorables: [
+      { get: () => c.background_color || defaultConfig.background_color, set: (v) => { c.background_color = v; window.elementSdk.setConfig({ background_color: v }); } },
+      { get: () => c.surface_color || defaultConfig.surface_color, set: (v) => { c.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
+      { get: () => c.text_color || defaultConfig.text_color, set: (v) => { c.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
+      { get: () => c.primary_color || defaultConfig.primary_color, set: (v) => { c.primary_color = v; window.elementSdk.setConfig({ primary_color: v }); } },
+      { get: () => c.accent_color || defaultConfig.accent_color, set: (v) => { c.accent_color = v; window.elementSdk.setConfig({ accent_color: v }); } }
+    ],
+    borderables: [],
+    fontEditable: { get: () => c.font_family || 'Outfit', set: (v) => { c.font_family = v; window.elementSdk.setConfig({ font_family: v }); } },
+    fontSizeable: undefined
+  }),
+  mapToEditPanelValues: (c) => new Map([
+    ['main_title', c.main_title || defaultConfig.main_title],
+    ['day_label', c.day_label || defaultConfig.day_label]
+  ])
+});
+
+// Data
+const poolData = [
+  { name: 'Fredy Chidotz', color: 'blue' }, { name: 'Deni Sandy', color: 'blue' }, { name: 'Hamdan', color: 'blue' }, { name: 'Iman Udeng', color: 'blue' }, { name: 'Pingki Sopian', color: 'blue' },
+  { name: 'Adi Susanto', color: 'yellow' }, { name: 'Alif', color: 'yellow' }, { name: 'Ikhwani', color: 'yellow' }, { name: 'Yudi', color: 'yellow' }, { name: 'Fahmi', color: 'yellow' }, { name: 'Aditya Arisandi', color: 'yellow' }, { name: 'Kikin', color: 'yellow' }, { name: 'Samsul Hidayat', color: 'yellow' },
+  { name: 'Supriyadi', color: 'orange' }, { name: 'Hendri', color: 'orange' }, { name: 'Basori', color: 'orange' }, { name: 'Acep', color: 'orange' }, { name: 'Edi', color: 'orange' }, { name: 'Sudarmansyah', color: 'orange' }, { name: 'Ryan Hermawan', color: 'orange' }, { name: 'Iwan A. Setiawan', color: 'orange' },
+  { name: 'Heri Suherman', color: 'red' }, { name: 'Ismail', color: 'red' }, { name: 'Rahmat', color: 'red' }, { name: 'Rendi', color: 'red' }, { name: 'Dafa', color: 'red' }, { name: 'Anggi Yanuar', color: 'red' }, { name: 'Caryana', color: 'red' }, { name: 'Pryambudi', color: 'red' }, { name: 'Asep A. Setiawan', color: 'red' }, { name: 'Sandi Permana', color: 'red' }, { name: 'Aditiya A. Aziz', color: 'red' }, { name: 'Wawan Kurniawan', color: 'red' }, { name: 'Rizki N. Huda', color: 'red' }, { name: 'M. Dian Saputra', color: 'red' }
 ];
 
-let pool = [...initialWorkers];
-let zones = [];
-let standbyWorkers = [];
-let zoneIdCounter = 0;
-let selectedIds = new Set();
-let dragData = null;
+let zoneCount = 0;
 let colorPickerTarget = null;
 
-// ===== ADVANCED DND STATE =====
-let activeDragSource = null;
-let activeDragWorkerIds = [];
-let dragStartPos = { x: 0, y: 0 };
-let selectionRect = null;
-let isDrawingSelectionRect = false;
-let lastHoveredDropZone = null;
-
-function newZone(headerText, titleText, subText) {
-  return { id: ++zoneIdCounter, header: headerText||'ZONE '+zoneIdCounter, title: titleText||'UNIT '+zoneIdCounter, sub: subText||'Subtitle', workers: [] };
+// Initialize
+function createNameBlock(name, color) {
+  const el = document.createElement('div');
+  el.className = `name-block ${color}`;
+  el.dataset.name = name;
+  el.dataset.color = color;
+  el.innerHTML = `<span class="num"></span><span class="ntext">${name}</span>`;
+  el.addEventListener('dblclick', (e) => openColorPicker(e, el));
+  return el;
 }
 
-// Add 2 default zones
-zones.push(newZone('ZONE A','UNIT A','Sub-Unit A'));
-zones.push(newZone('ZONE B','UNIT B','Sub-Unit B'));
-
-// ===== RENDER =====
-function render() {
-  renderPool();
-  renderCanvas();
-  renderZonePanel();
-  updateTotals();
+function initPool() {
+  const pool = document.getElementById('pool-list');
+  poolData.forEach(d => pool.appendChild(createNameBlock(d.name, d.color)));
+  new Sortable(pool, { group: 'names', animation: 150, ghostClass: 'sortable-ghost', chosenClass: 'sortable-chosen', onEnd: recalcAll });
 }
 
-function renderPool() {
-  const c = document.getElementById('pool-list');
-  const existing = new Map([...c.children].map(el=>[el.dataset.workerId, el]));
-  const currentIds = new Set(pool.map(w=>String(w.id)));
-
-  // Remove workers no longer in pool
-  existing.forEach((el, id) => { if (!currentIds.has(id)) el.remove(); });
-
-  pool.forEach((w, i) => {
-    let el = existing.get(String(w.id));
-    if (!el) {
-      el = document.createElement('div');
-      el.dataset.workerId = String(w.id);
-      el.className = `name-chip ${COLOR_CLASSES[w.color]} rounded px-3 py-1.5 text-xs font-semibold flex items-center gap-1`;
-      el.draggable = true;
-      el.textContent = w.name;
-      el.addEventListener('dragstart', onPointerDragStart);
-      el.addEventListener('dragend', onPointerDragEnd);
-      el.addEventListener('pointerdown', onPoolPointerDown);
-      el.addEventListener('click', onPoolClick);
-    }
-    // Update selection state
-    el.classList.toggle('selected', selectedIds.has(w.id));
-    // Ensure correct position
-    if (c.children[i] !== el) {
-      if (c.children[i]) c.insertBefore(el, c.children[i]);
-      else c.appendChild(el);
-    }
-  });
-
-  document.getElementById('pool-count').textContent = pool.length + ' workers available';
-  
-  // Setup selection rect on pool
-  setupSelectionRect(c);
-}
-
-function renderCanvas() {
-  const grid = document.getElementById('zone-grid');
-  const existingZones = new Map([...grid.children].map(el=>[el.dataset.zoneId, el]));
-  const currentZoneIds = new Set(zones.map(z=>String(z.id)));
-
-  existingZones.forEach((el, id) => { if (!currentZoneIds.has(id)) el.remove(); });
-
-  zones.forEach((zone, zi) => {
-    let wrapper = existingZones.get(String(zone.id));
-    if (!wrapper) {
-      wrapper = document.createElement('div');
-      wrapper.dataset.zoneId = String(zone.id);
-      wrapper.className = 'zone-wrapper';
-      wrapper.innerHTML = buildZoneHTML(zone);
-      setupZoneEvents(wrapper, zone);
-    } else {
-      updateZoneWorkers(wrapper, zone);
-    }
-    if (grid.children[zi] !== wrapper) {
-      if (grid.children[zi]) grid.insertBefore(wrapper, grid.children[zi]);
-      else grid.appendChild(wrapper);
-    }
-  });
-
-  // Standby
-  renderStandby();
-}
-
-function buildZoneHTML(zone) {
-  return `
-    <div class="text-xs font-bold text-gray-400 mb-0.5 px-1 editable-field" contenteditable="true" data-field="header">${zone.header}</div>
-    <div class="border border-gray-300 rounded bg-white p-1.5 min-h-[60px]" data-drop="zone-${zone.id}">
-      <div class="text-sm font-bold text-blue-600 editable-field text-center" contenteditable="true" data-field="title">${zone.title}</div>
-      <div class="text-xs font-bold text-red-500 italic editable-field text-center" contenteditable="true" data-field="sub">${zone.sub}</div>
-      <div class="worker-list mt-1 space-y-0.5 min-h-[20px]"></div>
-      <button class="remove-zone-btn text-[9px] text-gray-300 hover:text-red-400 mt-1 transition-colors" title="Remove zone">✕ remove</button>
-    </div>`;
-}
-
-function setupZoneEvents(wrapper, zone) {
-  const dropArea = wrapper.querySelector('[data-drop]');
-  dropArea.addEventListener('dragover', e => { e.preventDefault(); dropArea.classList.add('drag-over'); });
-  dropArea.addEventListener('dragleave', () => dropArea.classList.remove('drag-over'));
-  dropArea.addEventListener('drop', e => { e.preventDefault(); dropArea.classList.remove('drag-over'); onDropInZone(zone.id); });
-
-  // Touch drop zone
-  dropArea.dataset.zoneDropId = zone.id;
-
-  // Editable fields
-  wrapper.querySelector('[data-field="header"]').addEventListener('blur', function(){ zone.header = this.textContent; });
-  wrapper.querySelector('[data-field="title"]').addEventListener('blur', function(){ zone.title = this.textContent; });
-  wrapper.querySelector('[data-field="sub"]').addEventListener('blur', function(){ zone.sub = this.textContent; });
-
-  // Remove zone btn
-  wrapper.querySelector('.remove-zone-btn').addEventListener('click', () => {
-    pool.push(...zone.workers);
-    zones = zones.filter(z=>z.id!==zone.id);
-    render();
-  });
-  
-  // Selection rect on zone workers
-  setupSelectionRect(wrapper.querySelector('.worker-list'));
-}
-
-function getNumberedWorkers(workers) {
-  // Group by color, maintain order, number within each group
-  const groups = [];
-  let currentColor = null;
-  let num = 0;
-  // Sort by color order first, preserve insertion order within same color
-  const sorted = [...workers].sort((a,b) => {
-    const ai = COLOR_ORDER.indexOf(a.color); const bi = COLOR_ORDER.indexOf(b.color);
-    if (ai !== bi) return ai - bi;
-    return workers.indexOf(a) - workers.indexOf(b);
-  });
-  sorted.forEach(w => {
-    if (w.color !== currentColor) { currentColor = w.color; num = 1; }
-    else num++;
-    groups.push({ ...w, num });
-  });
-  return groups;
-}
-
-function updateZoneWorkers(wrapper, zone) {
-  const list = wrapper.querySelector('.worker-list');
-  const numbered = getNumberedWorkers(zone.workers);
-  const existing = new Map([...list.children].map(el=>[el.dataset.workerId, el]));
-  const currentIds = new Set(numbered.map(w=>String(w.id)));
-
-  existing.forEach((el, id) => { if (!currentIds.has(id)) el.remove(); });
-
-  numbered.forEach((w, i) => {
-    let el = existing.get(String(w.id));
-    if (!el) {
-      el = document.createElement('div');
-      el.dataset.workerId = String(w.id);
-      el.draggable = true;
-      el.addEventListener('dragstart', (e) => onPointerDragStart.call(el, e, zone.id));
-      el.addEventListener('dragend', onPointerDragEnd);
-      el.addEventListener('dblclick', (e) => openColorPicker(e, w.id, zone.id));
-      el.addEventListener('pointerdown', (e) => onCanvasPointerDown.call(el, e, zone.id));
-    }
-    el.className = `name-chip ${COLOR_CLASSES[w.color]} rounded px-2 py-0.5 text-[10px] font-semibold`;
-    el.textContent = `${w.num}. ${w.name}`;
-    if (list.children[i] !== el) {
-      if (list.children[i]) list.insertBefore(el, list.children[i]);
-      else list.appendChild(el);
-    }
-  });
-}
-
-function renderStandby() {
-  const c = document.getElementById('standby-zone');
-  const numbered = getNumberedWorkers(standbyWorkers);
-  const existing = new Map([...c.children].map(el=>[el.dataset.workerId, el]));
-  const currentIds = new Set(numbered.map(w=>String(w.id)));
-
-  existing.forEach((el, id) => { if (!currentIds.has(id)) el.remove(); });
-
-  numbered.forEach((w, i) => {
-    let el = existing.get(String(w.id));
-    if (!el) {
-      el = document.createElement('div');
-      el.dataset.workerId = String(w.id);
-      el.draggable = true;
-      el.addEventListener('dragstart', (e) => onPointerDragStart.call(el, e, 'standby'));
-      el.addEventListener('dragend', onPointerDragEnd);
-      el.addEventListener('dblclick', (e) => openColorPicker(e, w.id, 'standby'));
-      el.addEventListener('pointerdown', (e) => onStandbyPointerDown.call(el, e));
-    }
-    el.className = `name-chip ${COLOR_CLASSES[w.color]} rounded px-2 py-0.5 text-[10px] font-semibold`;
-    el.textContent = `${w.num}. ${w.name}`;
-    if (c.children[i] !== el) {
-      if (c.children[i]) c.insertBefore(el, c.children[i]);
-      else c.appendChild(el);
-    }
-  });
-
-  // Setup drop on standby
-  c.ondragover = (e) => { e.preventDefault(); c.classList.add('drag-over'); };
-  c.ondragleave = () => c.classList.remove('drag-over');
-  c.ondrop = (e) => { e.preventDefault(); c.classList.remove('drag-over'); onDropInStandby(); };
-}
-
-function renderZonePanel() {
-  const panel = document.getElementById('zone-list-panel');
-  panel.innerHTML = zones.map(z =>
-    `<div class="flex items-center justify-between text-xs text-white/70 bg-white/5 rounded px-2 py-1.5">
-      <span>${z.header} (${z.workers.length})</span>
-    </div>`
-  ).join('') + `<div class="text-xs text-white/40 mt-1">Standby: ${standbyWorkers.length}</div>`;
-}
-
-function updateTotals() {
-  const totalWorkers = zones.reduce((s,z)=>s+z.workers.length, 0);
-  document.getElementById('total-pekerja').textContent = totalWorkers;
-  document.getElementById('total-standby').textContent = standbyWorkers.length;
-}
-
-// ===== ADVANCED DRAG & DROP =====
-
-// Selection Rectangle Logic
-function setupSelectionRect(container) {
-  if (!container) return;
-  let isSelecting = false;
-  let startX, startY;
-  let rectElement = null;
-  
-  const isDropZone = container.classList.contains('worker-list') || container.id === 'pool-list';
-  if (!isDropZone) return;
-
-  container.addEventListener('pointerdown', (e) => {
-    // Only activate on empty space (not on name-chip)
-    if (e.target.closest('.name-chip')) return;
-    
-    isSelecting = true;
-    startX = e.clientX;
-    startY = e.clientY;
-    
-    // Create selection rectangle visual
-    rectElement = document.createElement('div');
-    rectElement.style.position = 'fixed';
-    rectElement.style.border = '2px dashed #3b82f6';
-    rectElement.style.background = 'rgba(59, 130, 246, 0.1)';
-    rectElement.style.pointerEvents = 'none';
-    rectElement.style.zIndex = '9998';
-    document.body.appendChild(rectElement);
-  });
-
-  document.addEventListener('pointermove', (e) => {
-    if (!isSelecting || !rectElement) return;
-    
-    const currentX = e.clientX;
-    const currentY = e.clientY;
-    const left = Math.min(startX, currentX);
-    const top = Math.min(startY, currentY);
-    const width = Math.abs(currentX - startX);
-    const height = Math.abs(currentY - startY);
-    
-    rectElement.style.left = left + 'px';
-    rectElement.style.top = top + 'px';
-    rectElement.style.width = width + 'px';
-    rectElement.style.height = height + 'px';
-    
-    // Collision detection: find all chips that intersect rect
-    const chips = container.querySelectorAll('.name-chip');
-    const rectBounds = { left, top, right: left + width, bottom: top + height };
-    
-    selectedIds.clear();
-    chips.forEach(chip => {
-      const chipBounds = chip.getBoundingClientRect();
-      if (rectsIntersect(rectBounds, { left: chipBounds.left, top: chipBounds.top, right: chipBounds.right, bottom: chipBounds.bottom })) {
-        const wid = parseInt(chip.dataset.workerId);
-        selectedIds.add(wid);
-      }
-    });
-    
-    renderPool();
-  });
-
-  document.addEventListener('pointerup', (e) => {
-    if (isSelecting && rectElement) {
-      rectElement.remove();
-      rectElement = null;
-      isSelecting = false;
-    }
-  });
-}
-
-function rectsIntersect(r1, r2) {
-  return !(r2.right < r1.left || r2.left > r1.right || r2.bottom < r1.top || r2.top > r1.bottom);
-}
-
-function onPointerDragStart(e, sourceZoneId) {
-  const wid = parseInt(e.currentTarget.dataset.workerId);
-  const source = e.currentTarget.closest('#pool-list') ? 'pool' :
-                 e.currentTarget.closest('#standby-zone') ? 'standby' : 'zone';
-  
-  let ids = selectedIds.size > 0 && selectedIds.has(wid) ? [...selectedIds] : [wid];
-  
-  activeDragSource = source;
-  activeDragWorkerIds = ids;
-  
-  dragData = source === 'pool' 
-    ? { source: 'pool', workerIds: ids }
-    : source === 'standby'
-    ? { source: 'standby', workerIds: ids }
-    : { source: 'zone', sourceZoneId, workerIds: ids };
-  
-  e.currentTarget.classList.add('dragging');
-  e.dataTransfer.effectAllowed = 'move';
-}
-
-function onPointerDragEnd(e) {
-  e.currentTarget.classList.remove('dragging');
-  activeDragSource = null;
-  activeDragWorkerIds = [];
-}
-
-function onPoolPointerDown(e) {
-  if (e.button !== 0) return; // Only left-click
-  
-  const wid = parseInt(e.currentTarget.dataset.workerId);
-  const isMultiSelect = e.ctrlKey || e.metaKey;
-  const isRangeSelect = e.shiftKey;
-  
-  if (isMultiSelect) {
-    if (selectedIds.has(wid)) selectedIds.delete(wid);
-    else selectedIds.add(wid);
-  } else if (isRangeSelect) {
-    // Simple range select: just add to selection
-    selectedIds.add(wid);
-  } else {
-    // Single click
-    if (selectedIds.has(wid) && selectedIds.size === 1) selectedIds.clear();
-    else { selectedIds.clear(); selectedIds.add(wid); }
-  }
-  
-  renderPool();
-}
-
-function onCanvasPointerDown(e, zoneId) {
-  if (e.button !== 0) return;
-  const wid = parseInt(e.currentTarget.dataset.workerId);
-  
-  // For canvas zones, only single select initially (multi-select via lasso)
-  if (selectedIds.has(wid) && selectedIds.size === 1) selectedIds.clear();
-  else { selectedIds.clear(); selectedIds.add(wid); }
-}
-
-function onStandbyPointerDown(e) {
-  if (e.button !== 0) return;
-  const wid = parseInt(e.currentTarget.dataset.workerId);
-  
-  if (selectedIds.has(wid) && selectedIds.size === 1) selectedIds.clear();
-  else { selectedIds.clear(); selectedIds.add(wid); }
-}
-
-function onPoolClick(e) {
-  // Click handling is now in onPoolPointerDown
-}
-
-function onDropInZone(zoneId) {
-  if (!dragData) return;
-  const zone = zones.find(z=>z.id===zoneId);
-  if (!zone) return;
-
-  const workers = [];
-  dragData.workerIds.forEach(id => {
-    let w = null;
-    if (dragData.source === 'pool') {
-      const idx = pool.findIndex(p=>p.id===id);
-      if (idx > -1) { w = pool.splice(idx, 1)[0]; }
-    } else if (dragData.source === 'zone') {
-      const srcZone = zones.find(z=>z.id===dragData.sourceZoneId);
-      if (srcZone) { const idx = srcZone.workers.findIndex(p=>p.id===id); if (idx>-1) w = srcZone.workers.splice(idx,1)[0]; }
-    } else if (dragData.source === 'standby') {
-      const idx = standbyWorkers.findIndex(p=>p.id===id);
-      if (idx>-1) w = standbyWorkers.splice(idx,1)[0];
-    }
-    if (w) workers.push(w);
-  });
-
-  zone.workers.push(...workers);
-  selectedIds.clear();
-  dragData = null;
-  render();
-}
-
-function onDropInStandby() {
-  if (!dragData) return;
-  const workers = [];
-  dragData.workerIds.forEach(id => {
-    let w = null;
-    if (dragData.source === 'pool') {
-      const idx = pool.findIndex(p=>p.id===id);
-      if (idx > -1) w = pool.splice(idx, 1)[0];
-    } else if (dragData.source === 'zone') {
-      const srcZone = zones.find(z=>z.id===dragData.sourceZoneId);
-      if (srcZone) { const idx = srcZone.workers.findIndex(p=>p.id===id); if (idx>-1) w = srcZone.workers.splice(idx,1)[0]; }
-    } else if (dragData.source === 'standby') {
-      return; // Already in standby
-    }
-    if (w) workers.push(w);
-  });
-  standbyWorkers.push(...workers);
-  selectedIds.clear();
-  dragData = null;
-  render();
-}
-
-// ===== TOUCH DND =====
-let touchDragEl = null;
-let touchClone = null;
-let touchWorkerId = null;
-let touchSource = null;
-let touchSourceZone = null;
-let touchStartTime = 0;
-let touchLongPressTimer = null;
-
-// ===== COLOR PICKER =====
-function openColorPicker(e, workerId, zoneIdOrStandby) {
-  e.preventDefault(); e.stopPropagation();
+function openColorPicker(e, el) {
   const picker = document.getElementById('color-picker');
+  colorPickerTarget = el;
   picker.style.display = 'flex';
-  picker.style.left = e.clientX + 'px';
-  picker.style.top = (e.clientY - 40) + 'px';
-  colorPickerTarget = { workerId, zone: zoneIdOrStandby };
+  picker.style.left = e.pageX + 'px';
+  picker.style.top = e.pageY + 'px';
 }
 
-document.querySelectorAll('#color-picker .color-dot').forEach(dot => {
-  dot.addEventListener('click', () => {
-    if (!colorPickerTarget) return;
-    const color = dot.dataset.color;
-    const { workerId, zone } = colorPickerTarget;
-
-    if (zone === 'standby') {
-      const w = standbyWorkers.find(w=>w.id===workerId);
-      if (w) w.color = color;
-    } else {
-      const z = zones.find(z=>z.id===zone);
-      if (z) { const w = z.workers.find(w=>w.id===workerId); if (w) w.color = color; }
-    }
-
+document.getElementById('color-picker').addEventListener('click', (e) => {
+  const color = e.target.dataset.color;
+  if (color && colorPickerTarget) {
+    colorPickerTarget.className = `name-block ${color}`;
+    colorPickerTarget.dataset.color = color;
     document.getElementById('color-picker').style.display = 'none';
     colorPickerTarget = null;
-    render();
-  });
+    recalcAll();
+  }
 });
 
 document.addEventListener('click', (e) => {
-  if (!e.target.closest('#color-picker') && !e.target.closest('.name-chip')) {
+  if (!e.target.closest('.color-picker-popup') && !e.target.closest('.name-block')) {
     document.getElementById('color-picker').style.display = 'none';
   }
 });
 
-// ===== DATE =====
-function updateDate() {
-  const d = new Date();
-  const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
-  document.getElementById('canvas-date').textContent = d.toLocaleDateString('id-ID', opts);
+// Zones
+function addZone() {
+  zoneCount++;
+  const grid = document.getElementById('zones-grid');
+  const zone = document.createElement('div');
+  zone.className = 'zone-container';
+  zone.style.width = 'calc(33.33% - 6px)';
+  zone.innerHTML = `
+    <div class="zone-title-outer" contenteditable="true">ZONE ${zoneCount}</div>
+    <div class="zone-title-inner" contenteditable="true">Location</div>
+    <div class="zone-title-sub" contenteditable="true">Description</div>
+    <div class="zone-drop" data-zone="${zoneCount}"></div>
+  `;
+  grid.appendChild(zone);
+  new Sortable(zone.querySelector('.zone-drop'), { group: 'names', animation: 150, ghostClass: 'sortable-ghost', chosenClass: 'sortable-chosen', onEnd: recalcAll, onAdd: recalcAll });
 }
-updateDate();
 
-// ===== ADD ZONE =====
-document.getElementById('add-zone-btn').addEventListener('click', () => {
-  zones.push(newZone());
-  render();
-});
+// Standby
+function initStandby() {
+  new Sortable(document.getElementById('standby-drop'), { group: 'names', animation: 150, ghostClass: 'sortable-ghost', chosenClass: 'sortable-chosen', onEnd: recalcAll, onAdd: recalcAll });
+}
 
-// ===== ADD NAME =====
-document.getElementById('add-name-btn').addEventListener('click', addNewName);
-document.getElementById('new-name-input').addEventListener('keydown', e => { if (e.key==='Enter') { e.preventDefault(); addNewName(); }});
+// Numbering
+function recalcAll() {
+  document.querySelectorAll('.zone-drop').forEach(zone => {
+    const blocks = zone.querySelectorAll('.name-block');
+    const colorCounts = {};
+    blocks.forEach(b => {
+      const c = b.dataset.color;
+      if (!colorCounts[c]) colorCounts[c] = 0;
+      colorCounts[c]++;
+      b.querySelector('.num').textContent = colorCounts[c] + '.';
+    });
+  });
+  // Pool has no numbers
+  document.querySelectorAll('#pool-list .name-block .num').forEach(n => n.textContent = '');
+  updateTotals();
+}
 
-function addNewName() {
+function updateTotals() {
+  const allZones = document.querySelectorAll('#zones-grid .zone-drop .name-block');
+  const standby = document.querySelectorAll('#standby-drop .name-block');
+  document.getElementById('totals-display').innerHTML = `Total Working: ${allZones.length}<br>Total Standby: ${standby.length}`;
+}
+
+// Day selector
+function initDaySelector() {
+  const sel = document.getElementById('day-selector');
+  for (let i = 1; i <= 40; i++) {
+    const opt = document.createElement('option');
+    opt.value = i; opt.textContent = i;
+    sel.appendChild(opt);
+  }
+}
+
+// Date
+function updateDate() {
+  const today = new Date();
+  document.getElementById('date-display').textContent = today.toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+// Add name
+document.getElementById('add-name-btn').addEventListener('click', () => {
   const input = document.getElementById('new-name-input');
   const name = input.value.trim();
-  if (!name) return;
-  pool.push(mkWorker(name, 'grey'));
-  input.value = '';
-  render();
-}
-
-// ===== DOWNLOAD =====
-document.getElementById('download-btn').addEventListener('click', () => {
-  const canvas = document.getElementById('a4-canvas');
-  const btn = document.getElementById('download-btn');
-  btn.textContent = 'Exporting...';
-  btn.disabled = true;
-
-  html2canvas(canvas, { scale: 2, useCORS: true, backgroundColor: '#ffffff' }).then(c => {
-    const link = document.createElement('a');
-    const day = document.getElementById('day-input').value || '1';
-    link.download = `IBOL_DAY_${day}.jpeg`;
-    link.href = c.toDataURL('image/jpeg', 0.95);
-    link.click();
-  }).catch(err => {
-    console.error('Export failed:', err);
-  }).finally(() => {
-    btn.innerHTML = '<i data-lucide="download" class="w-4 h-4"></i> Download JPEG';
-    btn.disabled = false;
-    lucide.createIcons();
-  });
+  if (name) {
+    document.getElementById('pool-list').appendChild(createNameBlock(name, 'grey'));
+    input.value = '';
+  }
+});
+document.getElementById('new-name-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') { e.preventDefault(); document.getElementById('add-name-btn').click(); }
 });
 
-// ===== POOL DROP (return workers) =====
-const poolList = document.getElementById('pool-list');
-poolList.addEventListener('dragover', e => e.preventDefault());
-poolList.addEventListener('drop', e => {
-  e.preventDefault();
-  if (!dragData || dragData.source === 'pool') return;
-  dragData.workerIds.forEach(id => {
-    let w = null;
-    if (dragData.source === 'zone') {
-      const z = zones.find(z=>z.id===dragData.sourceZoneId);
-      if (z) { const idx = z.workers.findIndex(p=>p.id===id); if(idx>-1) w = z.workers.splice(idx,1)[0]; }
-    } else if (dragData.source === 'standby') {
-      const idx = standbyWorkers.findIndex(p=>p.id===id);
-      if(idx>-1) w = standbyWorkers.splice(idx,1)[0];
-    }
-    if (w) pool.push(w);
-  });
-  dragData = null;
-  selectedIds.clear();
-  render();
+// Add zone button
+document.getElementById('add-zone-btn').addEventListener('click', addZone);
+
+// Download
+document.getElementById('download-btn').addEventListener('click', async () => {
+  const canvas = await html2canvas(document.getElementById('a4-canvas'), { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+  const link = document.createElement('a');
+  link.download = 'callsheet.jpg';
+  link.href = canvas.toDataURL('image/jpeg', 0.95);
+  link.click();
 });
-
-// ===== ELEMENT SDK =====
-const defaultConfig = {
-  canvas_title: 'I.B.O.L',
-  day_label: 'DAY',
-  background_color: '#0a0e1a',
-  surface_color: '#0f1629',
-  text_color: '#e2e8f0',
-  accent_color: '#3b82f6',
-  secondary_accent: '#22c55e',
-  font_family: 'Source Sans 3',
-  font_size: 14
-};
-
-function applyConfig(config) {
-  const c = { ...defaultConfig, ...config };
-  document.getElementById('canvas-title').textContent = c.canvas_title;
-  document.getElementById('canvas-day-label').textContent = c.day_label;
-
-  document.querySelector('.app-root').style.background = c.background_color;
-  document.querySelectorAll('aside').forEach(el => el.style.background = c.surface_color);
-  document.querySelector('header').style.background = c.surface_color;
-
-  const font = c.font_family + ', Source Sans 3, sans-serif';
-  document.body.style.fontFamily = font;
-
-  document.querySelectorAll('aside h2, aside h3, aside p, aside span, aside div').forEach(el => {
-    if (!el.closest('.name-chip')) el.style.color = c.text_color;
-  });
-}
-
-if (window.elementSdk) {
-  window.elementSdk.init({
-    defaultConfig,
-    onConfigChange: async (config) => applyConfig(config),
-    mapToCapabilities: (config) => ({
-      recolorables: [
-        { get: () => config.background_color || defaultConfig.background_color, set: v => { config.background_color = v; window.elementSdk.setConfig({background_color:v}); }},
-        { get: () => config.surface_color || defaultConfig.surface_color, set: v => { config.surface_color = v; window.elementSdk.setConfig({surface_color:v}); }},
-        { get: () => config.text_color || defaultConfig.text_color, set: v => { config.text_color = v; window.elementSdk.setConfig({text_color:v}); }},
-        { get: () => config.accent_color || defaultConfig.accent_color, set: v => { config.accent_color = v; window.elementSdk.setConfig({accent_color:v}); }},
-        { get: () => config.secondary_accent || defaultConfig.secondary_accent, set: v => { config.secondary_accent = v; window.elementSdk.setConfig({secondary_accent:v}); }},
-      ],
-      borderables: [],
-      fontEditable: { get: () => config.font_family || defaultConfig.font_family, set: v => { config.font_family = v; window.elementSdk.setConfig({font_family:v}); }},
-      fontSizeable: { get: () => config.font_size || defaultConfig.font_size, set: v => { config.font_size = v; window.elementSdk.setConfig({font_size:v}); }}
-    }),
-    mapToEditPanelValues: (config) => new Map([
-      ['canvas_title', config.canvas_title || defaultConfig.canvas_title],
-      ['day_label', config.day_label || defaultConfig.day_label]
-    ])
-  });
-}
 
 // Init
-render();
-applyConfig(defaultConfig);
+initPool();
+initDaySelector();
+updateDate();
+initStandby();
+addZone();
+addZone();
+recalcAll();
 lucide.createIcons();
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9eedfd4701c26ca8',t:'MTc3NjYyMzUyMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9eee1b8a12b00d23',t:'MTc3NjYyNDc1OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
