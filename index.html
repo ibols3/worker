@@ -3,274 +3,528 @@
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Digital Callsheet Planner</title>
+  <title>Film Crew Manager</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
   <script src="/_sdk/element_sdk.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&amp;family=Outfit:wght@300;400;600;700&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
   <style>
-* { box-sizing: border-box; }
-html, body { height: 100%; margin: 0; overflow: hidden; font-family: 'Outfit', sans-serif; }
-.app-wrapper { height: 100%; width: 100%; display: flex; background: #000033; }
-.pool-sidebar { width: 20%; min-width: 180px; height: 100%; overflow-y: auto; padding: 10px; border-right: 1px solid #1a1a5e; }
-.canvas-area { flex: 1; height: 100%; overflow: auto; padding: 20px; display: flex; justify-content: center; }
-.right-sidebar { width: 20%; min-width: 180px; height: 100%; overflow-y: auto; padding: 10px; border-left: 1px solid #1a1a5e; }
-.a4-canvas { width: 794px; min-height: 1123px; background: white; box-shadow: 0 4px 20px rgba(0,0,0,0.5); padding: 20px; position: relative; }
-.name-block { padding: 4px 8px; margin: 2px 0; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: grab; color: white; user-select: none; display: flex; align-items: center; gap: 4px; }
-.name-block.blue { background: #2563eb; }
-.name-block.yellow { background: #ca8a04; }
-.name-block.orange { background: #ea580c; }
-.name-block.red { background: #dc2626; }
-.name-block.grey { background: #6b7280; }
-.name-block.green { background: #16a34a; }
-.name-block.pink { background: #db2777; }
-.name-block .num { font-family: 'JetBrains Mono', monospace; font-size: 10px; opacity: 0.8; min-width: 14px; }
-.zone-container { border: 2px solid #e5e7eb; margin: 8px 4px; padding: 6px; border-radius: 6px; min-height: 80px; }
-.zone-title-outer { font-size: 11px; font-weight: 700; color: #6b7280; text-align: center; }
-.zone-title-inner { font-size: 11px; font-weight: 700; color: #2563eb; text-align: center; }
-.zone-title-sub { font-size: 10px; font-weight: 700; color: #ef4444; font-style: italic; text-align: center; }
-.zone-drop { min-height: 40px; padding: 2px; }
-.sortable-ghost { opacity: 0.4; }
-.sortable-chosen { box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
-.standby-table { border: 2px dashed #6b7280; margin-top: 12px; padding: 8px; border-radius: 6px; }
-.color-picker-popup { position: absolute; background: white; border: 1px solid #ccc; border-radius: 8px; padding: 8px; display: flex; gap: 6px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-.color-picker-popup span { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
-.color-picker-popup span:hover { border-color: #333; transform: scale(1.2); }
-.pool-sidebar::-webkit-scrollbar, .canvas-area::-webkit-scrollbar, .right-sidebar::-webkit-scrollbar { width: 6px; }
-.pool-sidebar::-webkit-scrollbar-thumb, .canvas-area::-webkit-scrollbar-thumb, .right-sidebar::-webkit-scrollbar-thumb { background: #4a4a8a; border-radius: 3px; }
-[contenteditable]:focus { outline: 1px dashed #2563eb; border-radius: 2px; }
-.marquee { position: fixed; border: 2px dashed #2563eb; background: rgba(37,99,235,0.1); pointer-events: none; z-index: 9999; }
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif}
+body{background:#000033;color:#fff}
+.app-wrap{display:flex;height:100%;overflow:hidden}
+.sidebar-left{width:240px;min-width:240px;background:#000044;border-right:1px solid #1a1a5e;display:flex;flex-direction:column;height:100%;overflow:hidden}
+.sidebar-right{width:220px;min-width:220px;background:#000044;border-left:1px solid #1a1a5e;display:flex;flex-direction:column;height:100%;overflow:hidden}
+.center-area{flex:1;overflow:auto;display:flex;justify-content:center;padding:20px;min-width:0}
+.a4-canvas{width:210mm;min-width:210mm;min-height:297mm;background:#fff;color:#000;position:relative;padding:8mm;font-family:'Inter',sans-serif;flex-shrink:0}
+.pool-item{padding:5px 10px;margin:2px 6px;border-radius:4px;cursor:grab;font-size:12px;font-weight:600;color:#fff;user-select:none;display:flex;align-items:center;gap:6px;position:relative}
+.pool-item:active{cursor:grabbing;opacity:.8}
+.pool-item .grip{opacity:.4;font-size:10px}
+.zone-box{border:2px solid #ddd;border-radius:6px;min-height:80px;margin-bottom:8px;overflow:hidden;break-inside:avoid}
+.zone-label{background:#6b7280;color:#fff;padding:3px 8px;font-weight:700;font-size:11px;cursor:text}
+.zone-inner{padding:4px}
+.zone-title{color:#2563eb;font-weight:700;font-size:13px;cursor:text;outline:none;min-height:16px}
+.zone-subtitle{color:#ef4444;font-weight:700;font-style:italic;font-size:11px;cursor:text;outline:none;min-height:14px}
+.zone-names{min-height:30px;display:flex;flex-direction:column;gap:1px}
+.canvas-name{padding:2px 6px;border-radius:3px;font-size:10px;font-weight:600;color:#fff;cursor:grab;user-select:none;display:flex;align-items:center;gap:4px;position:relative}
+.canvas-name:active{cursor:grabbing}
+.canvas-name .num{min-width:14px;text-align:right;opacity:.8;font-size:9px}
+.canvas-name .nm{flex:1}
+.canvas-name .del{opacity:0;cursor:pointer;font-size:10px;padding:0 2px}
+.canvas-name:hover .del{opacity:.7}
+.standby-box{border:2px solid #999;border-radius:6px;min-height:60px;margin-top:8px}
+.standby-header{background:#6b7280;color:#fff;padding:3px 8px;font-weight:700;font-size:11px}
+.standby-names{min-height:30px;padding:4px;display:flex;flex-direction:column;gap:1px}
+.drop-hover{background:#e0e7ff !important}
+.drag-ghost{opacity:.5}
+.color-popup{position:fixed;z-index:9999;background:#1e1e2e;border:1px solid #444;border-radius:8px;padding:8px;display:flex;gap:6px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.color-popup .swatch{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .15s}
+.color-popup .swatch:hover{transform:scale(1.2);border-color:#fff}
+.marquee{position:fixed;border:1px dashed #4f8fff;background:rgba(79,143,255,.1);z-index:9998;pointer-events:none}
+.selected-name{outline:2px solid #4f8fff;outline-offset:1px}
+.zones-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.btn-sm{padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:none;display:flex;align-items:center;gap:4px;justify-content:center;transition:background .2s}
+.scroll-y{overflow-y:auto;flex:1;min-height:0}
+.sidebar-title{padding:10px 12px;font-weight:700;font-size:14px;border-bottom:1px solid #1a1a5e;flex-shrink:0}
+input:focus,select:focus{outline:none}
+[contenteditable]:focus{outline:1px dashed #999}
+@media print{.sidebar-left,.sidebar-right{display:none}.center-area{padding:0}}
 </style>
   <style>body { box-sizing: border-box; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
- <body>
-  <div class="app-wrapper" id="app"><!-- Left Sidebar -->
-   <div class="pool-sidebar">
-    <h3 class="text-white text-sm font-bold mb-2 uppercase tracking-wide">Pool List</h3>
-    <div id="pool-list"></div>
-    <div class="mt-3 flex gap-1"><input id="new-name-input" type="text" placeholder="Add name..." class="flex-1 text-xs px-2 py-1 rounded bg-white/10 text-white border border-white/20 focus:outline-none focus:border-blue-400"> <button id="add-name-btn" class="bg-blue-600 text-white text-xs px-2 py-1 rounded hover:bg-blue-500"><i data-lucide="plus" style="width:12px;height:12px;"></i></button>
+ <body class="h-full">
+  <div class="app-wrap" id="app"><!-- LEFT SIDEBAR -->
+   <div class="sidebar-left">
+    <div class="sidebar-title flex items-center gap-2">
+     <i data-lucide="users" style="width:16px;height:16px"></i> Pool List
     </div>
-   </div><!-- Center Canvas -->
-   <div class="canvas-area">
-    <div class="a4-canvas" id="a4-canvas"><!-- Header -->
-     <div style="display:flex;align-items:center;gap:12px;border-bottom:2px solid #000;padding-bottom:8px;">
-      <div style="height:60px;width:60px;display:flex;align-items:center;justify-content:center;"><img src="https://drive.google.com/uc?export=view&amp;id=1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" alt="Logo" style="max-height:60px;max-width:60px;" loading="lazy" onerror="this.style.background='#1a1a5e';this.style.borderRadius='8px';this.alt='IBOL';">
+    <div class="scroll-y" id="poolList"></div>
+    <div style="padding:8px;border-top:1px solid #1a1a5e;flex-shrink:0">
+     <form id="addForm" class="flex gap-1"><input id="addInput" type="text" placeholder="Add name..." class="flex-1 bg-transparent border border-gray-600 rounded px-2 py-1 text-xs text-white" style="min-width:0"> <button type="submit" class="btn-sm bg-emerald-600 text-white hover:bg-emerald-500"><i data-lucide="plus" style="width:14px;height:14px"></i></button>
+     </form>
+    </div>
+   </div><!-- CENTER -->
+   <div class="center-area" id="centerScroll">
+    <div class="a4-canvas" id="a4canvas"><!-- HEADER -->
+     <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+      <div style="height:80px;flex-shrink:0">
+       <img src="https://lh3.googleusercontent.com/d/1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" style="height:80px;object-fit:contain" alt="Logo" loading="lazy" onerror="this.style.background='#e5e7eb';this.alt='Logo unavailable';this.style.width='80px'">
       </div>
-      <div style="flex:1;text-align:center;"><span id="main-title" style="font-size:36px;font-weight:700;font-family:'Outfit',sans-serif;">I.B.O.L</span> <span style="margin-left:12px;font-size:36px;font-weight:700;" id="day-label">DAY</span> <select id="day-selector" style="font-size:36px;font-weight:700;border:none;outline:none;background:transparent;cursor:pointer;appearance:none;-webkit-appearance:none;"></select>
+      <div style="flex:1;text-align:center"><span id="canvasMainTitle" style="font-size:40px;font-weight:800">I.B.O.L</span> <span style="font-size:40px;font-weight:800;margin-left:16px" id="canvasDayLabel">DAY</span> <select id="daySelect" style="font-size:40px;font-weight:800;border:none;background:transparent;appearance:none;width:70px;cursor:pointer;text-align:center"></select>
       </div>
      </div>
-     <div id="date-display" style="font-size:20px;color:#ef4444;text-align:center;margin:6px 0;font-weight:600;"></div><!-- Zones Grid -->
-     <div id="zones-grid" style="display:flex;flex-wrap:wrap;gap:8px;"></div><!-- Standby Table -->
-     <div class="standby-table" id="standby-table">
-      <div style="font-size:11px;font-weight:700;color:#6b7280;text-align:center;margin-bottom:4px;">
+     <div style="text-align:center;margin-bottom:10px"><input type="date" id="dateInput" style="font-size:18px;color:#ef4444;font-weight:700;border:none;background:transparent;text-align:center;cursor:pointer">
+     </div><!-- ZONES GRID -->
+     <div class="zones-grid" id="zonesGrid"></div><!-- STANDBY -->
+     <div class="standby-box" id="standbyBox">
+      <div class="standby-header">
        STANDBY
       </div>
-      <div id="standby-drop" class="zone-drop"></div>
-     </div><!-- Totals -->
-     <div id="totals-display" style="position:absolute;bottom:16px;right:16px;font-weight:700;font-size:12px;text-align:right;"></div>
+      <div class="standby-names" id="standbyNames"></div>
+     </div><!-- FOOTER -->
+     <div style="position:absolute;bottom:8mm;right:8mm;text-align:right;font-size:12px;font-weight:700">
+      <div>
+       TOTAL PEKERJA BEKERJA: <span id="countWork">0</span>
+      </div>
+      <div>
+       TOTAL PEKERJA STANDBY: <span id="countStandby">0</span>
+      </div>
+     </div>
     </div>
-   </div><!-- Right Sidebar -->
-   <div class="right-sidebar">
-    <h3 class="text-white text-sm font-bold mb-3 uppercase tracking-wide">Controls</h3><button id="add-zone-btn" class="w-full bg-emerald-600 text-white text-xs font-bold py-2 px-3 rounded mb-2 hover:bg-emerald-500 flex items-center justify-center gap-1"> <i data-lucide="plus-square" style="width:14px;height:14px;"></i> Add Zone </button> <button id="download-btn" class="w-full bg-amber-600 text-white text-xs font-bold py-2 px-3 rounded mb-2 hover:bg-amber-500 flex items-center justify-center gap-1"> <i data-lucide="download" style="width:14px;height:14px;"></i> Download JPEG </button>
-    <div class="mt-4 text-white/60 text-xs">
-     <p class="mb-1">• Drag names to zones</p>
-     <p class="mb-1">• Double-click name to change color</p>
-     <p class="mb-1">• Click zone titles to edit</p>
-     <p class="mb-1">• Max 3 zones per row</p>
+   </div><!-- RIGHT SIDEBAR -->
+   <div class="sidebar-right">
+    <div class="sidebar-title flex items-center gap-2">
+     <i data-lucide="layout" style="width:16px;height:16px"></i> Zone &amp; Export
+    </div>
+    <div class="scroll-y" style="padding:10px;display:flex;flex-direction:column;gap:8px"><button id="btnAddZone" class="btn-sm bg-blue-600 text-white hover:bg-blue-500 w-full"><i data-lucide="plus-square" style="width:14px;height:14px"></i> Add Zone</button> <button id="btnExport" class="btn-sm bg-amber-600 text-white hover:bg-amber-500 w-full"><i data-lucide="download" style="width:14px;height:14px"></i> Download JPEG</button>
+     <div class="text-xs text-gray-400 mt-4">
+      <p class="mb-2">• Drag names from pool to zones</p>
+      <p class="mb-2">• Double-click name on canvas to change color</p>
+      <p class="mb-2">• Click &amp; drag on canvas for marquee select</p>
+      <p class="mb-2">• Max 3 zones per row</p>
+     </div>
     </div>
    </div>
-  </div><!-- Color Picker -->
-  <div id="color-picker" class="color-picker-popup" style="display:none;"><span style="background:#2563eb;" data-color="blue"></span> <span style="background:#ca8a04;" data-color="yellow"></span> <span style="background:#ea580c;" data-color="orange"></span> <span style="background:#dc2626;" data-color="red"></span> <span style="background:#16a34a;" data-color="green"></span> <span style="background:#db2777;" data-color="pink"></span>
-  </div>
+  </div><!-- COLOR POPUP -->
+  <div id="colorPopup" class="color-popup" style="display:none"></div><!-- MARQUEE -->
+  <div id="marquee" class="marquee" style="display:none"></div>
   <script>
+// ---- DATA ----
+const COLORS = {
+  blue:'#2563eb', yellow:'#ca8a04', orange:'#ea580c', red:'#dc2626',
+  green:'#16a34a', pink:'#db2777', gray:'#6b7280'
+};
+const COLOR_LIST = ['red','blue','yellow','green','pink','orange'];
+const COLOR_HEX = COLOR_LIST.map(c=>COLORS[c]);
+
+const INITIAL_POOL = [
+  {cat:'blue',names:['Fredy Chidotz','Deni Sandy','Hamdan','Iman Udeng','Pingki Sopian']},
+  {cat:'yellow',names:['Adi Susanto','Alif','Ikhwani','Yudi','Fahmi','Aditya Arisandi','Kikin','Samsul Hidayat']},
+  {cat:'orange',names:['Supriyadi','Hendri','Basori','Acep','Edi','Sudarmansyah','Ryan Hermawan','Iwan A. setiawan']},
+  {cat:'red',names:['Heri Suherman','Ismail','Rahmat','Rendi','Dafa','Anggi Yanuar','Caryana','Pryambudi','Asep A. Setiawan','Sandi permana','Aditiya A. Aziz','Wawan Kurniawan','Rizki N. Huda','M. Dian Saputra']}
+];
+
+let poolNames = [];
+let nextId = 1;
+let zoneCount = 0;
+let dragData = null;
+let colorTarget = null;
+let marqueeActive = false;
+let marqueeStart = null;
+let selectedIds = new Set();
+
+function uid(){return 'd'+(nextId++)}
+
+// Init pool
+INITIAL_POOL.forEach(g=>{
+  g.names.forEach(n=>{
+    poolNames.push({id:uid(), name:n, color:COLORS[g.cat]});
+  });
+});
+
+// Day selector
+const daySelect = document.getElementById('daySelect');
+for(let i=1;i<=40;i++){const o=document.createElement('option');o.value=i;o.textContent=i;daySelect.appendChild(o);}
+
+// Date
+const dateInput = document.getElementById('dateInput');
+dateInput.value = new Date().toISOString().split('T')[0];
+
+// ---- POOL RENDER ----
+function renderPool(){
+  const el = document.getElementById('poolList');
+  const existing = new Map([...el.children].map(c=>[c.dataset.id,c]));
+  const ids = new Set(poolNames.map(p=>p.id));
+  existing.forEach((node,id)=>{if(!ids.has(id))node.remove();});
+  poolNames.forEach(p=>{
+    let node = existing.get(p.id);
+    if(!node){
+      node = document.createElement('div');
+      node.className='pool-item';
+      node.dataset.id=p.id;
+      node.draggable=true;
+      node.innerHTML='<span class="grip">⠿</span><span class="nm"></span>';
+      node.addEventListener('dragstart',onPoolDragStart);
+      node.addEventListener('touchstart',onTouchStart,{passive:false});
+      el.appendChild(node);
+    }
+    node.style.background=p.color;
+    node.querySelector('.nm').textContent=p.name;
+  });
+}
+
+// ---- ZONE MANAGEMENT ----
+function addZone(){
+  zoneCount++;
+  const zid='zone_'+zoneCount;
+  const grid=document.getElementById('zonesGrid');
+  const box=document.createElement('div');
+  box.className='zone-box';
+  box.dataset.zone=zid;
+  box.innerHTML=`
+    <div class="zone-label" contenteditable="true">ZONE ${zoneCount}</div>
+    <div class="zone-inner">
+      <div class="zone-title" contenteditable="true" data-placeholder="Title">Title</div>
+      <div class="zone-subtitle" contenteditable="true" data-placeholder="Sub-title">Sub-title</div>
+      <div class="zone-names" data-zone="${zid}"></div>
+    </div>`;
+  grid.appendChild(box);
+  setupDropZone(box.querySelector('.zone-names'));
+}
+
+function setupDropZone(el){
+  el.addEventListener('dragover',e=>{e.preventDefault();el.classList.add('drop-hover');});
+  el.addEventListener('dragleave',()=>el.classList.remove('drop-hover'));
+  el.addEventListener('drop',e=>{
+    e.preventDefault();el.classList.remove('drop-hover');
+    handleDrop(el,e);
+  });
+}
+
+// Setup standby drop
+setupDropZone(document.getElementById('standbyNames'));
+
+// ---- DRAG & DROP ----
+function onPoolDragStart(e){
+  const id=e.currentTarget.dataset.id;
+  if(selectedIds.size>0 && selectedIds.has(id)){
+    dragData={type:'multi',ids:[...selectedIds],source:'pool'};
+  } else {
+    dragData={type:'single',id,source:'pool'};
+  }
+  e.dataTransfer.effectAllowed='move';
+  e.currentTarget.classList.add('drag-ghost');
+  setTimeout(()=>e.currentTarget.classList.remove('drag-ghost'),0);
+}
+
+function onCanvasDragStart(e){
+  const id=e.currentTarget.dataset.id;
+  const src=e.currentTarget.closest('.zone-names,.standby-names');
+  if(selectedIds.size>0 && selectedIds.has(id)){
+    dragData={type:'multi',ids:[...selectedIds],source:'canvas',srcEl:src};
+  } else {
+    dragData={type:'single',id,source:'canvas',srcEl:src};
+  }
+  e.dataTransfer.effectAllowed='move';
+}
+
+function handleDrop(targetEl, e){
+  if(!dragData) return;
+  const ids = dragData.type==='multi' ? dragData.ids : [dragData.id];
+  // Find insert position
+  const rect = targetEl.getBoundingClientRect();
+  const children = [...targetEl.children];
+  let insertBefore = null;
+  const clientY = e.clientY || (e.changedTouches && e.changedTouches[0].clientY) || 0;
+  for(const ch of children){
+    const cr=ch.getBoundingClientRect();
+    if(clientY < cr.top + cr.height/2){insertBefore=ch;break;}
+  }
+
+  ids.forEach(id=>{
+    let entry;
+    if(dragData.source==='pool'){
+      const idx=poolNames.findIndex(p=>p.id===id);
+      if(idx>=0){entry=poolNames.splice(idx,1)[0];}
+    } else {
+      const existing=dragData.srcEl?.querySelector(`[data-id="${id}"]`);
+      if(existing){
+        entry={id, name:existing.querySelector('.nm').textContent, color:existing.dataset.color};
+        existing.remove();
+      }
+    }
+    if(entry){
+      const node=createCanvasName(entry);
+      if(insertBefore) targetEl.insertBefore(node, insertBefore);
+      else targetEl.appendChild(node);
+    }
+  });
+
+  selectedIds.clear();
+  renderPool();
+  renumberAll();
+  updateCounts();
+}
+
+function createCanvasName(entry){
+  const d=document.createElement('div');
+  d.className='canvas-name';
+  d.dataset.id=entry.id;
+  d.dataset.color=entry.color;
+  d.draggable=true;
+  d.style.background=entry.color;
+  d.innerHTML=`<span class="num"></span><span class="nm">${entry.name}</span><span class="del" title="Remove">✕</span>`;
+  d.addEventListener('dragstart',onCanvasDragStart);
+  d.addEventListener('touchstart',onTouchStart,{passive:false});
+  d.addEventListener('dblclick',e=>openColorPicker(e,d));
+  d.querySelector('.del').addEventListener('click',()=>{
+    const name=d.querySelector('.nm').textContent;
+    const color=d.dataset.color;
+    d.remove();
+    poolNames.push({id:entry.id, name, color});
+    renderPool();renumberAll();updateCounts();
+  });
+  return d;
+}
+
+// ---- AUTO NUMBERING ----
+function renumberAll(){
+  document.querySelectorAll('.zone-names').forEach(z=>{
+    const items=[...z.querySelectorAll('.canvas-name')];
+    const groups={};
+    items.forEach(it=>{
+      const c=it.dataset.color;
+      if(!groups[c])groups[c]=[];
+      groups[c].push(it);
+    });
+    // Sort groups by first appearance
+    items.forEach(it=>{
+      const c=it.dataset.color;
+      const idx=groups[c].indexOf(it);
+      it.querySelector('.num').textContent=(idx+1)+'.';
+    });
+  });
+  // Standby - simple numbering
+  const sb=[...document.querySelectorAll('#standbyNames .canvas-name')];
+  sb.forEach((it,i)=>it.querySelector('.num').textContent=(i+1)+'.');
+}
+
+function updateCounts(){
+  const workNames=document.querySelectorAll('.zone-names .canvas-name');
+  const sbNames=document.querySelectorAll('#standbyNames .canvas-name');
+  document.getElementById('countWork').textContent=workNames.length;
+  document.getElementById('countStandby').textContent=sbNames.length;
+}
+
+// ---- COLOR PICKER ----
+function openColorPicker(e,nameEl){
+  e.stopPropagation();
+  colorTarget=nameEl;
+  const popup=document.getElementById('colorPopup');
+  popup.innerHTML='';
+  COLOR_HEX.forEach((hex,i)=>{
+    const s=document.createElement('div');
+    s.className='swatch';
+    s.style.background=hex;
+    s.addEventListener('click',()=>{
+      nameEl.dataset.color=hex;
+      nameEl.style.background=hex;
+      popup.style.display='none';
+      colorTarget=null;
+      renumberAll();
+    });
+    popup.appendChild(s);
+  });
+  popup.style.display='flex';
+  popup.style.left=Math.min(e.clientX, window.innerWidth-200)+'px';
+  popup.style.top=Math.min(e.clientY-40, window.innerHeight-50)+'px';
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.color-popup')&&!e.target.closest('.canvas-name')){
+    document.getElementById('colorPopup').style.display='none';
+  }
+});
+
+// ---- MARQUEE SELECTION ----
+const centerArea = document.getElementById('centerScroll');
+centerArea.addEventListener('mousedown',e=>{
+  if(e.target.closest('.canvas-name,.pool-item,.zone-label,.zone-title,.zone-subtitle,[contenteditable],.color-popup'))return;
+  if(e.button!==0)return;
+  marqueeActive=true;
+  marqueeStart={x:e.clientX,y:e.clientY};
+  selectedIds.clear();
+  document.querySelectorAll('.selected-name').forEach(n=>n.classList.remove('selected-name'));
+  const m=document.getElementById('marquee');
+  m.style.display='block';
+  m.style.left=e.clientX+'px';m.style.top=e.clientY+'px';
+  m.style.width='0';m.style.height='0';
+});
+document.addEventListener('mousemove',e=>{
+  if(!marqueeActive)return;
+  const m=document.getElementById('marquee');
+  const x=Math.min(marqueeStart.x,e.clientX), y=Math.min(marqueeStart.y,e.clientY);
+  const w=Math.abs(e.clientX-marqueeStart.x), h=Math.abs(e.clientY-marqueeStart.y);
+  m.style.left=x+'px';m.style.top=y+'px';m.style.width=w+'px';m.style.height=h+'px';
+});
+document.addEventListener('mouseup',e=>{
+  if(!marqueeActive)return;
+  marqueeActive=false;
+  const m=document.getElementById('marquee');
+  const mr=m.getBoundingClientRect();
+  m.style.display='none';
+  if(mr.width<5&&mr.height<5)return;
+  document.querySelectorAll('.canvas-name').forEach(n=>{
+    const r=n.getBoundingClientRect();
+    if(r.left<mr.right&&r.right>mr.left&&r.top<mr.bottom&&r.bottom>mr.top){
+      selectedIds.add(n.dataset.id);
+      n.classList.add('selected-name');
+    }
+  });
+});
+
+// ---- TOUCH DND ----
+let touchClone=null, touchSource=null, touchId=null;
+function onTouchStart(e){
+  if(e.touches.length!==1)return;
+  const el=e.currentTarget;
+  const touch=e.touches[0];
+  const startX=touch.clientX, startY=touch.clientY;
+  let moved=false;
+
+  const onMove=ev=>{
+    ev.preventDefault();
+    const t=ev.touches[0];
+    if(!moved&&Math.abs(t.clientX-startX)+Math.abs(t.clientY-startY)<8)return;
+    if(!moved){
+      moved=true;
+      const isPool=!!el.closest('#poolList');
+      touchId=el.dataset.id;
+      touchSource=isPool?'pool':'canvas';
+      touchClone=el.cloneNode(true);
+      touchClone.style.position='fixed';
+      touchClone.style.zIndex='9999';
+      touchClone.style.width=el.offsetWidth+'px';
+      touchClone.style.opacity='.8';
+      touchClone.style.pointerEvents='none';
+      document.body.appendChild(touchClone);
+      if(isPool){
+        dragData={type:'single',id:touchId,source:'pool'};
+      } else {
+        dragData={type:'single',id:touchId,source:'canvas',srcEl:el.closest('.zone-names,.standby-names')};
+      }
+    }
+    touchClone.style.left=(t.clientX-40)+'px';
+    touchClone.style.top=(t.clientY-12)+'px';
+  };
+
+  const onEnd=ev=>{
+    document.removeEventListener('touchmove',onMove);
+    document.removeEventListener('touchend',onEnd);
+    if(touchClone){
+      touchClone.remove();touchClone=null;
+      const t=ev.changedTouches[0];
+      const dropEl=document.elementFromPoint(t.clientX,t.clientY);
+      const zone=dropEl?.closest('.zone-names,.standby-names');
+      if(zone && dragData){
+        handleDrop(zone,{clientY:t.clientY});
+      }
+      dragData=null;
+    }
+  };
+  document.addEventListener('touchmove',onMove,{passive:false});
+  document.addEventListener('touchend',onEnd);
+}
+
+// ---- ADD NAME ----
+document.getElementById('addForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const inp=document.getElementById('addInput');
+  const v=inp.value.trim();
+  if(!v)return;
+  poolNames.push({id:uid(),name:v,color:COLORS.gray});
+  inp.value='';
+  renderPool();
+});
+
+// ---- ADD ZONE ----
+document.getElementById('btnAddZone').addEventListener('click',addZone);
+
+// ---- EXPORT JPEG ----
+document.getElementById('btnExport').addEventListener('click',async()=>{
+  const btn=document.getElementById('btnExport');
+  btn.textContent='Exporting...';btn.disabled=true;
+  try{
+    const canvas=await html2canvas(document.getElementById('a4canvas'),{scale:2,useCORS:true,backgroundColor:'#ffffff'});
+    const link=document.createElement('a');
+    link.download='crew-report.jpg';
+    link.href=canvas.toDataURL('image/jpeg',0.95);
+    link.click();
+  }catch(err){console.error(err);}
+  btn.innerHTML='<i data-lucide="download" style="width:14px;height:14px"></i> Download JPEG';
+  btn.disabled=false;
+  lucide.createIcons();
+});
+
+// ---- ELEMENT SDK ----
 const defaultConfig = {
   main_title: 'I.B.O.L',
   day_label: 'DAY',
   background_color: '#000033',
-  surface_color: '#ffffff',
-  text_color: '#1f2937',
-  primary_color: '#2563eb',
-  accent_color: '#ea580c'
+  surface_color: '#000044',
+  text_color: '#ffffff',
+  primary_action_color: '#2563eb',
+  secondary_action_color: '#ca8a04',
+  font_family: 'Inter',
+  font_size: 14
 };
 
-let config = { ...defaultConfig };
-
-window.elementSdk.init({
-  defaultConfig,
-  onConfigChange: async (c) => {
-    config = { ...defaultConfig, ...c };
-    document.getElementById('main-title').textContent = config.main_title;
-    document.getElementById('day-label').textContent = config.day_label;
-  },
-  mapToCapabilities: (c) => ({
-    recolorables: [
-      { get: () => c.background_color || defaultConfig.background_color, set: (v) => { c.background_color = v; window.elementSdk.setConfig({ background_color: v }); } },
-      { get: () => c.surface_color || defaultConfig.surface_color, set: (v) => { c.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
-      { get: () => c.text_color || defaultConfig.text_color, set: (v) => { c.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
-      { get: () => c.primary_color || defaultConfig.primary_color, set: (v) => { c.primary_color = v; window.elementSdk.setConfig({ primary_color: v }); } },
-      { get: () => c.accent_color || defaultConfig.accent_color, set: (v) => { c.accent_color = v; window.elementSdk.setConfig({ accent_color: v }); } }
-    ],
-    borderables: [],
-    fontEditable: { get: () => c.font_family || 'Outfit', set: (v) => { c.font_family = v; window.elementSdk.setConfig({ font_family: v }); } },
-    fontSizeable: undefined
-  }),
-  mapToEditPanelValues: (c) => new Map([
-    ['main_title', c.main_title || defaultConfig.main_title],
-    ['day_label', c.day_label || defaultConfig.day_label]
-  ])
-});
-
-// Data
-const poolData = [
-  { name: 'Fredy Chidotz', color: 'blue' }, { name: 'Deni Sandy', color: 'blue' }, { name: 'Hamdan', color: 'blue' }, { name: 'Iman Udeng', color: 'blue' }, { name: 'Pingki Sopian', color: 'blue' },
-  { name: 'Adi Susanto', color: 'yellow' }, { name: 'Alif', color: 'yellow' }, { name: 'Ikhwani', color: 'yellow' }, { name: 'Yudi', color: 'yellow' }, { name: 'Fahmi', color: 'yellow' }, { name: 'Aditya Arisandi', color: 'yellow' }, { name: 'Kikin', color: 'yellow' }, { name: 'Samsul Hidayat', color: 'yellow' },
-  { name: 'Supriyadi', color: 'orange' }, { name: 'Hendri', color: 'orange' }, { name: 'Basori', color: 'orange' }, { name: 'Acep', color: 'orange' }, { name: 'Edi', color: 'orange' }, { name: 'Sudarmansyah', color: 'orange' }, { name: 'Ryan Hermawan', color: 'orange' }, { name: 'Iwan A. Setiawan', color: 'orange' },
-  { name: 'Heri Suherman', color: 'red' }, { name: 'Ismail', color: 'red' }, { name: 'Rahmat', color: 'red' }, { name: 'Rendi', color: 'red' }, { name: 'Dafa', color: 'red' }, { name: 'Anggi Yanuar', color: 'red' }, { name: 'Caryana', color: 'red' }, { name: 'Pryambudi', color: 'red' }, { name: 'Asep A. Setiawan', color: 'red' }, { name: 'Sandi Permana', color: 'red' }, { name: 'Aditiya A. Aziz', color: 'red' }, { name: 'Wawan Kurniawan', color: 'red' }, { name: 'Rizki N. Huda', color: 'red' }, { name: 'M. Dian Saputra', color: 'red' }
-];
-
-let zoneCount = 0;
-let colorPickerTarget = null;
-
-// Initialize
-function createNameBlock(name, color) {
-  const el = document.createElement('div');
-  el.className = `name-block ${color}`;
-  el.dataset.name = name;
-  el.dataset.color = color;
-  el.innerHTML = `<span class="num"></span><span class="ntext">${name}</span>`;
-  el.addEventListener('dblclick', (e) => openColorPicker(e, el));
-  return el;
+function applyConfig(config){
+  document.getElementById('canvasMainTitle').textContent = config.main_title || defaultConfig.main_title;
+  document.getElementById('canvasDayLabel').textContent = config.day_label || defaultConfig.day_label;
+  const bg = config.background_color || defaultConfig.background_color;
+  const sf = config.surface_color || defaultConfig.surface_color;
+  const tx = config.text_color || defaultConfig.text_color;
+  const ff = (config.font_family || defaultConfig.font_family) + ', sans-serif';
+  const fs = config.font_size || defaultConfig.font_size;
+  document.body.style.background = bg;
+  document.body.style.fontFamily = ff;
+  document.querySelector('.sidebar-left').style.background = sf;
+  document.querySelector('.sidebar-right').style.background = sf;
+  document.body.style.color = tx;
+  document.body.style.fontSize = fs + 'px';
 }
 
-function initPool() {
-  const pool = document.getElementById('pool-list');
-  poolData.forEach(d => pool.appendChild(createNameBlock(d.name, d.color)));
-  new Sortable(pool, { group: 'names', animation: 150, ghostClass: 'sortable-ghost', chosenClass: 'sortable-chosen', onEnd: recalcAll });
-}
-
-function openColorPicker(e, el) {
-  const picker = document.getElementById('color-picker');
-  colorPickerTarget = el;
-  picker.style.display = 'flex';
-  picker.style.left = e.pageX + 'px';
-  picker.style.top = e.pageY + 'px';
-}
-
-document.getElementById('color-picker').addEventListener('click', (e) => {
-  const color = e.target.dataset.color;
-  if (color && colorPickerTarget) {
-    colorPickerTarget.className = `name-block ${color}`;
-    colorPickerTarget.dataset.color = color;
-    document.getElementById('color-picker').style.display = 'none';
-    colorPickerTarget = null;
-    recalcAll();
-  }
-});
-
-document.addEventListener('click', (e) => {
-  if (!e.target.closest('.color-picker-popup') && !e.target.closest('.name-block')) {
-    document.getElementById('color-picker').style.display = 'none';
-  }
-});
-
-// Zones
-function addZone() {
-  zoneCount++;
-  const grid = document.getElementById('zones-grid');
-  const zone = document.createElement('div');
-  zone.className = 'zone-container';
-  zone.style.width = 'calc(33.33% - 6px)';
-  zone.innerHTML = `
-    <div class="zone-title-outer" contenteditable="true">ZONE ${zoneCount}</div>
-    <div class="zone-title-inner" contenteditable="true">Location</div>
-    <div class="zone-title-sub" contenteditable="true">Description</div>
-    <div class="zone-drop" data-zone="${zoneCount}"></div>
-  `;
-  grid.appendChild(zone);
-  new Sortable(zone.querySelector('.zone-drop'), { group: 'names', animation: 150, ghostClass: 'sortable-ghost', chosenClass: 'sortable-chosen', onEnd: recalcAll, onAdd: recalcAll });
-}
-
-// Standby
-function initStandby() {
-  new Sortable(document.getElementById('standby-drop'), { group: 'names', animation: 150, ghostClass: 'sortable-ghost', chosenClass: 'sortable-chosen', onEnd: recalcAll, onAdd: recalcAll });
-}
-
-// Numbering
-function recalcAll() {
-  document.querySelectorAll('.zone-drop').forEach(zone => {
-    const blocks = zone.querySelectorAll('.name-block');
-    const colorCounts = {};
-    blocks.forEach(b => {
-      const c = b.dataset.color;
-      if (!colorCounts[c]) colorCounts[c] = 0;
-      colorCounts[c]++;
-      b.querySelector('.num').textContent = colorCounts[c] + '.';
-    });
+if(window.elementSdk){
+  window.elementSdk.init({
+    defaultConfig,
+    onConfigChange: async(config)=>applyConfig(config),
+    mapToCapabilities:(config)=>({
+      recolorables:[
+        {get:()=>config.background_color||defaultConfig.background_color,set:v=>{config.background_color=v;window.elementSdk.setConfig({background_color:v})}},
+        {get:()=>config.surface_color||defaultConfig.surface_color,set:v=>{config.surface_color=v;window.elementSdk.setConfig({surface_color:v})}},
+        {get:()=>config.text_color||defaultConfig.text_color,set:v=>{config.text_color=v;window.elementSdk.setConfig({text_color:v})}},
+        {get:()=>config.primary_action_color||defaultConfig.primary_action_color,set:v=>{config.primary_action_color=v;window.elementSdk.setConfig({primary_action_color:v})}},
+        {get:()=>config.secondary_action_color||defaultConfig.secondary_action_color,set:v=>{config.secondary_action_color=v;window.elementSdk.setConfig({secondary_action_color:v})}}
+      ],
+      borderables:[],
+      fontEditable:{get:()=>config.font_family||defaultConfig.font_family,set:v=>{config.font_family=v;window.elementSdk.setConfig({font_family:v})}},
+      fontSizeable:{get:()=>config.font_size||defaultConfig.font_size,set:v=>{config.font_size=v;window.elementSdk.setConfig({font_size:v})}}
+    }),
+    mapToEditPanelValues:(config)=>new Map([
+      ['main_title',config.main_title||defaultConfig.main_title],
+      ['day_label',config.day_label||defaultConfig.day_label]
+    ])
   });
-  // Pool has no numbers
-  document.querySelectorAll('#pool-list .name-block .num').forEach(n => n.textContent = '');
-  updateTotals();
 }
 
-function updateTotals() {
-  const allZones = document.querySelectorAll('#zones-grid .zone-drop .name-block');
-  const standby = document.querySelectorAll('#standby-drop .name-block');
-  document.getElementById('totals-display').innerHTML = `Total Working: ${allZones.length}<br>Total Standby: ${standby.length}`;
-}
-
-// Day selector
-function initDaySelector() {
-  const sel = document.getElementById('day-selector');
-  for (let i = 1; i <= 40; i++) {
-    const opt = document.createElement('option');
-    opt.value = i; opt.textContent = i;
-    sel.appendChild(opt);
-  }
-}
-
-// Date
-function updateDate() {
-  const today = new Date();
-  document.getElementById('date-display').textContent = today.toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-}
-
-// Add name
-document.getElementById('add-name-btn').addEventListener('click', () => {
-  const input = document.getElementById('new-name-input');
-  const name = input.value.trim();
-  if (name) {
-    document.getElementById('pool-list').appendChild(createNameBlock(name, 'grey'));
-    input.value = '';
-  }
-});
-document.getElementById('new-name-input').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') { e.preventDefault(); document.getElementById('add-name-btn').click(); }
-});
-
-// Add zone button
-document.getElementById('add-zone-btn').addEventListener('click', addZone);
-
-// Download
-document.getElementById('download-btn').addEventListener('click', async () => {
-  const canvas = await html2canvas(document.getElementById('a4-canvas'), { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
-  const link = document.createElement('a');
-  link.download = 'callsheet.jpg';
-  link.href = canvas.toDataURL('image/jpeg', 0.95);
-  link.click();
-});
-
-// Init
-initPool();
-initDaySelector();
-updateDate();
-initStandby();
-addZone();
-addZone();
-recalcAll();
+// ---- INIT ----
+renderPool();
+// Add 2 default zones
+addZone();addZone();
+updateCounts();
 lucide.createIcons();
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9eee1b8a12b00d23',t:'MTc3NjYyNDc1OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9eee2c4364450d23',t:'MTc3NjYyNTQ0NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
