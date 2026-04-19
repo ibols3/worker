@@ -3,581 +3,797 @@
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Digital Callsheet Planner</title>
+  <title>IBOL Production Team Manager</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
   <script src="/_sdk/element_sdk.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&amp;family=Outfit:wght@300;400;600;700;800&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+  <script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        heading: ['"Bebas Neue"', 'sans-serif'],
+        body: ['"Source Sans 3"', 'sans-serif']
+      }
+    }
+  }
+}
+</script>
   <style>
 html, body { height: 100%; margin: 0; overflow: hidden; }
 * { box-sizing: border-box; }
-body { font-family: 'Outfit', sans-serif; background: #000033; }
+.app-root { height: 100%; overflow: hidden; background: #0a0e1a; }
 
-.pool-item {
-  padding: 5px 10px;
-  margin: 2px 4px;
-  border-radius: 6px;
-  cursor: grab;
-  font-size: 12px;
-  font-weight: 600;
-  color: #fff;
-  user-select: none;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: transform 0.1s, box-shadow 0.1s;
-  position: relative;
-}
-.pool-item:active { cursor: grabbing; }
-.pool-item:hover { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(0,0,0,0.3); }
+/* Scrollbars */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
 
-.pool-item .num-badge {
-  min-width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: rgba(0,0,0,0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  font-weight: 700;
-  flex-shrink: 0;
-}
+/* DND */
+.dragging { opacity: 0.4; transform: scale(0.95); }
+.drag-over { background: rgba(59,130,246,0.15) !important; border: 2px dashed #3b82f6 !important; }
+.name-chip { cursor: grab; user-select: none; transition: all 0.15s ease; }
+.name-chip:active { cursor: grabbing; }
+.name-chip.selected { ring: 2px; outline: 2px solid #60a5fa; outline-offset: 1px; }
+.name-chip:hover { filter: brightness(1.1); transform: translateY(-1px); }
 
-.color-blue { background: #2563eb; }
-.color-yellow { background: #d97706; color: #000; }
-.color-yellow .num-badge { background: rgba(0,0,0,0.15); color: #000; }
-.color-orange { background: #ea580c; }
-.color-red { background: #dc2626; }
-.color-grey { background: #6b7280; }
-.color-green { background: #16a34a; }
-.color-pink { background: #db2777; }
+/* Color classes */
+.chip-blue { background: #3b82f6; color: #fff; }
+.chip-yellow { background: #eab308; color: #1a1a1a; }
+.chip-orange { background: #f97316; color: #fff; }
+.chip-red { background: #ef4444; color: #fff; }
+.chip-grey { background: #6b7280; color: #fff; }
+.chip-green { background: #22c55e; color: #fff; }
+.chip-pink { background: #ec4899; color: #fff; }
 
+/* A4 Canvas */
 .a4-canvas {
-  width: 210mm;
-  min-height: 297mm;
-  background: #fff;
-  margin: 0 auto;
-  padding: 12mm;
+  width: 794px; min-height: 1123px; background: #fff;
+  font-family: 'Source Sans 3', sans-serif;
   position: relative;
-  box-shadow: 0 0 40px rgba(0,0,0,0.5);
 }
 
-.zone-container {
-  border: 2px solid #d1d5db;
-  border-radius: 8px;
-  min-height: 80px;
-  background: #fafafa;
-  overflow: hidden;
-}
-.zone-outer-title {
-  background: #e5e7eb;
-  padding: 4px 8px;
-  font-weight: 700;
-  font-size: 11px;
-  color: #374151;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-.zone-inner-title {
-  padding: 2px 8px;
-  font-weight: 700;
-  font-size: 11px;
-  color: #2563eb;
-}
-.zone-inner-subtitle {
-  padding: 0 8px 4px;
-  font-weight: 700;
-  font-style: italic;
-  font-size: 10px;
-  color: #ef4444;
-}
-.zone-drop-area {
-  min-height: 40px;
-  padding: 4px;
-  display: flex;
-  flex-direction: column;
-}
-.zone-drop-area .pool-item {
-  font-size: 11px;
-  padding: 3px 8px;
-  margin: 1px 4px;
-}
+/* Zone grid */
+.zone-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 8px; }
+.zone-wrapper { break-inside: avoid; }
 
-.sortable-ghost { opacity: 0.4; }
-.sortable-chosen { box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-.sortable-drag { z-index: 9999; }
+/* Editable fields */
+.editable-field { border: none; outline: none; background: transparent; }
+.editable-field:focus { background: rgba(0,0,0,0.05); border-radius: 2px; }
 
-.standby-container {
-  border: 2px dashed #9ca3af;
-  border-radius: 8px;
-  background: #f9fafb;
-  min-height: 60px;
-}
-
+/* Color picker popup */
 .color-picker-popup {
-  position: fixed;
-  z-index: 10000;
-  background: #1e293b;
-  border-radius: 10px;
-  padding: 8px;
-  display: flex;
-  gap: 6px;
+  position: fixed; z-index: 9999; background: #1e293b;
+  border-radius: 8px; padding: 8px; display: flex; gap: 6px;
   box-shadow: 0 8px 30px rgba(0,0,0,0.5);
 }
-.color-picker-popup .cp-swatch {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: transform 0.15s;
+.color-dot {
+  width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+  border: 2px solid transparent; transition: all 0.15s;
 }
-.color-picker-popup .cp-swatch:hover { transform: scale(1.2); border-color: #fff; }
+.color-dot:hover { transform: scale(1.2); border-color: #fff; }
 
-.sidebar-scroll::-webkit-scrollbar { width: 5px; }
-.sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
-.sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+/* Print-safe */
+@media print { .no-print { display: none !important; } }
 
-.canvas-scroll::-webkit-scrollbar { width: 8px; }
-.canvas-scroll::-webkit-scrollbar-track { background: #0a0a2e; }
-.canvas-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
-
-.editable-title { 
-  outline: none; 
-  border: 1px solid transparent; 
-  border-radius: 3px;
-  padding: 0 2px;
+/* Touch helpers */
+@media (pointer: coarse) {
+  .name-chip { padding: 6px 10px !important; min-height: 36px; }
 }
-.editable-title:focus { border-color: #3b82f6; background: #eff6ff; }
 
-@media print { .no-print { display: none; } }
+/* Standby table */
+.standby-container { border: 2px solid #374151; background: #f9fafb; }
 </style>
   <style>body { box-sizing: border-box; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
  <body class="h-full">
-  <div id="app" class="flex h-full overflow-hidden"><!-- LEFT SIDEBAR -->
-   <div class="no-print flex flex-col h-full bg-slate-900 border-r border-slate-700" style="width:20%; min-width:180px;">
-    <div class="p-3 border-b border-slate-700">
-     <h2 class="text-white font-bold text-sm tracking-wider flex items-center gap-2"><i data-lucide="users" style="width:16px;height:16px;color:#60a5fa;"></i> CREW POOL</h2>
+  <div class="app-root flex flex-col h-full font-body">
+   <!-- Top bar -->
+   <header class="flex items-center justify-between px-4 py-2 bg-[#0f1629] border-b border-white/10 shrink-0">
+    <div class="flex items-center gap-2">
+     <i data-lucide="clapperboard" class="w-6 h-6 text-blue-400"></i>
+     <h1 class="font-heading text-xl text-white tracking-wider">IBOL TEAM MANAGER</h1>
     </div>
-    <div id="pool-list" class="flex-1 overflow-y-auto sidebar-scroll p-2 flex flex-col">
+    <div class="flex items-center gap-2 text-xs text-white/50">
+     <i data-lucide="grip-vertical" class="w-4 h-4"></i> <span>Drag &amp; Drop Enabled</span>
     </div>
-    <div class="p-3 border-t border-slate-700">
-     <div class="flex gap-2"><input id="new-name-input" type="text" placeholder="Add new name..." class="flex-1 bg-slate-800 text-white text-xs rounded-lg px-3 py-2 border border-slate-600 focus:border-blue-500 focus:outline-none placeholder-slate-500"> <button id="add-name-btn" class="bg-blue-600 hover:bg-blue-500 text-white rounded-lg px-3 py-2 text-xs font-bold transition-colors"> <i data-lucide="plus" style="width:14px;height:14px;"></i> </button>
+   </header><!-- Main 3-col layout -->
+   <div class="flex flex-1 overflow-hidden">
+    <!-- COL 1: Pool List -->
+    <aside id="pool-sidebar" class="w-64 shrink-0 bg-[#0f1629] border-r border-white/10 flex flex-col overflow-hidden">
+     <div class="p-3 border-b border-white/10">
+      <h2 class="text-sm font-bold text-white/80 uppercase tracking-wider flex items-center gap-2"><i data-lucide="users" class="w-4 h-4 text-blue-400"></i> Worker Pool</h2>
+      <p id="pool-count" class="text-xs text-white/40 mt-1">0 workers available</p>
      </div>
-    </div>
-   </div><!-- CENTER CANVAS -->
-   <div class="flex-1 overflow-y-auto canvas-scroll h-full bg-slate-950 p-6" id="canvas-wrapper">
-    <div class="a4-canvas" id="a4-canvas"><!-- HEADER -->
-     <div class="flex items-center gap-4 mb-2 border-b-2 border-gray-300 pb-3">
-      <div style="height:80px;width:80px;flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:8px;background:#f3f4f6;"><img src="https://drive.google.com/uc?export=view&amp;id=1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" alt="Logo" style="max-height:100%;max-width:100%;object-fit:contain;" loading="lazy" onerror="console.error('Image failed:',this.src);this.style.display='none';this.parentElement.innerHTML='<div style=&quot;font-size:28px;font-weight:900;color:#2563eb;&quot;>IBOL</div>';">
+     <div id="pool-list" class="flex-1 overflow-y-auto p-2 space-y-1">
+     </div>
+     <div class="p-3 border-t border-white/10">
+      <div class="flex gap-2">
+       <input id="new-name-input" type="text" placeholder="Add new name..." class="flex-1 bg-white/10 text-white text-sm px-3 py-2 rounded-lg border border-white/10 focus:border-blue-400 focus:outline-none placeholder-white/30"> <button id="add-name-btn" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition-colors"> <i data-lucide="plus" class="w-4 h-4"></i> </button>
       </div>
-      <div class="flex-1">
-       <div class="flex items-baseline gap-3"><span id="main-title-display" style="font-size:40px;font-weight:800;color:#111;line-height:1;font-family:'Outfit',sans-serif;">I.B.O.L</span> <span style="font-size:40px;font-weight:700;color:#111;line-height:1;">DAY</span> <select id="day-select" style="font-size:40px;font-weight:700;color:#111;border:none;outline:none;background:transparent;cursor:pointer;-webkit-appearance:none;-moz-appearance:none;appearance:none;padding:0 8px;"> </select>
+     </div>
+    </aside><!-- COL 2: A4 Canvas -->
+    <main class="flex-1 overflow-auto p-4 flex justify-center" style="background: #0d1220;">
+     <div class="inline-block">
+      <div id="a4-canvas" class="a4-canvas shadow-2xl">
+       <!-- Canvas Header -->
+       <div class="flex items-center justify-between px-4 pt-4 pb-2 border-b-2 border-gray-300">
+        <div style="height:80px;width:120px;" class="flex items-center justify-center overflow-hidden">
+         <img src="https://lh3.googleusercontent.com/d/1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" alt="IBOL Logo" style="max-height:80px;width:auto;" loading="lazy" onerror="console.error('Logo failed:', this.src); this.style.display='none'; this.parentElement.innerHTML='<div style=&quot;font-size:24px;font-weight:bold;color:#3b82f6;&quot;>IBOL</div>';">
+        </div>
+        <div class="text-center flex-1">
+         <div id="canvas-title" class="font-heading text-[40px] leading-none tracking-wider text-gray-900">
+          I.B.O.L
+         </div>
+         <div class="flex items-center justify-center gap-1 mt-1">
+          <span id="canvas-day-label" class="font-heading text-[40px] leading-none text-gray-900">DAY</span> <input id="day-input" type="number" min="1" max="40" value="1" class="editable-field font-heading text-[40px] leading-none text-gray-900 w-16 text-center" style="border:none;outline:none;">
+         </div>
+        </div>
+        <div id="canvas-date" class="text-right" style="font-size:24px;color:#ef4444;font-weight:700;">
+        </div>
+       </div><!-- Zone Grid -->
+       <div id="zone-grid" class="zone-grid">
+       </div><!-- Standby + Totals row -->
+       <div class="flex items-end justify-between px-4 pb-4 mt-2">
+        <!-- Standby Container -->
+        <div class="w-1/2">
+         <div class="text-sm font-bold text-gray-500 mb-1">
+          STANDBY
+         </div>
+         <div id="standby-zone" class="standby-container rounded-lg p-2 min-h-[60px]" data-zone-id="standby">
+         </div>
+        </div><!-- Totals -->
+        <div class="text-right">
+         <div class="text-sm font-bold text-gray-800">
+          TOTAL PEKERJA: <span id="total-pekerja" class="text-blue-600">0</span>
+         </div>
+         <div class="text-sm font-bold text-gray-800">
+          TOTAL STANDBY: <span id="total-standby" class="text-orange-500">0</span>
+         </div>
+        </div>
        </div>
-       <div id="date-display" style="font-size:24px;color:#ef4444;font-weight:600;margin-top:2px;">
-        Select Date
-       </div>
-      </div><input type="date" id="date-picker" class="no-print text-sm border border-gray-300 rounded px-2 py-1" style="max-width:150px;">
-     </div><!-- ZONES GRID -->
-     <div id="zones-grid" class="grid gap-3 mt-4" style="grid-template-columns: repeat(3, 1fr);">
-     </div><!-- STANDBY -->
-     <div class="mt-4">
-      <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
-       Standby
-      </div>
-      <div class="standby-container">
-       <div id="standby-drop" class="zone-drop-area" style="min-height:50px;"></div>
-      </div>
-     </div><!-- TOTALS -->
-     <div class="flex justify-end gap-6 mt-4 pt-2 border-t border-gray-200">
-      <div class="text-right"><span class="font-bold text-sm text-gray-700">Total Working: </span> <span id="total-working" class="font-extrabold text-lg text-green-700">0</span>
-      </div>
-      <div class="text-right"><span class="font-bold text-sm text-gray-700">Total Standby: </span> <span id="total-standby" class="font-extrabold text-lg text-orange-600">0</span>
       </div>
      </div>
-    </div>
-   </div><!-- RIGHT SIDEBAR -->
-   <div class="no-print flex flex-col h-full bg-slate-900 border-l border-slate-700" style="width:20%; min-width:180px;">
-    <div class="p-3 border-b border-slate-700">
-     <h2 class="text-white font-bold text-sm tracking-wider flex items-center gap-2"><i data-lucide="settings" style="width:16px;height:16px;color:#60a5fa;"></i> CONTROLS</h2>
-    </div>
-    <div class="p-3 flex flex-col gap-3 flex-1 overflow-y-auto sidebar-scroll"><button id="add-zone-btn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg px-4 py-3 text-sm font-bold transition-colors flex items-center justify-center gap-2"> <i data-lucide="plus-square" style="width:18px;height:18px;"></i> Add Zone </button> <button id="download-btn" class="w-full bg-blue-600 hover:bg-blue-500 text-white rounded-lg px-4 py-3 text-sm font-bold transition-colors flex items-center justify-center gap-2"> <i data-lucide="download" style="width:18px;height:18px;"></i> Download JPEG </button>
-     <div class="mt-4 border-t border-slate-700 pt-3">
-      <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">
-       Zone List
-      </div>
-      <div id="zone-list-controls" class="flex flex-col gap-2"></div>
+    </main><!-- COL 3: Tools -->
+    <aside class="w-56 shrink-0 bg-[#0f1629] border-l border-white/10 flex flex-col overflow-y-auto">
+     <div class="p-3 border-b border-white/10">
+      <h2 class="text-sm font-bold text-white/80 uppercase tracking-wider flex items-center gap-2"><i data-lucide="settings" class="w-4 h-4 text-blue-400"></i> Tools</h2>
      </div>
-    </div>
+     <div class="p-3 space-y-3">
+      <button id="add-zone-btn" class="w-full flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white py-2 px-3 rounded-lg text-sm font-semibold transition-colors"> <i data-lucide="plus-square" class="w-4 h-4"></i> Add Zone </button> <button id="download-btn" class="w-full flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white py-2 px-3 rounded-lg text-sm font-semibold transition-colors"> <i data-lucide="download" class="w-4 h-4"></i> Download JPEG </button>
+      <hr class="border-white/10">
+      <div class="text-xs text-white/40 space-y-2">
+       <p><strong class="text-white/60">Drag</strong> names from Pool → Zones</p>
+       <p><strong class="text-white/60">Shift+Click</strong> for multi-select</p>
+       <p><strong class="text-white/60">Double-click</strong> name on canvas to change color</p>
+       <p><strong class="text-white/60">Click</strong> zone titles to edit</p>
+      </div>
+      <hr class="border-white/10">
+      <h3 class="text-xs font-bold text-white/60 uppercase">Zones</h3>
+      <div id="zone-list-panel" class="space-y-1"></div>
+     </div>
+    </aside>
    </div>
-  </div><!-- COLOR PICKER POPUP -->
+  </div><!-- Color picker popup (hidden) -->
   <div id="color-picker" class="color-picker-popup" style="display:none;">
-   <div class="cp-swatch color-blue" data-color="blue"></div>
-   <div class="cp-swatch color-yellow" data-color="yellow"></div>
-   <div class="cp-swatch color-orange" data-color="orange"></div>
-   <div class="cp-swatch color-red" data-color="red"></div>
-   <div class="cp-swatch color-green" data-color="green"></div>
-   <div class="cp-swatch color-pink" data-color="pink"></div>
-   <div class="cp-swatch color-grey" data-color="grey"></div>
+   <div class="color-dot" style="background:#ef4444;" data-color="red"></div>
+   <div class="color-dot" style="background:#3b82f6;" data-color="blue"></div>
+   <div class="color-dot" style="background:#eab308;" data-color="yellow"></div>
+   <div class="color-dot" style="background:#22c55e;" data-color="green"></div>
+   <div class="color-dot" style="background:#ec4899;" data-color="pink"></div>
+   <div class="color-dot" style="background:#f97316;" data-color="orange"></div>
   </div>
   <script>
 // ===== STATE =====
-let idCounter = 0;
-const uid = () => 'item-' + (++idCounter);
-
 const COLOR_ORDER = ['blue','yellow','orange','red','green','pink','grey'];
+const COLOR_CLASSES = {blue:'chip-blue',yellow:'chip-yellow',orange:'chip-orange',red:'chip-red',grey:'chip-grey',green:'chip-green',pink:'chip-pink'};
 
-const initialPool = [
-  {names:['Fredy Chidotz','Deni Sandy','Hamdan','Iman Udeng','Pingki Sopian'],color:'blue'},
-  {names:['Adi Susanto','Alif','Ikhwani','Yudi','Fahmi','Aditya Arisandi','Kikin','Samsul Hidayat'],color:'yellow'},
-  {names:['Supriyadi','Hendri','Basori','Acep','Edi','Sudarmansyah','Ryan Hermawan','Iwan A. setiawan'],color:'orange'},
-  {names:['Heri Suherman','Ismail','Rahmat','Rendi','Dafa','Anggi Yanuar','Caryana','Pryambudi','Asep A. Setiawan','Sandi permana','Aditiya A. Aziz','Wawan Kurniawan','Rizki N. Huda','M. Dian Saputra'],color:'red'}
+let nextId = 1;
+function mkWorker(name, color) { return { id: nextId++, name, color }; }
+
+const initialWorkers = [
+  ...['Fredy Chidotz','Deni Sandy','Hamdan','Iman Udeng','Pingki Sopian'].map(n=>mkWorker(n,'blue')),
+  ...['Adi Susanto','Alif','Ikhwani','Yudi','Fahmi','Aditya Arisandi','Kikin','Samsul Hidayat'].map(n=>mkWorker(n,'yellow')),
+  ...['Supriyadi','Hendri','Basori','Acep','Edi','Sudarmansyah','Ryan Hermawan','Iwan A. Setiawan'].map(n=>mkWorker(n,'orange')),
+  ...['Heri Suherman','Ismail','Rahmat','Rendi','Dafa','Anggi Yanuar','Caryana','Pryambudi','Asep A. Setiawan','Sandi Permana','Aditiya A. Aziz','Wawan Kurniawan','Rizki N. Huda','M. Dian Saputra'].map(n=>mkWorker(n,'red'))
 ];
 
-let items = [];
-initialPool.forEach(g => g.names.forEach(n => items.push({id:uid(),name:n,color:g.color})));
-
+let pool = [...initialWorkers];
 let zones = [];
-let zoneCounter = 0;
-let sortables = [];
+let standbyWorkers = [];
+let zoneIdCounter = 0;
+let selectedIds = new Set();
+let dragData = null;
 let colorPickerTarget = null;
 
-// ===== HELPERS =====
-function makeItemEl(item, showNum) {
-  const el = document.createElement('div');
-  el.className = `pool-item color-${item.color}`;
-  el.dataset.id = item.id;
-  el.innerHTML = `${showNum !== undefined ? `<span class="num-badge">${showNum}</span>` : ''}<span class="item-name">${item.name}</span>`;
-  el.addEventListener('dblclick', (e) => openColorPicker(e, item.id));
-  return el;
+// ===== ADVANCED DND STATE =====
+let activeDragSource = null;
+let activeDragWorkerIds = [];
+let dragStartPos = { x: 0, y: 0 };
+let selectionRect = null;
+let isDrawingSelectionRect = false;
+let lastHoveredDropZone = null;
+
+function newZone(headerText, titleText, subText) {
+  return { id: ++zoneIdCounter, header: headerText||'ZONE '+zoneIdCounter, title: titleText||'UNIT '+zoneIdCounter, sub: subText||'Subtitle', workers: [] };
 }
 
-function getItem(id) { return items.find(i => i.id === id); }
+// Add 2 default zones
+zones.push(newZone('ZONE A','UNIT A','Sub-Unit A'));
+zones.push(newZone('ZONE B','UNIT B','Sub-Unit B'));
 
-function recalcNumbers(container) {
-  const children = [...container.children];
-  const colorCounts = {};
-  children.forEach(el => {
-    const item = getItem(el.dataset.id);
-    if (!item) return;
-    if (!colorCounts[item.color]) colorCounts[item.color] = 0;
-    colorCounts[item.color]++;
-    const badge = el.querySelector('.num-badge');
-    if (badge) badge.textContent = colorCounts[item.color];
-    else {
-      const b = document.createElement('span');
-      b.className = 'num-badge';
-      b.textContent = colorCounts[item.color];
-      el.insertBefore(b, el.firstChild);
+// ===== RENDER =====
+function render() {
+  renderPool();
+  renderCanvas();
+  renderZonePanel();
+  updateTotals();
+}
+
+function renderPool() {
+  const c = document.getElementById('pool-list');
+  const existing = new Map([...c.children].map(el=>[el.dataset.workerId, el]));
+  const currentIds = new Set(pool.map(w=>String(w.id)));
+
+  // Remove workers no longer in pool
+  existing.forEach((el, id) => { if (!currentIds.has(id)) el.remove(); });
+
+  pool.forEach((w, i) => {
+    let el = existing.get(String(w.id));
+    if (!el) {
+      el = document.createElement('div');
+      el.dataset.workerId = String(w.id);
+      el.className = `name-chip ${COLOR_CLASSES[w.color]} rounded px-3 py-1.5 text-xs font-semibold flex items-center gap-1`;
+      el.draggable = true;
+      el.textContent = w.name;
+      el.addEventListener('dragstart', onPointerDragStart);
+      el.addEventListener('dragend', onPointerDragEnd);
+      el.addEventListener('pointerdown', onPoolPointerDown);
+      el.addEventListener('click', onPoolClick);
+    }
+    // Update selection state
+    el.classList.toggle('selected', selectedIds.has(w.id));
+    // Ensure correct position
+    if (c.children[i] !== el) {
+      if (c.children[i]) c.insertBefore(el, c.children[i]);
+      else c.appendChild(el);
     }
   });
+
+  document.getElementById('pool-count').textContent = pool.length + ' workers available';
+  
+  // Setup selection rect on pool
+  setupSelectionRect(c);
+}
+
+function renderCanvas() {
+  const grid = document.getElementById('zone-grid');
+  const existingZones = new Map([...grid.children].map(el=>[el.dataset.zoneId, el]));
+  const currentZoneIds = new Set(zones.map(z=>String(z.id)));
+
+  existingZones.forEach((el, id) => { if (!currentZoneIds.has(id)) el.remove(); });
+
+  zones.forEach((zone, zi) => {
+    let wrapper = existingZones.get(String(zone.id));
+    if (!wrapper) {
+      wrapper = document.createElement('div');
+      wrapper.dataset.zoneId = String(zone.id);
+      wrapper.className = 'zone-wrapper';
+      wrapper.innerHTML = buildZoneHTML(zone);
+      setupZoneEvents(wrapper, zone);
+    } else {
+      updateZoneWorkers(wrapper, zone);
+    }
+    if (grid.children[zi] !== wrapper) {
+      if (grid.children[zi]) grid.insertBefore(wrapper, grid.children[zi]);
+      else grid.appendChild(wrapper);
+    }
+  });
+
+  // Standby
+  renderStandby();
+}
+
+function buildZoneHTML(zone) {
+  return `
+    <div class="text-xs font-bold text-gray-400 mb-0.5 px-1 editable-field" contenteditable="true" data-field="header">${zone.header}</div>
+    <div class="border border-gray-300 rounded bg-white p-1.5 min-h-[60px]" data-drop="zone-${zone.id}">
+      <div class="text-sm font-bold text-blue-600 editable-field text-center" contenteditable="true" data-field="title">${zone.title}</div>
+      <div class="text-xs font-bold text-red-500 italic editable-field text-center" contenteditable="true" data-field="sub">${zone.sub}</div>
+      <div class="worker-list mt-1 space-y-0.5 min-h-[20px]"></div>
+      <button class="remove-zone-btn text-[9px] text-gray-300 hover:text-red-400 mt-1 transition-colors" title="Remove zone">✕ remove</button>
+    </div>`;
+}
+
+function setupZoneEvents(wrapper, zone) {
+  const dropArea = wrapper.querySelector('[data-drop]');
+  dropArea.addEventListener('dragover', e => { e.preventDefault(); dropArea.classList.add('drag-over'); });
+  dropArea.addEventListener('dragleave', () => dropArea.classList.remove('drag-over'));
+  dropArea.addEventListener('drop', e => { e.preventDefault(); dropArea.classList.remove('drag-over'); onDropInZone(zone.id); });
+
+  // Touch drop zone
+  dropArea.dataset.zoneDropId = zone.id;
+
+  // Editable fields
+  wrapper.querySelector('[data-field="header"]').addEventListener('blur', function(){ zone.header = this.textContent; });
+  wrapper.querySelector('[data-field="title"]').addEventListener('blur', function(){ zone.title = this.textContent; });
+  wrapper.querySelector('[data-field="sub"]').addEventListener('blur', function(){ zone.sub = this.textContent; });
+
+  // Remove zone btn
+  wrapper.querySelector('.remove-zone-btn').addEventListener('click', () => {
+    pool.push(...zone.workers);
+    zones = zones.filter(z=>z.id!==zone.id);
+    render();
+  });
+  
+  // Selection rect on zone workers
+  setupSelectionRect(wrapper.querySelector('.worker-list'));
+}
+
+function getNumberedWorkers(workers) {
+  // Group by color, maintain order, number within each group
+  const groups = [];
+  let currentColor = null;
+  let num = 0;
+  // Sort by color order first, preserve insertion order within same color
+  const sorted = [...workers].sort((a,b) => {
+    const ai = COLOR_ORDER.indexOf(a.color); const bi = COLOR_ORDER.indexOf(b.color);
+    if (ai !== bi) return ai - bi;
+    return workers.indexOf(a) - workers.indexOf(b);
+  });
+  sorted.forEach(w => {
+    if (w.color !== currentColor) { currentColor = w.color; num = 1; }
+    else num++;
+    groups.push({ ...w, num });
+  });
+  return groups;
+}
+
+function updateZoneWorkers(wrapper, zone) {
+  const list = wrapper.querySelector('.worker-list');
+  const numbered = getNumberedWorkers(zone.workers);
+  const existing = new Map([...list.children].map(el=>[el.dataset.workerId, el]));
+  const currentIds = new Set(numbered.map(w=>String(w.id)));
+
+  existing.forEach((el, id) => { if (!currentIds.has(id)) el.remove(); });
+
+  numbered.forEach((w, i) => {
+    let el = existing.get(String(w.id));
+    if (!el) {
+      el = document.createElement('div');
+      el.dataset.workerId = String(w.id);
+      el.draggable = true;
+      el.addEventListener('dragstart', (e) => onPointerDragStart.call(el, e, zone.id));
+      el.addEventListener('dragend', onPointerDragEnd);
+      el.addEventListener('dblclick', (e) => openColorPicker(e, w.id, zone.id));
+      el.addEventListener('pointerdown', (e) => onCanvasPointerDown.call(el, e, zone.id));
+    }
+    el.className = `name-chip ${COLOR_CLASSES[w.color]} rounded px-2 py-0.5 text-[10px] font-semibold`;
+    el.textContent = `${w.num}. ${w.name}`;
+    if (list.children[i] !== el) {
+      if (list.children[i]) list.insertBefore(el, list.children[i]);
+      else list.appendChild(el);
+    }
+  });
+}
+
+function renderStandby() {
+  const c = document.getElementById('standby-zone');
+  const numbered = getNumberedWorkers(standbyWorkers);
+  const existing = new Map([...c.children].map(el=>[el.dataset.workerId, el]));
+  const currentIds = new Set(numbered.map(w=>String(w.id)));
+
+  existing.forEach((el, id) => { if (!currentIds.has(id)) el.remove(); });
+
+  numbered.forEach((w, i) => {
+    let el = existing.get(String(w.id));
+    if (!el) {
+      el = document.createElement('div');
+      el.dataset.workerId = String(w.id);
+      el.draggable = true;
+      el.addEventListener('dragstart', (e) => onPointerDragStart.call(el, e, 'standby'));
+      el.addEventListener('dragend', onPointerDragEnd);
+      el.addEventListener('dblclick', (e) => openColorPicker(e, w.id, 'standby'));
+      el.addEventListener('pointerdown', (e) => onStandbyPointerDown.call(el, e));
+    }
+    el.className = `name-chip ${COLOR_CLASSES[w.color]} rounded px-2 py-0.5 text-[10px] font-semibold`;
+    el.textContent = `${w.num}. ${w.name}`;
+    if (c.children[i] !== el) {
+      if (c.children[i]) c.insertBefore(el, c.children[i]);
+      else c.appendChild(el);
+    }
+  });
+
+  // Setup drop on standby
+  c.ondragover = (e) => { e.preventDefault(); c.classList.add('drag-over'); };
+  c.ondragleave = () => c.classList.remove('drag-over');
+  c.ondrop = (e) => { e.preventDefault(); c.classList.remove('drag-over'); onDropInStandby(); };
+}
+
+function renderZonePanel() {
+  const panel = document.getElementById('zone-list-panel');
+  panel.innerHTML = zones.map(z =>
+    `<div class="flex items-center justify-between text-xs text-white/70 bg-white/5 rounded px-2 py-1.5">
+      <span>${z.header} (${z.workers.length})</span>
+    </div>`
+  ).join('') + `<div class="text-xs text-white/40 mt-1">Standby: ${standbyWorkers.length}</div>`;
 }
 
 function updateTotals() {
-  let working = 0, standby = 0;
-  zones.forEach(z => {
-    working += document.getElementById('zone-drop-' + z.id).children.length;
+  const totalWorkers = zones.reduce((s,z)=>s+z.workers.length, 0);
+  document.getElementById('total-pekerja').textContent = totalWorkers;
+  document.getElementById('total-standby').textContent = standbyWorkers.length;
+}
+
+// ===== ADVANCED DRAG & DROP =====
+
+// Selection Rectangle Logic
+function setupSelectionRect(container) {
+  if (!container) return;
+  let isSelecting = false;
+  let startX, startY;
+  let rectElement = null;
+  
+  const isDropZone = container.classList.contains('worker-list') || container.id === 'pool-list';
+  if (!isDropZone) return;
+
+  container.addEventListener('pointerdown', (e) => {
+    // Only activate on empty space (not on name-chip)
+    if (e.target.closest('.name-chip')) return;
+    
+    isSelecting = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    
+    // Create selection rectangle visual
+    rectElement = document.createElement('div');
+    rectElement.style.position = 'fixed';
+    rectElement.style.border = '2px dashed #3b82f6';
+    rectElement.style.background = 'rgba(59, 130, 246, 0.1)';
+    rectElement.style.pointerEvents = 'none';
+    rectElement.style.zIndex = '9998';
+    document.body.appendChild(rectElement);
   });
-  standby = document.getElementById('standby-drop').children.length;
-  document.getElementById('total-working').textContent = working;
-  document.getElementById('total-standby').textContent = standby;
-}
 
-// ===== COLOR PICKER =====
-function openColorPicker(e, itemId) {
-  e.stopPropagation();
-  const picker = document.getElementById('color-picker');
-  colorPickerTarget = itemId;
-  picker.style.display = 'flex';
-  picker.style.left = Math.min(e.clientX, window.innerWidth - 250) + 'px';
-  picker.style.top = Math.min(e.clientY - 40, window.innerHeight - 50) + 'px';
-}
-
-document.getElementById('color-picker').addEventListener('click', (e) => {
-  const swatch = e.target.closest('.cp-swatch');
-  if (!swatch || !colorPickerTarget) return;
-  const newColor = swatch.dataset.color;
-  const item = getItem(colorPickerTarget);
-  if (item) {
-    item.color = newColor;
-    document.querySelectorAll(`[data-id="${item.id}"]`).forEach(el => {
-      el.className = `pool-item color-${newColor}`;
-      const parent = el.closest('.zone-drop-area');
-      if (parent) recalcNumbers(parent);
+  document.addEventListener('pointermove', (e) => {
+    if (!isSelecting || !rectElement) return;
+    
+    const currentX = e.clientX;
+    const currentY = e.clientY;
+    const left = Math.min(startX, currentX);
+    const top = Math.min(startY, currentY);
+    const width = Math.abs(currentX - startX);
+    const height = Math.abs(currentY - startY);
+    
+    rectElement.style.left = left + 'px';
+    rectElement.style.top = top + 'px';
+    rectElement.style.width = width + 'px';
+    rectElement.style.height = height + 'px';
+    
+    // Collision detection: find all chips that intersect rect
+    const chips = container.querySelectorAll('.name-chip');
+    const rectBounds = { left, top, right: left + width, bottom: top + height };
+    
+    selectedIds.clear();
+    chips.forEach(chip => {
+      const chipBounds = chip.getBoundingClientRect();
+      if (rectsIntersect(rectBounds, { left: chipBounds.left, top: chipBounds.top, right: chipBounds.right, bottom: chipBounds.bottom })) {
+        const wid = parseInt(chip.dataset.workerId);
+        selectedIds.add(wid);
+      }
     });
-  }
-  document.getElementById('color-picker').style.display = 'none';
-  colorPickerTarget = null;
-  updateTotals();
-});
-
-document.addEventListener('click', (e) => {
-  if (!e.target.closest('.color-picker-popup') && !e.target.closest('.pool-item')) {
-    document.getElementById('color-picker').style.display = 'none';
-    colorPickerTarget = null;
-  }
-});
-
-// ===== POOL RENDERING =====
-function renderPool() {
-  const pool = document.getElementById('pool-list');
-  const zoneItemIds = new Set();
-  zones.forEach(z => {
-    [...document.getElementById('zone-drop-' + z.id).children].forEach(c => zoneItemIds.add(c.dataset.id));
+    
+    renderPool();
   });
-  [...document.getElementById('standby-drop').children].forEach(c => zoneItemIds.add(c.dataset.id));
-  
-  const poolItems = items.filter(i => !zoneItemIds.has(i.id));
-  
-  // Keep existing, remove gone, add new
-  const existing = new Map([...pool.children].map(el => [el.dataset.id, el]));
-  const newIds = new Set(poolItems.map(i => i.id));
-  
-  existing.forEach((el, id) => { if (!newIds.has(id)) el.remove(); });
-  
-  poolItems.forEach(item => {
-    if (!existing.has(item.id)) {
-      pool.appendChild(makeItemEl(item));
-    } else {
-      const el = existing.get(item.id);
-      el.className = `pool-item color-${item.color}`;
+
+  document.addEventListener('pointerup', (e) => {
+    if (isSelecting && rectElement) {
+      rectElement.remove();
+      rectElement = null;
+      isSelecting = false;
     }
   });
 }
 
-function initPoolSortable() {
-  new Sortable(document.getElementById('pool-list'), {
-    group: 'crew',
-    animation: 150,
-    sort: true,
-    onEnd: () => { refreshAllNumbers(); updateTotals(); renderPool(); }
-  });
+function rectsIntersect(r1, r2) {
+  return !(r2.right < r1.left || r2.left > r1.right || r2.bottom < r1.top || r2.top > r1.bottom);
 }
 
-// ===== ZONES =====
-function addZone(outerTitle, innerTitle, innerSub) {
-  zoneCounter++;
-  const z = {
-    id: 'zone-' + zoneCounter,
-    outerTitle: outerTitle || 'ZONE ' + zoneCounter,
-    innerTitle: innerTitle || 'Location',
-    innerSub: innerSub || 'Description'
-  };
-  zones.push(z);
-  renderZones();
-  renderZoneControls();
-  updateTotals();
-}
-
-function renderZones() {
-  const grid = document.getElementById('zones-grid');
+function onPointerDragStart(e, sourceZoneId) {
+  const wid = parseInt(e.currentTarget.dataset.workerId);
+  const source = e.currentTarget.closest('#pool-list') ? 'pool' :
+                 e.currentTarget.closest('#standby-zone') ? 'standby' : 'zone';
   
-  zones.forEach(z => {
-    if (document.getElementById(z.id)) return;
-    const div = document.createElement('div');
-    div.className = 'zone-container';
-    div.id = z.id;
-    div.innerHTML = `
-      <div class="zone-outer-title"><span contenteditable="true" class="editable-title" data-field="outerTitle" data-zone="${z.id}">${z.outerTitle}</span></div>
-      <div class="zone-inner-title"><span contenteditable="true" class="editable-title" data-field="innerTitle" data-zone="${z.id}">${z.innerTitle}</span></div>
-      <div class="zone-inner-subtitle"><span contenteditable="true" class="editable-title" data-field="innerSub" data-zone="${z.id}">${z.innerSub}</span></div>
-      <div class="zone-drop-area" id="zone-drop-${z.id}"></div>
-    `;
-    grid.appendChild(div);
-    
-    const dropArea = document.getElementById('zone-drop-' + z.id);
-    const s = new Sortable(dropArea, {
-      group: 'crew',
-      animation: 150,
-      onEnd: () => { refreshAllNumbers(); updateTotals(); renderPool(); }
-    });
-    sortables.push(s);
-  });
-
-  // Editable title sync
-  document.querySelectorAll('.editable-title').forEach(el => {
-    el.addEventListener('blur', () => {
-      const z = zones.find(z => z.id === el.dataset.zone);
-      if (z) z[el.dataset.field] = el.textContent;
-    });
-  });
+  let ids = selectedIds.size > 0 && selectedIds.has(wid) ? [...selectedIds] : [wid];
+  
+  activeDragSource = source;
+  activeDragWorkerIds = ids;
+  
+  dragData = source === 'pool' 
+    ? { source: 'pool', workerIds: ids }
+    : source === 'standby'
+    ? { source: 'standby', workerIds: ids }
+    : { source: 'zone', sourceZoneId, workerIds: ids };
+  
+  e.currentTarget.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
 }
 
-function removeZone(zoneId) {
-  const dropArea = document.getElementById('zone-drop-' + zoneId);
-  if (dropArea) {
-    // Move items back to pool
-    [...dropArea.children].forEach(c => {
-      document.getElementById('pool-list').appendChild(c);
-    });
+function onPointerDragEnd(e) {
+  e.currentTarget.classList.remove('dragging');
+  activeDragSource = null;
+  activeDragWorkerIds = [];
+}
+
+function onPoolPointerDown(e) {
+  if (e.button !== 0) return; // Only left-click
+  
+  const wid = parseInt(e.currentTarget.dataset.workerId);
+  const isMultiSelect = e.ctrlKey || e.metaKey;
+  const isRangeSelect = e.shiftKey;
+  
+  if (isMultiSelect) {
+    if (selectedIds.has(wid)) selectedIds.delete(wid);
+    else selectedIds.add(wid);
+  } else if (isRangeSelect) {
+    // Simple range select: just add to selection
+    selectedIds.add(wid);
+  } else {
+    // Single click
+    if (selectedIds.has(wid) && selectedIds.size === 1) selectedIds.clear();
+    else { selectedIds.clear(); selectedIds.add(wid); }
   }
-  const el = document.getElementById(zoneId);
-  if (el) el.remove();
-  zones = zones.filter(z => z.id !== zoneId);
-  renderZoneControls();
-  updateTotals();
+  
   renderPool();
 }
 
-function renderZoneControls() {
-  const list = document.getElementById('zone-list-controls');
-  list.innerHTML = '';
-  zones.forEach(z => {
-    const div = document.createElement('div');
-    div.className = 'flex items-center justify-between bg-slate-800 rounded-lg px-3 py-2';
-    div.innerHTML = `
-      <span class="text-white text-xs font-semibold truncate">${z.outerTitle}</span>
-      <button class="text-red-400 hover:text-red-300 transition-colors" data-remove="${z.id}">
-        <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
-      </button>
-    `;
-    div.querySelector('[data-remove]').addEventListener('click', () => removeZone(z.id));
-    list.appendChild(div);
-  });
-  lucide.createIcons();
+function onCanvasPointerDown(e, zoneId) {
+  if (e.button !== 0) return;
+  const wid = parseInt(e.currentTarget.dataset.workerId);
+  
+  // For canvas zones, only single select initially (multi-select via lasso)
+  if (selectedIds.has(wid) && selectedIds.size === 1) selectedIds.clear();
+  else { selectedIds.clear(); selectedIds.add(wid); }
 }
 
-function refreshAllNumbers() {
-  zones.forEach(z => {
-    const drop = document.getElementById('zone-drop-' + z.id);
-    if (drop) recalcNumbers(drop);
-  });
-  const standby = document.getElementById('standby-drop');
-  if (standby) recalcNumbers(standby);
+function onStandbyPointerDown(e) {
+  if (e.button !== 0) return;
+  const wid = parseInt(e.currentTarget.dataset.workerId);
+  
+  if (selectedIds.has(wid) && selectedIds.size === 1) selectedIds.clear();
+  else { selectedIds.clear(); selectedIds.add(wid); }
 }
 
-// ===== STANDBY SORTABLE =====
-function initStandbySortable() {
-  new Sortable(document.getElementById('standby-drop'), {
-    group: 'crew',
-    animation: 150,
-    onEnd: () => { refreshAllNumbers(); updateTotals(); renderPool(); }
-  });
+function onPoolClick(e) {
+  // Click handling is now in onPoolPointerDown
 }
 
-// ===== DAY SELECT =====
-function initDaySelect() {
-  const sel = document.getElementById('day-select');
-  for (let i = 1; i <= 40; i++) {
-    const opt = document.createElement('option');
-    opt.value = i; opt.textContent = i;
-    sel.appendChild(opt);
+function onDropInZone(zoneId) {
+  if (!dragData) return;
+  const zone = zones.find(z=>z.id===zoneId);
+  if (!zone) return;
+
+  const workers = [];
+  dragData.workerIds.forEach(id => {
+    let w = null;
+    if (dragData.source === 'pool') {
+      const idx = pool.findIndex(p=>p.id===id);
+      if (idx > -1) { w = pool.splice(idx, 1)[0]; }
+    } else if (dragData.source === 'zone') {
+      const srcZone = zones.find(z=>z.id===dragData.sourceZoneId);
+      if (srcZone) { const idx = srcZone.workers.findIndex(p=>p.id===id); if (idx>-1) w = srcZone.workers.splice(idx,1)[0]; }
+    } else if (dragData.source === 'standby') {
+      const idx = standbyWorkers.findIndex(p=>p.id===id);
+      if (idx>-1) w = standbyWorkers.splice(idx,1)[0];
+    }
+    if (w) workers.push(w);
+  });
+
+  zone.workers.push(...workers);
+  selectedIds.clear();
+  dragData = null;
+  render();
+}
+
+function onDropInStandby() {
+  if (!dragData) return;
+  const workers = [];
+  dragData.workerIds.forEach(id => {
+    let w = null;
+    if (dragData.source === 'pool') {
+      const idx = pool.findIndex(p=>p.id===id);
+      if (idx > -1) w = pool.splice(idx, 1)[0];
+    } else if (dragData.source === 'zone') {
+      const srcZone = zones.find(z=>z.id===dragData.sourceZoneId);
+      if (srcZone) { const idx = srcZone.workers.findIndex(p=>p.id===id); if (idx>-1) w = srcZone.workers.splice(idx,1)[0]; }
+    } else if (dragData.source === 'standby') {
+      return; // Already in standby
+    }
+    if (w) workers.push(w);
+  });
+  standbyWorkers.push(...workers);
+  selectedIds.clear();
+  dragData = null;
+  render();
+}
+
+// ===== TOUCH DND =====
+let touchDragEl = null;
+let touchClone = null;
+let touchWorkerId = null;
+let touchSource = null;
+let touchSourceZone = null;
+let touchStartTime = 0;
+let touchLongPressTimer = null;
+
+// ===== COLOR PICKER =====
+function openColorPicker(e, workerId, zoneIdOrStandby) {
+  e.preventDefault(); e.stopPropagation();
+  const picker = document.getElementById('color-picker');
+  picker.style.display = 'flex';
+  picker.style.left = e.clientX + 'px';
+  picker.style.top = (e.clientY - 40) + 'px';
+  colorPickerTarget = { workerId, zone: zoneIdOrStandby };
+}
+
+document.querySelectorAll('#color-picker .color-dot').forEach(dot => {
+  dot.addEventListener('click', () => {
+    if (!colorPickerTarget) return;
+    const color = dot.dataset.color;
+    const { workerId, zone } = colorPickerTarget;
+
+    if (zone === 'standby') {
+      const w = standbyWorkers.find(w=>w.id===workerId);
+      if (w) w.color = color;
+    } else {
+      const z = zones.find(z=>z.id===zone);
+      if (z) { const w = z.workers.find(w=>w.id===workerId); if (w) w.color = color; }
+    }
+
+    document.getElementById('color-picker').style.display = 'none';
+    colorPickerTarget = null;
+    render();
+  });
+});
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#color-picker') && !e.target.closest('.name-chip')) {
+    document.getElementById('color-picker').style.display = 'none';
   }
-}
+});
 
-// ===== DATE PICKER =====
-document.getElementById('date-picker').addEventListener('change', (e) => {
-  const d = new Date(e.target.value);
-  if (!isNaN(d)) {
-    document.getElementById('date-display').textContent = d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-  }
+// ===== DATE =====
+function updateDate() {
+  const d = new Date();
+  const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+  document.getElementById('canvas-date').textContent = d.toLocaleDateString('id-ID', opts);
+}
+updateDate();
+
+// ===== ADD ZONE =====
+document.getElementById('add-zone-btn').addEventListener('click', () => {
+  zones.push(newZone());
+  render();
 });
 
 // ===== ADD NAME =====
-document.getElementById('add-name-btn').addEventListener('click', () => {
+document.getElementById('add-name-btn').addEventListener('click', addNewName);
+document.getElementById('new-name-input').addEventListener('keydown', e => { if (e.key==='Enter') { e.preventDefault(); addNewName(); }});
+
+function addNewName() {
   const input = document.getElementById('new-name-input');
   const name = input.value.trim();
   if (!name) return;
-  const item = { id: uid(), name, color: 'grey' };
-  items.push(item);
-  document.getElementById('pool-list').appendChild(makeItemEl(item));
+  pool.push(mkWorker(name, 'grey'));
   input.value = '';
-});
-document.getElementById('new-name-input').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') document.getElementById('add-name-btn').click();
-});
-
-// ===== ADD ZONE BUTTON =====
-document.getElementById('add-zone-btn').addEventListener('click', () => addZone());
+  render();
+}
 
 // ===== DOWNLOAD =====
-document.getElementById('download-btn').addEventListener('click', async () => {
+document.getElementById('download-btn').addEventListener('click', () => {
+  const canvas = document.getElementById('a4-canvas');
   const btn = document.getElementById('download-btn');
+  btn.textContent = 'Exporting...';
   btn.disabled = true;
-  btn.innerHTML = '<span class="animate-pulse">Exporting...</span>';
-  
-  try {
-    const canvas = await html2canvas(document.getElementById('a4-canvas'), {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: '#ffffff',
-      logging: false
-    });
+
+  html2canvas(canvas, { scale: 2, useCORS: true, backgroundColor: '#ffffff' }).then(c => {
     const link = document.createElement('a');
-    link.download = 'callsheet-day-' + document.getElementById('day-select').value + '.jpeg';
-    link.href = canvas.toDataURL('image/jpeg', 0.95);
+    const day = document.getElementById('day-input').value || '1';
+    link.download = `IBOL_DAY_${day}.jpeg`;
+    link.href = c.toDataURL('image/jpeg', 0.95);
     link.click();
-  } catch(err) {
+  }).catch(err => {
     console.error('Export failed:', err);
-  }
-  
-  btn.disabled = false;
-  btn.innerHTML = '<i data-lucide="download" style="width:18px;height:18px;"></i> Download JPEG';
-  lucide.createIcons();
+  }).finally(() => {
+    btn.innerHTML = '<i data-lucide="download" class="w-4 h-4"></i> Download JPEG';
+    btn.disabled = false;
+    lucide.createIcons();
+  });
+});
+
+// ===== POOL DROP (return workers) =====
+const poolList = document.getElementById('pool-list');
+poolList.addEventListener('dragover', e => e.preventDefault());
+poolList.addEventListener('drop', e => {
+  e.preventDefault();
+  if (!dragData || dragData.source === 'pool') return;
+  dragData.workerIds.forEach(id => {
+    let w = null;
+    if (dragData.source === 'zone') {
+      const z = zones.find(z=>z.id===dragData.sourceZoneId);
+      if (z) { const idx = z.workers.findIndex(p=>p.id===id); if(idx>-1) w = z.workers.splice(idx,1)[0]; }
+    } else if (dragData.source === 'standby') {
+      const idx = standbyWorkers.findIndex(p=>p.id===id);
+      if(idx>-1) w = standbyWorkers.splice(idx,1)[0];
+    }
+    if (w) pool.push(w);
+  });
+  dragData = null;
+  selectedIds.clear();
+  render();
 });
 
 // ===== ELEMENT SDK =====
 const defaultConfig = {
-  main_title: 'I.B.O.L',
-  date_text: '',
-  background_color: '#000033',
-  surface_color: '#0f172a',
-  text_color: '#ffffff',
-  primary_action: '#2563eb',
-  secondary_action: '#10b981',
-  font_family: 'Outfit',
+  canvas_title: 'I.B.O.L',
+  day_label: 'DAY',
+  background_color: '#0a0e1a',
+  surface_color: '#0f1629',
+  text_color: '#e2e8f0',
+  accent_color: '#3b82f6',
+  secondary_accent: '#22c55e',
+  font_family: 'Source Sans 3',
   font_size: 14
 };
 
-window.elementSdk.init({
-  defaultConfig,
-  onConfigChange: async (config) => {
-    const title = config.main_title || defaultConfig.main_title;
-    document.getElementById('main-title-display').textContent = title;
-    
-    if (config.date_text) {
-      document.getElementById('date-display').textContent = config.date_text;
-    }
-    
-    const font = config.font_family || defaultConfig.font_family;
-    document.body.style.fontFamily = `${font}, Outfit, sans-serif`;
-  },
-  mapToCapabilities: (config) => ({
-    recolorables: [
-      { get: () => config.background_color || defaultConfig.background_color, set: (v) => { config.background_color = v; window.elementSdk.setConfig({background_color:v}); }},
-      { get: () => config.surface_color || defaultConfig.surface_color, set: (v) => { config.surface_color = v; window.elementSdk.setConfig({surface_color:v}); }},
-      { get: () => config.text_color || defaultConfig.text_color, set: (v) => { config.text_color = v; window.elementSdk.setConfig({text_color:v}); }},
-      { get: () => config.primary_action || defaultConfig.primary_action, set: (v) => { config.primary_action = v; window.elementSdk.setConfig({primary_action:v}); }},
-      { get: () => config.secondary_action || defaultConfig.secondary_action, set: (v) => { config.secondary_action = v; window.elementSdk.setConfig({secondary_action:v}); }}
-    ],
-    borderables: [],
-    fontEditable: {
-      get: () => config.font_family || defaultConfig.font_family,
-      set: (v) => { config.font_family = v; window.elementSdk.setConfig({font_family:v}); }
-    },
-    fontSizeable: {
-      get: () => config.font_size || defaultConfig.font_size,
-      set: (v) => { config.font_size = v; window.elementSdk.setConfig({font_size:v}); }
-    }
-  }),
-  mapToEditPanelValues: (config) => new Map([
-    ['main_title', config.main_title || defaultConfig.main_title],
-    ['date_text', config.date_text || '']
-  ])
-});
+function applyConfig(config) {
+  const c = { ...defaultConfig, ...config };
+  document.getElementById('canvas-title').textContent = c.canvas_title;
+  document.getElementById('canvas-day-label').textContent = c.day_label;
 
-// ===== INIT =====
-initDaySelect();
-renderPool();
-initPoolSortable();
-initStandbySortable();
-addZone('ZONE 1', 'Main Location', 'Primary Work Area');
+  document.querySelector('.app-root').style.background = c.background_color;
+  document.querySelectorAll('aside').forEach(el => el.style.background = c.surface_color);
+  document.querySelector('header').style.background = c.surface_color;
+
+  const font = c.font_family + ', Source Sans 3, sans-serif';
+  document.body.style.fontFamily = font;
+
+  document.querySelectorAll('aside h2, aside h3, aside p, aside span, aside div').forEach(el => {
+    if (!el.closest('.name-chip')) el.style.color = c.text_color;
+  });
+}
+
+if (window.elementSdk) {
+  window.elementSdk.init({
+    defaultConfig,
+    onConfigChange: async (config) => applyConfig(config),
+    mapToCapabilities: (config) => ({
+      recolorables: [
+        { get: () => config.background_color || defaultConfig.background_color, set: v => { config.background_color = v; window.elementSdk.setConfig({background_color:v}); }},
+        { get: () => config.surface_color || defaultConfig.surface_color, set: v => { config.surface_color = v; window.elementSdk.setConfig({surface_color:v}); }},
+        { get: () => config.text_color || defaultConfig.text_color, set: v => { config.text_color = v; window.elementSdk.setConfig({text_color:v}); }},
+        { get: () => config.accent_color || defaultConfig.accent_color, set: v => { config.accent_color = v; window.elementSdk.setConfig({accent_color:v}); }},
+        { get: () => config.secondary_accent || defaultConfig.secondary_accent, set: v => { config.secondary_accent = v; window.elementSdk.setConfig({secondary_accent:v}); }},
+      ],
+      borderables: [],
+      fontEditable: { get: () => config.font_family || defaultConfig.font_family, set: v => { config.font_family = v; window.elementSdk.setConfig({font_family:v}); }},
+      fontSizeable: { get: () => config.font_size || defaultConfig.font_size, set: v => { config.font_size = v; window.elementSdk.setConfig({font_size:v}); }}
+    }),
+    mapToEditPanelValues: (config) => new Map([
+      ['canvas_title', config.canvas_title || defaultConfig.canvas_title],
+      ['day_label', config.day_label || defaultConfig.day_label]
+    ])
+  });
+}
+
+// Init
+render();
+applyConfig(defaultConfig);
 lucide.createIcons();
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9eee13fa5381a98e',t:'MTc3NjYyNDQ1MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9eedfd4701c26ca8',t:'MTc3NjYyMzUyMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
