@@ -84,29 +84,36 @@ input:focus,select:focus{outline:none}
    <div class="center-area" id="centerScroll">
     <div class="a4-canvas" id="a4canvas">
      <!-- HEADER -->
-     <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+     <div style="display:flex;align-items:flex-start;gap:24px;margin-bottom:12px">
       <div style="height:80px;flex-shrink:0"><img src="https://lh3.googleusercontent.com/d/1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" style="height:80px;object-fit:contain" alt="Logo" loading="lazy" onerror="this.style.background='#e5e7eb';this.alt='Logo unavailable';this.style.width='80px'">
       </div>
-      <div style="flex:1;text-align:center">
-       <span id="canvasMainTitle" style="font-size:40px;font-weight:800">I.B.O.L</span> <span style="font-size:40px;font-weight:800;margin-left:16px" id="canvasDayLabel">DAY</span> <select id="daySelect" style="font-size:40px;font-weight:800;border:none;background:transparent;appearance:none;width:70px;cursor:pointer;text-align:center"></select>
+      <div style="flex:1;text-align:center;padding-top:8px">
+       <div style="font-size:40px;font-weight:800;line-height:1.1">
+        <div id="canvasMainTitle">
+         I.B.O.L
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;justify-content:center">
+         <span id="canvasDayLabel">DAY</span> <select id="daySelect" style="font-size:40px;font-weight:800;border:none;background:transparent;appearance:none;width:70px;cursor:pointer;text-align:center;padding:0;margin:0"></select>
+        </div>
+       </div>
       </div>
-     </div>
-     <div style="text-align:center;margin-bottom:10px">
-      <input type="date" id="dateInput" style="font-size:18px;color:#ef4444;font-weight:700;border:none;background:transparent;text-align:center;cursor:pointer">
+      <div style="padding-top:8px">
+       <div id="dateFormatted" style="font-size:16px;color:#CC0000;font-weight:700;text-align:right;cursor:pointer;user-select:none;padding:4px 8px;border-radius:4px;transition:background 0.2s" title="Click to change date">
+        MINGGU, 19 APRIL 26
+       </div><input type="date" id="dateInput" style="display:none" title="Select date">
+      </div>
      </div><!-- ZONES GRID -->
      <div class="zones-grid" id="zonesGrid"></div><!-- STANDBY -->
-     <div class="standby-box" id="standbyBox">
+     <div class="standby-box" id="standbyBox" style="width:calc(33.333% - 4px)">
       <div class="standby-header">
        STANDBY
       </div>
       <div class="standby-names" id="standbyNames"></div>
-     </div><!-- FOOTER -->
-     <div style="position:absolute;bottom:8mm;right:8mm;text-align:right;font-size:12px;font-weight:700">
-      <div>
-       TOTAL PEKERJA BEKERJA: <span id="countWork">0</span>
+     </div><!-- COUNTER -->
+     <div style="margin-top:12px;padding-top:8px;border-top:1px solid #ddd;text-align:left;font-size:13px;font-weight:700">
+      <div style="margin-bottom:4px"><span style="color:#CC0000">TOTAL PEKERJA BEKERJA: <span id="countWork" style="color:#CC0000">0</span></span>
       </div>
-      <div>
-       TOTAL PEKERJA STANDBY: <span id="countStandby">0</span>
+      <div><span style="color:#7c3aed">TOTAL PEKERJA STANDBY: <span id="countStandby" style="color:#7c3aed">0</span></span>
       </div>
      </div>
     </div>
@@ -130,11 +137,24 @@ input:focus,select:focus{outline:none}
   <script>
 // ---- DATA ----
 const COLORS = {
-  blue:'#2563eb', yellow:'#ca8a04', orange:'#ea580c', red:'#dc2626',
+  blue:'#2563eb', yellow:'#FFD700', orange:'#FF8C00', red:'#CC0000',
   green:'#16a34a', pink:'#db2777', gray:'#6b7280'
 };
 const COLOR_LIST = ['red','blue','yellow','green','pink','orange'];
 const COLOR_HEX = COLOR_LIST.map(c=>COLORS[c]);
+
+// Calculate text color based on background contrast (WCAG)
+function getContrastTextColor(bgHex) {
+  const rgb = parseInt(bgHex.slice(1), 16);
+  const r = (rgb >> 16) & 255;
+  const g = (rgb >> 8) & 255;
+  const b = rgb & 255;
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  
+  // For dark backgrounds (luminance < 0.5), use white text
+  // For light backgrounds (luminance >= 0.5), use black text
+  return luminance < 0.5 ? '#ffffff' : '#000000';
+}
 
 const INITIAL_POOL = [
   {cat:'blue',names:['Fredy Chidotz','Deni Sandy','Hamdan','Iman Udeng','Pingki Sopian']},
@@ -169,6 +189,36 @@ for(let i=1;i<=40;i++){const o=document.createElement('option');o.value=i;o.text
 const dateInput = document.getElementById('dateInput');
 dateInput.value = new Date().toISOString().split('T')[0];
 
+// Date formatter with Indonesian locale
+function formatDateIndo(dateStr) {
+  const date = new Date(dateStr + 'T00:00:00');
+  const days = ['MINGGU', 'SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT', 'SABTU'];
+  const months = ['JANUARI', 'FEBRUARI', 'MARET', 'APRIL', 'MEI', 'JUNI', 'JULI', 'AGUSTUS', 'SEPTEMBER', 'OKTOBER', 'NOVEMBER', 'DESEMBER'];
+  
+  const dayName = days[date.getDay()];
+  const dayNum = String(date.getDate()).padStart(2, '0');
+  const monthName = months[date.getMonth()];
+  const yearShort = String(date.getFullYear()).slice(-2);
+  
+  return `${dayName}, ${dayNum} ${monthName} ${yearShort}`;
+}
+
+// Update formatted date on load and when changed
+function updateDateDisplay() {
+  document.getElementById('dateFormatted').textContent = formatDateIndo(dateInput.value);
+}
+
+// Date picker click handler
+document.getElementById('dateFormatted').addEventListener('click', () => {
+  dateInput.click();
+});
+
+// Date input change handler
+dateInput.addEventListener('change', updateDateDisplay);
+
+updateDateDisplay();
+dateInput.value = new Date().toISOString().split('T')[0];
+
 // ---- POOL RENDER ----
 function renderPool(){
   const el = document.getElementById('poolList');
@@ -199,6 +249,8 @@ function renderPool(){
       el.appendChild(node);
     }
     node.style.background=p.type === 'subheading' ? 'transparent' : p.color;
+    node.style.color=p.type === 'subheading' ? '' : getContrastTextColor(p.color);
+    node.style.fontWeight=p.type === 'subheading' ? '' : '700';
     node.querySelector('.nm').textContent=p.name;
   });
 }
@@ -444,6 +496,8 @@ function createCanvasName(entry){
     d.dataset.color=entry.color;
     d.draggable=true;
     d.style.background=entry.color;
+    d.style.color=getContrastTextColor(entry.color);
+    d.style.fontWeight='700';
     d.innerHTML=`<span class="num"></span><span class="nm">${entry.name}</span><span class="del" title="Remove">✕</span>`;
     d.addEventListener('dragstart',onCanvasDragStart);
     d.addEventListener('touchstart',onTouchStart,{passive:false});
@@ -555,6 +609,7 @@ function openColorPicker(e,nameEl){
     s.addEventListener('click',()=>{
       nameEl.dataset.color=hex;
       nameEl.style.background=hex;
+      nameEl.style.color=getContrastTextColor(hex);
       popup.style.display='none';
       colorTarget=null;
       renumberAll();
@@ -799,5 +854,5 @@ addZone();addZone();
 updateCounts();
 lucide.createIcons();
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9eee4fbd30a037b5',t:'MTc3NjYyNjg5OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9eee666074b3ea77',t:'MTc3NjYyNzgyNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
