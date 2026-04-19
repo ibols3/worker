@@ -55,27 +55,30 @@ input:focus,select:focus{outline:none}
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
  <body class="h-full">
-  <div class="app-wrap" id="app"><!-- LEFT SIDEBAR -->
+  <div class="app-wrap" id="app">
+   <!-- LEFT SIDEBAR -->
    <div class="sidebar-left">
-    <div class="sidebar-title flex items-center gap-2">
-     <i data-lucide="users" style="width:16px;height:16px"></i> Pool List
+    <div class="sidebar-title flex items-center gap-2"><i data-lucide="users" style="width:16px;height:16px"></i> Pool List
     </div>
     <div class="scroll-y" id="poolList"></div>
     <div style="padding:8px;border-top:1px solid #1a1a5e;flex-shrink:0">
-     <form id="addForm" class="flex gap-1"><input id="addInput" type="text" placeholder="Add name..." class="flex-1 bg-transparent border border-gray-600 rounded px-2 py-1 text-xs text-white" style="min-width:0"> <button type="submit" class="btn-sm bg-emerald-600 text-white hover:bg-emerald-500"><i data-lucide="plus" style="width:14px;height:14px"></i></button>
+     <form id="addForm" class="flex gap-1">
+      <input id="addInput" type="text" placeholder="Add name..." class="flex-1 bg-transparent border border-gray-600 rounded px-2 py-1 text-xs text-white" style="min-width:0"> <button type="submit" class="btn-sm bg-emerald-600 text-white hover:bg-emerald-500"><i data-lucide="plus" style="width:14px;height:14px"></i></button>
      </form>
     </div>
    </div><!-- CENTER -->
    <div class="center-area" id="centerScroll">
-    <div class="a4-canvas" id="a4canvas"><!-- HEADER -->
+    <div class="a4-canvas" id="a4canvas">
+     <!-- HEADER -->
      <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
-      <div style="height:80px;flex-shrink:0">
-       <img src="https://lh3.googleusercontent.com/d/1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" style="height:80px;object-fit:contain" alt="Logo" loading="lazy" onerror="this.style.background='#e5e7eb';this.alt='Logo unavailable';this.style.width='80px'">
+      <div style="height:80px;flex-shrink:0"><img src="https://lh3.googleusercontent.com/d/1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" style="height:80px;object-fit:contain" alt="Logo" loading="lazy" onerror="this.style.background='#e5e7eb';this.alt='Logo unavailable';this.style.width='80px'">
       </div>
-      <div style="flex:1;text-align:center"><span id="canvasMainTitle" style="font-size:40px;font-weight:800">I.B.O.L</span> <span style="font-size:40px;font-weight:800;margin-left:16px" id="canvasDayLabel">DAY</span> <select id="daySelect" style="font-size:40px;font-weight:800;border:none;background:transparent;appearance:none;width:70px;cursor:pointer;text-align:center"></select>
+      <div style="flex:1;text-align:center">
+       <span id="canvasMainTitle" style="font-size:40px;font-weight:800">I.B.O.L</span> <span style="font-size:40px;font-weight:800;margin-left:16px" id="canvasDayLabel">DAY</span> <select id="daySelect" style="font-size:40px;font-weight:800;border:none;background:transparent;appearance:none;width:70px;cursor:pointer;text-align:center"></select>
       </div>
      </div>
-     <div style="text-align:center;margin-bottom:10px"><input type="date" id="dateInput" style="font-size:18px;color:#ef4444;font-weight:700;border:none;background:transparent;text-align:center;cursor:pointer">
+     <div style="text-align:center;margin-bottom:10px">
+      <input type="date" id="dateInput" style="font-size:18px;color:#ef4444;font-weight:700;border:none;background:transparent;text-align:center;cursor:pointer">
      </div><!-- ZONES GRID -->
      <div class="zones-grid" id="zonesGrid"></div><!-- STANDBY -->
      <div class="standby-box" id="standbyBox">
@@ -95,10 +98,10 @@ input:focus,select:focus{outline:none}
     </div>
    </div><!-- RIGHT SIDEBAR -->
    <div class="sidebar-right">
-    <div class="sidebar-title flex items-center gap-2">
-     <i data-lucide="layout" style="width:16px;height:16px"></i> Zone &amp; Export
+    <div class="sidebar-title flex items-center gap-2"><i data-lucide="layout" style="width:16px;height:16px"></i> Zone &amp; Export
     </div>
-    <div class="scroll-y" style="padding:10px;display:flex;flex-direction:column;gap:8px"><button id="btnAddZone" class="btn-sm bg-blue-600 text-white hover:bg-blue-500 w-full"><i data-lucide="plus-square" style="width:14px;height:14px"></i> Add Zone</button> <button id="btnExport" class="btn-sm bg-amber-600 text-white hover:bg-amber-500 w-full"><i data-lucide="download" style="width:14px;height:14px"></i> Download JPEG</button>
+    <div class="scroll-y" style="padding:10px;display:flex;flex-direction:column;gap:8px">
+     <button id="btnAddZone" class="btn-sm bg-blue-600 text-white hover:bg-blue-500 w-full"><i data-lucide="plus-square" style="width:14px;height:14px"></i> Add Zone</button> <button id="btnExport" class="btn-sm bg-amber-600 text-white hover:bg-amber-500 w-full"><i data-lucide="download" style="width:14px;height:14px"></i> Download JPEG</button>
      <div class="text-xs text-gray-400 mt-4">
       <p class="mb-2">• Drag names from pool to zones</p>
       <p class="mb-2">• Double-click name on canvas to change color</p>
@@ -209,14 +212,58 @@ setupDropZone(document.getElementById('standbyNames'));
 // ---- DRAG & DROP ----
 function onPoolDragStart(e){
   const id=e.currentTarget.dataset.id;
+  
+  // If this item is selected and part of a multi-selection, drag all selected
   if(selectedIds.size>0 && selectedIds.has(id)){
     dragData={type:'multi',ids:[...selectedIds],source:'pool'};
+    
+    // Create professional ghost image showing all selected pool items
+    const dragImg = document.createElement('div');
+    dragImg.style.position='fixed';
+    dragImg.style.zIndex='10000';
+    dragImg.style.pointerEvents='none';
+    dragImg.style.opacity='0.9';
+    dragImg.style.background='#1e1e2e';
+    dragImg.style.border='2px solid #3b82f6';
+    dragImg.style.borderRadius='6px';
+    dragImg.style.padding='8px';
+    dragImg.style.minWidth='140px';
+    dragImg.style.boxShadow='0 10px 30px rgba(0,0,0,0.7)';
+    
+    let count=0;
+    dragData.ids.forEach(selId=>{
+      const elem=document.querySelector(`.pool-item[data-id="${selId}"]`);
+      if(elem && count<3){
+        const clone=elem.cloneNode(true);
+        clone.style.margin='3px 0';
+        clone.style.fontSize='11px';
+        clone.style.padding='4px 8px';
+        clone.style.draggable='false';
+        dragImg.appendChild(clone);
+        count++;
+      }
+    });
+    
+    if(dragData.ids.length>3){
+      const more=document.createElement('div');
+      more.textContent=`+${dragData.ids.length-3} more`;
+      more.style.fontSize='10px';
+      more.style.padding='4px 8px';
+      more.style.textAlign='center';
+      more.style.color='#60a5fa';
+      more.style.fontWeight='600';
+      more.style.borderTop='1px solid #444';
+      dragImg.appendChild(more);
+    }
+    
+    document.body.appendChild(dragImg);
+    e.dataTransfer.setDragImage(dragImg,60,20);
+    setTimeout(()=>dragImg.remove(),0);
   } else {
+    // Single drag
     dragData={type:'single',id,source:'pool'};
   }
   e.dataTransfer.effectAllowed='move';
-  e.currentTarget.classList.add('drag-ghost');
-  setTimeout(()=>e.currentTarget.classList.remove('drag-ghost'),0);
 }
 
 function onCanvasDragStart(e){
@@ -293,9 +340,13 @@ function handleDrop(targetEl, e){
   ids.forEach(id=>{
     let entry;
     if(dragData.source==='pool'){
-      const idx=poolNames.findIndex(p=>p.id===id);
-      if(idx>=0){entry=poolNames.splice(idx,1)[0];}
+      // Coming from pool list
+      const poolIdx=poolNames.findIndex(p=>p.id===id);
+      if(poolIdx>=0){
+        entry=poolNames.splice(poolIdx,1)[0];
+      }
     } else {
+      // Coming from canvas (zone or standby)
       const existing=dragData.srcEl?.querySelector(`[data-id="${id}"]`);
       if(existing){
         entry={id, name:existing.querySelector('.nm').textContent, color:existing.dataset.color};
@@ -437,19 +488,17 @@ document.addEventListener('click',e=>{
   }
 });
 
-// ---- MARQUEE SELECTION ----
-const centerArea = document.getElementById('centerScroll');
+// ---- MARQUEE SELECTION (GLOBAL) ----
 let marqueeStartInViewport = null;
 
-centerArea.addEventListener('mousedown',e=>{
-  if(e.target.closest('.canvas-name,.pool-item,.zone-label,.zone-title,.zone-subtitle,[contenteditable],.color-popup'))return;
+document.addEventListener('mousedown',e=>{
+  // Don't start marquee if clicking on interactive elements
+  if(e.target.closest('.canvas-name,.pool-item,.zone-label,.zone-title,.zone-subtitle,[contenteditable],.color-popup,.btn-sm,button,input,select'))return;
   if(e.button!==0)return;
   
   marqueeActive=true;
-  const scrollLeft = centerArea.scrollLeft;
-  const scrollTop = centerArea.scrollTop;
   marqueeStartInViewport={x:e.clientX, y:e.clientY};
-  marqueeStart={x:e.clientX + scrollLeft, y:e.clientY + scrollTop};
+  marqueeStart={x:e.clientX, y:e.clientY};
   
   // Only clear selection if shift/ctrl not held
   if(!e.shiftKey && !e.ctrlKey) {
@@ -477,21 +526,35 @@ document.addEventListener('mousemove',e=>{
   m.style.width=w+'px';
   m.style.height=h+'px';
   
-  // Real-time collision detection for all canvas names
+  // Real-time collision detection for BOTH canvas names AND pool items
   const mr=m.getBoundingClientRect();
   const shouldAddMode = e.shiftKey || e.ctrlKey;
   
+  // Check canvas names (zones + standby)
   document.querySelectorAll('.canvas-name').forEach(n=>{
     const r=n.getBoundingClientRect();
     const isIntersecting=r.left<mr.right&&r.right>mr.left&&r.top<mr.bottom&&r.bottom>mr.top;
     const isSelected=selectedIds.has(n.dataset.id);
     
     if(isIntersecting && !isSelected){
-      // Enter marquee box - add to selection
       selectedIds.add(n.dataset.id);
       n.classList.add('selected-name');
     } else if(!isIntersecting && isSelected && !shouldAddMode){
-      // Left marquee box - remove from selection (only if not in add mode)
+      selectedIds.delete(n.dataset.id);
+      n.classList.remove('selected-name');
+    }
+  });
+  
+  // Check pool items (sidebar pool list)
+  document.querySelectorAll('.pool-item').forEach(n=>{
+    const r=n.getBoundingClientRect();
+    const isIntersecting=r.left<mr.right&&r.right>mr.left&&r.top<mr.bottom&&r.bottom>mr.top;
+    const isSelected=selectedIds.has(n.dataset.id);
+    
+    if(isIntersecting && !isSelected){
+      selectedIds.add(n.dataset.id);
+      n.classList.add('selected-name');
+    } else if(!isIntersecting && isSelected && !shouldAddMode){
       selectedIds.delete(n.dataset.id);
       n.classList.remove('selected-name');
     }
@@ -647,5 +710,5 @@ addZone();addZone();
 updateCounts();
 lucide.createIcons();
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9eee3a81e012fde8',t:'MTc3NjYyNjAyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9eee40d363eefde8',t:'MTc3NjYyNjI4Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
