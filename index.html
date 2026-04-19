@@ -11,9 +11,9 @@
   <style>
 * { font-family: 'DM Sans', sans-serif; box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
-#app-wrapper { height: 100%; display: flex; gap: 20px; padding: 20px; background: #f5f5f5; overflow-y: auto; flex-direction: row; }
-.canvas-section { flex: 1; min-width: 0; }
-.pool-section { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 280px; height: fit-content; flex-shrink: 0; }
+#app-wrapper { height: 100%; display: flex; gap: 20px; padding: 20px; background: #f5f5f5; overflow-y: auto; flex-direction: row; justify-content: center; }
+.canvas-section { flex: 0 0 auto; min-width: 0; }
+.pool-section { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 280px; max-height: 600px; overflow-y: auto; flex-shrink: 0; }
 .config-panel { width: 300px; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); height: fit-content; overflow-y: auto; max-height: 100vh; }
 .config-panel h3 { margin: 0 0 12px 0; font-size: 14px; font-weight: 600; color: #1a1a1a; }
 .config-section { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
@@ -42,17 +42,19 @@ html, body { height: 100%; margin: 0; }
 .a4-header { padding: 20px 25px 15px; border-bottom: 2px solid #f0f0f0; }
 .a4-title { font-size: 24px; font-weight: 700; color: #1a1a1a; margin: 0; }
 .a4-subtitle { font-size: 12px; color: #666; margin: 4px 0 0 0; }
-.a4-content { flex: 1; display: flex; gap: 15px; padding: 20px 25px; overflow: hidden; transition: gap 0.3s, flex-direction 0.3s; }
-.a4-left { display: none; }
-.a4-right { flex: 1; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; overflow-x: hidden; }
+.a4-content { flex: 1; display: flex; gap: 15px; padding: 20px 25px; overflow: hidden; transition: gap 0.3s, flex-direction 0.3s; position: relative; }
+.a4-content.selecting { cursor: crosshair; }
+.a4-right { pointer-events: auto; }
+.zone-wrapper, .zone-container, .name-card { pointer-events: auto; }
+.a4-right { flex: 1; display: flex; flex-direction: row; gap: 12px; overflow-x: auto; overflow-y: hidden; align-items: flex-start; }
 .zone-header { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
 .zone-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
 .zone-count { margin-left: auto; font-size: 10px; font-weight: 500; padding: 2px 6px; border-radius: 10px; flex-shrink: 0; }
 .zone-header-actions { margin-left: 8px; display: flex; gap: 4px; }
 .zone-header-btn { background: none; border: none; cursor: pointer; padding: 2px; font-size: 12px; opacity: 0.6; transition: opacity 0.2s; }
 .zone-header-btn:hover { opacity: 1; }
-.zone-container { min-height: 60px; border: 1px solid #ddd; border-radius: 8px; padding: 8px; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; overflow-x: hidden; }
-.zone-wrapper { display: flex; flex-direction: column; gap: 0; }
+.zone-container { min-height: 60px; border: 1px solid #ddd; border-radius: 8px; padding: 8px; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; overflow-x: hidden; min-width: 160px; }
+.zone-wrapper { display: flex; flex-direction: column; gap: 0; min-width: 180px; flex-shrink: 0; }
 .zone-wrapper.hidden { display: none; }
 .name-card { padding: 8px 10px; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: grab; border: 1px solid; transition: all 0.15s ease; user-select: none; position: relative; }
 .name-card:hover { transform: translateY(-1px); box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
@@ -85,19 +87,18 @@ html, body { height: 100%; margin: 0; }
    <div class="canvas-section">
     <div class="a4-canvas">
      <div class="a4-header">
-      <h1 id="board-title" class="a4-title">Team Assignment Board</h1>
-      <p id="board-subtitle" class="a4-subtitle">Drag names to assign members</p>
+      <h1 id="board-title" class="a4-title">I.B.O.L</h1>
+      <p id="board-subtitle" class="a4-subtitle">DAY <select id="day-selector" style="border: none; background: transparent; font-size: 12px; color: #666; cursor: pointer; font-weight: inherit; padding: 0; margin: 0; margin-left: 2px;"> <option value="1">1</option> <option value="2">2</option> <option value="3">3</option> <option value="4">4</option> <option value="5">5</option> <option value="6">6</option> <option value="7">7</option> <option value="8">8</option> <option value="9">9</option> <option value="10">10</option> <option value="11">11</option> <option value="12">12</option> <option value="13">13</option> <option value="14">14</option> <option value="15">15</option> <option value="16">16</option> <option value="17">17</option> <option value="18">18</option> <option value="19">19</option> <option value="20">20</option> <option value="21">21</option> <option value="22">22</option> <option value="23">23</option> <option value="24">24</option> <option value="25">25</option> <option value="26">26</option> <option value="27">27</option> <option value="28">28</option> <option value="29">29</option> <option value="30">30</option> <option value="31">31</option> <option value="32">32</option> <option value="33">33</option> <option value="34">34</option> <option value="35">35</option> <option value="36">36</option> <option value="37">37</option> <option value="38">38</option> <option value="39">39</option> <option value="40">40</option> </select></p>
      </div>
-     <div class="a4-content">
+     <div class="a4-content" id="a4-content">
       <div class="a4-right" id="zones-container"></div>
      </div>
     </div>
    </div>
    <div class="config-panel">
-    <h3>⚙️ Configuration</h3>
     <div class="config-section">
-     <h4 style="margin: 0 0 12px 0; font-size: 13px;">📦 Drop Zones</h4>
-     <div id="zones-config"></div><button class="btn btn-primary" style="width:100%; margin-top: 8px;" onclick="addNewZone()">+ Add Zone</button>
+     <h3>Zones</h3><button class="btn btn-primary btn-sm" onclick="addNewZone()" style="width:100%;">+ Add Zone</button>
+     <div id="zones-config" style="margin-top:12px;"></div>
     </div>
    </div>
   </div>
@@ -123,7 +124,7 @@ const colorNames = {
 
 // State management
 let draggableLists = [
-  { id: 'pool', name: 'Pool List', color: '#a78bfa', visible: true, items: ['Andi Pratama','Siti Nurhaliza','Budi Santoso','Dewi Lestari','Rizky Aditya','Putri Maharani','Fajar Hidayat','Nadia Safitri','Arief Rahman','Maya Kusuma'] }
+  { id: 'pool', name: 'Pool List', color: '#ca8a04', visible: true, items: ['Andi Pratama','Budi Santoso','Rizky Aditya','Fajar Hidayat','Arief Rahman','Dimas Permana','Hendra Wijaya','Irfan Harahap','Joko Supriyanto','Kris Mahendra','Leo Gunawan','Maman Sutrisna','Nendra Kusuma','Okta Riyanto','Pandu Wirawan','Qori Hidayatullah','Rafi Syafaat','Satrio Yudhanto','Teguh Santoso','Ulul Azmi'] }
 ];
 
 let dropZones = [
@@ -170,9 +171,9 @@ function createCard(name, zone) {
   
   div.addEventListener('mousedown', (e) => {
     if (e.button === 0 && !e.target.closest('button')) {
-      handleCardMouseDown(e, div);
+      startCardDrag(e, div);
     }
-  });
+  }, false);
   div.addEventListener('touchstart', (e) => handleCardTouchStart(e, div), false);
   
   return div;
@@ -273,20 +274,32 @@ function getZoneColor(zoneId) {
   return zone ? zone.color : '#a78bfa';
 }
 
-function startSelectionBox(e) {
-  // Cek apakah klik pada card atau button
-  if (e.target.closest('.name-card') || e.target.closest('button')) return;
+function handleSelectionBox(e, zoneContainer) {
+  // Jangan jalankan jika click pada card atau button
+  if (e.target.closest('.name-card') || e.target.closest('button') || e.target.tagName === 'INPUT') {
+    return;
+  }
+  
+  if (e.button !== 0) return;
+  
+  e.preventDefault();
+  e.stopPropagation();
   
   const startX = e.clientX;
   const startY = e.clientY;
   let isSelecting = false;
+  let selectionBox = null;
   
   const moveListener = (moveE) => {
     const dx = Math.abs(moveE.clientX - startX);
     const dy = Math.abs(moveE.clientY - startY);
     
-    if (dx > 3 || dy > 3) {
+    // Start selection after moving minimum 5px
+    if (!isSelecting && (dx > 5 || dy > 5)) {
       isSelecting = true;
+      // Clear previous selection
+      selectedCards.forEach(c => c.classList.remove('selected'));
+      selectedCards.clear();
     }
     
     if (isSelecting) {
@@ -295,44 +308,43 @@ function startSelectionBox(e) {
       const x2 = Math.max(startX, moveE.clientX);
       const y2 = Math.max(startY, moveE.clientY);
       
-      let box = document.querySelector('.selection-box');
-      if (!box) {
-        box = document.createElement('div');
-        box.className = 'selection-box';
-        document.body.appendChild(box);
+      if (!selectionBox) {
+        selectionBox = document.createElement('div');
+        selectionBox.className = 'selection-box';
+        document.body.appendChild(selectionBox);
       }
       
-      box.style.left = x1 + 'px';
-      box.style.top = y1 + 'px';
-      box.style.width = (x2 - x1) + 'px';
-      box.style.height = (y2 - y1) + 'px';
+      selectionBox.style.left = x1 + 'px';
+      selectionBox.style.top = y1 + 'px';
+      selectionBox.style.width = (x2 - x1) + 'px';
+      selectionBox.style.height = (y2 - y1) + 'px';
       
-      // Select cards inside box
-      const allCards = document.querySelectorAll('.name-card');
-      selectedCards.clear();
-      
+      // Select all cards within selection box
+      const allCards = zoneContainer.querySelectorAll('.name-card');
       allCards.forEach(card => {
         const rect = card.getBoundingClientRect();
-        if (rect.left < x2 && rect.right > x1 && rect.top < y2 && rect.bottom > y1) {
-          selectedCards.add(card);
-          card.classList.add('selected');
+        const isInside = (rect.left < x2 && rect.right > x1 && rect.top < y2 && rect.bottom > y1);
+        
+        if (isInside) {
+          if (!selectedCards.has(card)) {
+            selectedCards.add(card);
+            card.classList.add('selected');
+          }
         } else {
-          card.classList.remove('selected');
+          if (selectedCards.has(card)) {
+            selectedCards.delete(card);
+            card.classList.remove('selected');
+          }
         }
       });
     }
   };
   
-  const upListener = (upE) => {
+  const upListener = () => {
     document.removeEventListener('mousemove', moveListener);
     document.removeEventListener('mouseup', upListener);
-    
-    const box = document.querySelector('.selection-box');
-    if (box) box.remove();
-    
-    if (!isSelecting) {
-      selectedCards.clear();
-      document.querySelectorAll('.name-card').forEach(c => c.classList.remove('selected'));
+    if (selectionBox) {
+      selectionBox.remove();
     }
   };
   
@@ -340,7 +352,7 @@ function startSelectionBox(e) {
   document.addEventListener('mouseup', upListener);
 }
 
-function handleCardMouseDown(e, card) {
+function startCardDrag(e, card) {
   if (e.button !== 0) return;
   if (e.target.closest('button')) return;
   
@@ -352,9 +364,12 @@ function handleCardMouseDown(e, card) {
   
   const draggedCards = Array.from(selectedCards);
   if (!draggedCards.includes(card)) {
+    if (!e.ctrlKey && !e.metaKey && !e.shiftKey) {
+      selectedCards.forEach(c => c.classList.remove('selected'));
+      selectedCards.clear();
+    }
     draggedCards.length = 0;
     draggedCards.push(card);
-    selectedCards.clear();
     selectedCards.add(card);
     card.classList.add('selected');
   }
@@ -466,6 +481,9 @@ function handleCardTouchStart(e, card) {
   };
   
   const endListener = (endE) => {
+    document.removeEventListener('touchmove', moveListener, false);
+    document.removeEventListener('touchend', endListener, false);
+    
     const touch = endE.changedTouches[0];
     if (dragSource && selectedCards.size > 0) {
       const targetZone = getTargetZone(touch.clientX, touch.clientY);
@@ -480,10 +498,12 @@ function handleCardTouchStart(e, card) {
           targetContainer.appendChild(card);
           card.setAttribute('data-zone', targetZone);
           const color = getZoneColor(targetZone);
-          card.style.cssText = `background:${color}; border-color:${color}; color:#fff;`;
+          card.style.cssText = `background:${color}; border-color:${color}; color:#fff; display: flex; align-items: center; justify-content: space-between;`;
           card.classList.remove('dragging-ghost');
         });
         updateCounts();
+      } else {
+        draggedCards.forEach(c => {
           c.classList.remove('dragging', 'dragging-ghost');
           c.style.position = '';
           c.style.left = '';
@@ -610,10 +630,17 @@ function renderCanvas() {
   const poolContainer = document.getElementById('pool');
   poolContainer.innerHTML = '';
   
-  if (poolList && poolList.visible && poolList.items) {
+  if (poolList && poolList.items) {
     poolList.items.forEach(item => {
-      poolContainer.appendChild(createCard(item, 'pool'));
+      const card = createCard(item, 'pool');
+      poolContainer.appendChild(card);
     });
+  }
+  
+  // Update pool count
+  const poolCountEl = document.getElementById('pool-count');
+  if (poolCountEl && poolList) {
+    poolCountEl.textContent = poolList.items.length;
   }
   
   // Render drop zones
@@ -644,6 +671,7 @@ function renderCanvas() {
     container.id = zone.id;
     container.style.borderColor = zone.color + '40';
     container.style.background = zone.color + '08';
+    container.setAttribute('data-zone-id', zone.id);
     
     wrapper.appendChild(header);
     wrapper.appendChild(container);
@@ -651,10 +679,108 @@ function renderCanvas() {
     
     // Add event listeners to toggle buttons
     header.querySelector('[data-action="toggle"]').addEventListener('click', () => toggleZoneVisibility(zone.id));
+    
+    // Attach mousedown listener untuk selection box
+    attachZoneMouseDownListener(container);
   });
   
   updateCounts();
   renderConfig();
+}
+
+
+
+function attachZoneMouseDownListener(zoneElement) {
+  if (!zoneElement) return;
+  
+  zoneElement.addEventListener('mousedown', (e) => {
+    // Skip if clicking on cards, buttons, or inputs
+    if (e.target.closest('.name-card')) return;
+    if (e.target.closest('button')) return;
+    if (e.target.tagName === 'INPUT') return;
+    
+    // Only left mouse button
+    if (e.button !== 0) return;
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const startX = e.clientX;
+    const startY = e.clientY;
+    let isSelecting = false;
+    let selectionBox = null;
+    
+    // Clear previous selection
+    selectedCards.forEach(c => c.classList.remove('selected'));
+    selectedCards.clear();
+    
+    const moveListener = (moveE) => {
+      const dx = Math.abs(moveE.clientX - startX);
+      const dy = Math.abs(moveE.clientY - startY);
+      
+      // Start selection after moving 5px
+      if (!isSelecting && (dx > 5 || dy > 5)) {
+        isSelecting = true;
+      }
+      
+      if (isSelecting) {
+        moveE.preventDefault();
+        moveE.stopPropagation();
+        
+        const x1 = Math.min(startX, moveE.clientX);
+        const y1 = Math.min(startY, moveE.clientY);
+        const x2 = Math.max(startX, moveE.clientX);
+        const y2 = Math.max(startY, moveE.clientY);
+        
+        if (!selectionBox) {
+          selectionBox = document.createElement('div');
+          selectionBox.className = 'selection-box';
+          document.body.appendChild(selectionBox);
+        }
+        
+        selectionBox.style.left = x1 + 'px';
+        selectionBox.style.top = y1 + 'px';
+        selectionBox.style.width = (x2 - x1) + 'px';
+        selectionBox.style.height = (y2 - y1) + 'px';
+        
+        // Select cards in rectangle
+        const allCards = zoneElement.querySelectorAll('.name-card');
+        allCards.forEach(card => {
+          const rect = card.getBoundingClientRect();
+          const cardLeft = rect.left;
+          const cardRight = rect.right;
+          const cardTop = rect.top;
+          const cardBottom = rect.bottom;
+          
+          // Check if card intersects with selection box
+          const isInside = (cardRight > x1 && cardLeft < x2 && cardBottom > y1 && cardTop < y2);
+          
+          if (isInside) {
+            if (!selectedCards.has(card)) {
+              selectedCards.add(card);
+              card.classList.add('selected');
+            }
+          } else {
+            if (selectedCards.has(card)) {
+              selectedCards.delete(card);
+              card.classList.remove('selected');
+            }
+          }
+        });
+      }
+    };
+    
+    const upListener = (upE) => {
+      document.removeEventListener('mousemove', moveListener);
+      document.removeEventListener('mouseup', upListener);
+      if (selectionBox) {
+        selectionBox.remove();
+      }
+    };
+    
+    document.addEventListener('mousemove', moveListener);
+    document.addEventListener('mouseup', upListener);
+  }, false);
 }
 
 function renderConfig() {
@@ -803,16 +929,15 @@ function updateCounts() {
 
 // Element SDK
 const defaultConfig = {
-  board_title: 'Team Assignment Board',
-  subtitle: 'Drag names to assign members'
+  day_number: '1'
 };
 
 window.elementSdk.init({
   defaultConfig,
   onConfigChange: async (config) => {
     const c = { ...defaultConfig, ...config };
-    document.getElementById('board-title').textContent = c.board_title;
-    document.getElementById('board-subtitle').textContent = c.subtitle;
+    const dayNum = Math.min(Math.max(parseInt(c.day_number) || 1, 1), 40);
+    document.getElementById('day-selector').value = dayNum;
   },
   mapToCapabilities: (config) => {
     return {
@@ -824,16 +949,19 @@ window.elementSdk.init({
   },
   mapToEditPanelValues: (config) => {
     const c = { ...defaultConfig, ...config };
-    return new Map([['board_title', c.board_title], ['subtitle', c.subtitle]]);
+    return new Map([['day_number', c.day_number]]);
   }
+});
+
+// Day selector change handler
+document.getElementById('day-selector').addEventListener('change', (e) => {
+  const dayNum = Math.min(Math.max(parseInt(e.target.value) || 1, 1), 40);
+  window.elementSdk.setConfig({ day_number: String(dayNum) });
 });
 
 // Initialize
 renderCanvas();
 lucide.createIcons();
-
-// Add selection box listener to entire document
-document.addEventListener('mousedown', startSelectionBox);
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9eec2ada94bffdfb',t:'MTc3NjYwNDQxNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9eec7110f64c831f',t:'MTc3NjYwNzI5MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
