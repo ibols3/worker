@@ -1,1271 +1,583 @@
 <!doctype html>
-<html lang="id">
+<html lang="en" class="h-full">
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>I.B.O.L Dashboard</title>
+  <title>Digital Callsheet Planner</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
   <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&amp;family=Outfit:wght@300;400;600;700;800&amp;display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    
-    .pool-card {
-      cursor: move;
-      transition: all 0.2s ease;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-    
-    .pool-card.dragging {
-      opacity: 0.5;
-      transform: scale(0.95);
-    }
-    
-    .zone-wrapper {
-      margin-bottom: 20px;
-      display: flex;
-      flex-direction: column;
-    }
+html, body { height: 100%; margin: 0; overflow: hidden; }
+* { box-sizing: border-box; }
+body { font-family: 'Outfit', sans-serif; background: #000033; }
 
-    .zone-header-wrapper {
-      display: flex;
-      align-items: flex-end;
-      margin-bottom: 8px;
-      gap: 12px;
-    }
+.pool-item {
+  padding: 5px 10px;
+  margin: 2px 4px;
+  border-radius: 6px;
+  cursor: grab;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: transform 0.1s, box-shadow 0.1s;
+  position: relative;
+}
+.pool-item:active { cursor: grabbing; }
+.pool-item:hover { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(0,0,0,0.3); }
 
-    .zone-header {
-      font-size: 16px;
-      font-weight: 600;
-      color: #4b5563;
-      cursor: pointer;
-      padding: 4px 8px;
-      border-radius: 4px;
-      transition: all 0.2s ease;
-      white-space: nowrap;
-    }
+.pool-item .num-badge {
+  min-width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
 
-    .zone-header:hover {
-      background: rgba(75, 85, 99, 0.1);
-    }
-    
-    .zone-container {
-      min-height: 120px;
-      background: #f9f9f9;
-      border: 2px dashed #d4a017;
-      border-radius: 8px;
-      padding: 12px;
-      transition: all 0.2s ease;
-      position: relative;
-    }
-    
-    .zone-title-container {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    
-    .zone-title {
-      font-size: 16px;
-      font-weight: bold;
-      color: #1e3a8a;
-      cursor: pointer;
-      padding: 4px 8px;
-      border-radius: 4px;
-      transition: all 0.2s ease;
-      line-height: 0.5;
-    }
-    
-    .zone-title:hover {
-      background: rgba(30, 58, 138, 0.1);
-    }
-    
-    .zone-subtitle {
-      font-size: 13px;
-      color: #ef4444;
-      cursor: pointer;
-      padding: 4px 8px;
-      border-radius: 4px;
-      transition: all 0.2s ease;
-      line-height: 0.5;
-      font-weight: bold;
-      font-style: italic;
-    }
-    
-    .zone-subtitle:hover {
-      background: rgba(239, 68, 68, 0.1);
-    }
-    
-    .title-edit-modal {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      padding: 20px;
-      z-index: 1001;
-      min-width: 350px;
-    }
-    
-    .title-edit-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 1000;
-    }
-    
-    .zone-container.drag-over {
-      background: #fff3cd;
-      border-color: #d4a017;
-      box-shadow: inset 0 0 8px rgba(212, 160, 23, 0.2);
-    }
-    
-    .name-in-zone {
-      padding: 10px 12px;
-      border-radius: 6px;
-      margin-bottom: 8px;
-      cursor: pointer;
-      user-select: none;
-      transition: all 0.2s ease;
-      position: relative;
-      word-break: break-word;
-    }
-    
-    .name-in-zone:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    
-    .name-in-zone.selected {
-      outline: 2px solid #000;
-      outline-offset: 2px;
-    }
-    
-    .a4-canvas {
-      width: 210mm;
-      height: 297mm;
-      background: white;
-      box-shadow: 0 2px 16px rgba(0,0,0,0.1);
-      border-radius: 4px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .canvas-header {
-      padding: 24px;
-      border-bottom: 1px solid #e5e7eb;
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 16px;
-      align-items: center;
-    }
-    
-    .canvas-body {
-      flex: 1;
-      padding: 24px;
-      overflow-y: auto;
-    }
-    
-    .zone-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-    
-    .color-picker-modal {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      padding: 20px;
-      z-index: 1000;
-      min-width: 280px;
-    }
-    
-    .color-picker-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 999;
-    }
-    
-    .color-option {
-      width: 48px;
-      height: 48px;
-      border-radius: 8px;
-      cursor: pointer;
-      border: 2px solid transparent;
-      transition: all 0.2s ease;
-    }
-    
-    .color-option:hover {
-      transform: scale(1.1);
-      border-color: #666;
-    }
-    
-    .color-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-top: 12px;
-    }
-    
-    .left-sidebar {
-      width: 280px;
-      background: #fafaf8;
-      border-right: 1px solid #e5e7eb;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    
-    .pool-header {
-      background: #d4a017;
-      color: white;
-      padding: 16px;
-      font-weight: bold;
-      text-align: center;
-      font-size: 14px;
-      letter-spacing: 1px;
-    }
-    
-    .pool-list {
-      flex: 1;
-      overflow-y: auto;
-      padding: 12px;
-    }
-    
-    .pool-input-section {
-      padding: 12px;
-      border-top: 1px solid #e5e7eb;
-      display: flex;
-      gap: 8px;
-    }
-    
-    .right-sidebar {
-      width: 220px;
-      background: #fafaf8;
-      border-left: 1px solid #e5e7eb;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;
-    }
-    
-    .zones-title {
-      font-weight: bold;
-      font-size: 14px;
-      letter-spacing: 1px;
-      margin-bottom: 16px;
-      color: #333;
-    }
-    
-    .add-zone-btn {
-      background: #3b82f6;
-      color: white;
-      border: none;
-      padding: 10px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 13px;
-      transition: all 0.2s ease;
-      margin-bottom: 16px;
-    }
-    
-    .add-zone-btn:hover {
-      background: #2563eb;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
-    }
-    
-    .zone-item {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 6px;
-      padding: 10px 12px;
-      margin-bottom: 10px;
-      font-size: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .zone-item-name {
-      flex: 1;
-      font-weight: 500;
-      color: #333;
-      word-break: break-word;
-    }
-    
-    .zone-delete-btn {
-      background: #ef4444;
-      color: white;
-      border: none;
-      width: 20px;
-      height: 20px;
-      border-radius: 3px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      transition: all 0.2s ease;
-    }
-    
-    .zone-delete-btn:hover {
-      background: #dc2626;
-    }
-    
-    .logo-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 80px;
-    }
-    
-    .logo-container img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-    }
-    
-    .center-column {
-      flex: 1;
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      overflow-y: auto;
-      padding: 24px;
-      background: #f3f4f6;
-    }
+.color-blue { background: #2563eb; }
+.color-yellow { background: #d97706; color: #000; }
+.color-yellow .num-badge { background: rgba(0,0,0,0.15); color: #000; }
+.color-orange { background: #ea580c; }
+.color-red { background: #dc2626; }
+.color-grey { background: #6b7280; }
+.color-green { background: #16a34a; }
+.color-pink { background: #db2777; }
 
-    .calendar-modal {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      padding: 20px;
-      z-index: 1001;
-      min-width: 320px;
-    }
+.a4-canvas {
+  width: 210mm;
+  min-height: 297mm;
+  background: #fff;
+  margin: 0 auto;
+  padding: 12mm;
+  position: relative;
+  box-shadow: 0 0 40px rgba(0,0,0,0.5);
+}
 
-    .calendar-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 1000;
-    }
+.zone-container {
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  min-height: 80px;
+  background: #fafafa;
+  overflow: hidden;
+}
+.zone-outer-title {
+  background: #e5e7eb;
+  padding: 4px 8px;
+  font-weight: 700;
+  font-size: 11px;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.zone-inner-title {
+  padding: 2px 8px;
+  font-weight: 700;
+  font-size: 11px;
+  color: #2563eb;
+}
+.zone-inner-subtitle {
+  padding: 0 8px 4px;
+  font-weight: 700;
+  font-style: italic;
+  font-size: 10px;
+  color: #ef4444;
+}
+.zone-drop-area {
+  min-height: 40px;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+}
+.zone-drop-area .pool-item {
+  font-size: 11px;
+  padding: 3px 8px;
+  margin: 1px 4px;
+}
 
-    .calendar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-      font-weight: bold;
-      font-size: 16px;
-    }
+.sortable-ghost { opacity: 0.4; }
+.sortable-chosen { box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+.sortable-drag { z-index: 9999; }
 
-    .calendar-nav-btn {
-      background: #3b82f6;
-      color: white;
-      border: none;
-      width: 32px;
-      height: 32px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 16px;
-      transition: all 0.2s ease;
-    }
+.standby-container {
+  border: 2px dashed #9ca3af;
+  border-radius: 8px;
+  background: #f9fafb;
+  min-height: 60px;
+}
 
-    .calendar-nav-btn:hover {
-      background: #2563eb;
-    }
+.color-picker-popup {
+  position: fixed;
+  z-index: 10000;
+  background: #1e293b;
+  border-radius: 10px;
+  padding: 8px;
+  display: flex;
+  gap: 6px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+}
+.color-picker-popup .cp-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.15s;
+}
+.color-picker-popup .cp-swatch:hover { transform: scale(1.2); border-color: #fff; }
 
-    .calendar-weekdays {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
-      margin-bottom: 8px;
-      text-align: center;
-      font-weight: 600;
-      font-size: 12px;
-      color: #666;
-    }
+.sidebar-scroll::-webkit-scrollbar { width: 5px; }
+.sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
+.sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
 
-    .calendar-days {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
-    }
+.canvas-scroll::-webkit-scrollbar { width: 8px; }
+.canvas-scroll::-webkit-scrollbar-track { background: #0a0a2e; }
+.canvas-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
 
-    .calendar-day {
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: all 0.2s ease;
-      border: 2px solid transparent;
-    }
+.editable-title { 
+  outline: none; 
+  border: 1px solid transparent; 
+  border-radius: 3px;
+  padding: 0 2px;
+}
+.editable-title:focus { border-color: #3b82f6; background: #eff6ff; }
 
-    .calendar-day:hover:not(.disabled) {
-      background: #f0f0f0;
-    }
-
-    .calendar-day.other-month {
-      color: #ccc;
-    }
-
-    .calendar-day.today {
-      border-color: #3b82f6;
-    }
-
-    .calendar-day.selected {
-      background: #3b82f6;
-      color: white;
-      font-weight: bold;
-    }
-
-    .calendar-day.disabled {
-      color: #ccc;
-      cursor: not-allowed;
-    }
-
-    .calendar-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 16px;
-    }
-
-    .calendar-actions button {
-      flex: 1;
-      padding: 10px;
-      border-radius: 6px;
-      border: none;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .calendar-actions .btn-confirm {
-      background: #3b82f6;
-      color: white;
-    }
-
-    .calendar-actions .btn-confirm:hover {
-      background: #2563eb;
-    }
-
-    .calendar-actions .btn-cancel {
-      background: #e5e7eb;
-      color: #333;
-    }
-
-    .calendar-actions .btn-cancel:hover {
-      background: #d1d5db;
-    }
-  </style>
+@media print { .no-print { display: none; } }
+</style>
   <style>body { box-sizing: border-box; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
- <body class="bg-gray-100">
-  <div class="flex h-full w-full overflow-hidden"><!-- LEFT SIDEBAR: POOL LIST -->
-   <div class="left-sidebar">
-    <div class="pool-header">
-     POOL LIST
+ <body class="h-full">
+  <div id="app" class="flex h-full overflow-hidden"><!-- LEFT SIDEBAR -->
+   <div class="no-print flex flex-col h-full bg-slate-900 border-r border-slate-700" style="width:20%; min-width:180px;">
+    <div class="p-3 border-b border-slate-700">
+     <h2 class="text-white font-bold text-sm tracking-wider flex items-center gap-2"><i data-lucide="users" style="width:16px;height:16px;color:#60a5fa;"></i> CREW POOL</h2>
     </div>
-    <div class="pool-list" id="poolList"></div>
-    <div class="pool-input-section"><input type="text" id="customNameInput" placeholder="Add name..." class="flex-1 px-2 py-2 text-sm border border-gray-300 rounded"> <button id="addNameBtn" class="bg-d4a017 text-white px-3 py-2 rounded text-sm font-bold" style="background-color: #d4a017;">+</button>
+    <div id="pool-list" class="flex-1 overflow-y-auto sidebar-scroll p-2 flex flex-col">
     </div>
-   </div><!-- CENTER: A4 CANVAS -->
-   <div class="center-column">
-    <div class="a4-canvas"><!-- Header -->
-     <div class="canvas-header"><!-- Left: Logo -->
-      <div class="logo-container"><img src="https://lh3.googleusercontent.com/d/1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" alt="Logo" onerror="this.style.background='#d4a017'; this.alt='Logo unavailable';">
-      </div><!-- Center: Title & Day Selector -->
-      <div class="text-center">
-       <div class="text-3xl font-bold" id="mainTitle">
-        I.B.O.L
-       </div>
-       <div class="flex items-center justify-center gap-2" style="margin-top: 0.5rem;"><label class="font-bold" style="font-size: 36px;">DAY</label> <select id="daySelector" class="px-3 py-1 border border-gray-300 rounded font-bold" style="font-size: 36px;"> </select>
-       </div>
-      </div><!-- Right: Date Display -->
-      <div class="text-right"><button id="dateDisplay" class="font-semibold hover:underline cursor-pointer" style="font-size: 24px; color: #ef4444;"> Loading... </button>
+    <div class="p-3 border-t border-slate-700">
+     <div class="flex gap-2"><input id="new-name-input" type="text" placeholder="Add new name..." class="flex-1 bg-slate-800 text-white text-xs rounded-lg px-3 py-2 border border-slate-600 focus:border-blue-500 focus:outline-none placeholder-slate-500"> <button id="add-name-btn" class="bg-blue-600 hover:bg-blue-500 text-white rounded-lg px-3 py-2 text-xs font-bold transition-colors"> <i data-lucide="plus" style="width:14px;height:14px;"></i> </button>
+     </div>
+    </div>
+   </div><!-- CENTER CANVAS -->
+   <div class="flex-1 overflow-y-auto canvas-scroll h-full bg-slate-950 p-6" id="canvas-wrapper">
+    <div class="a4-canvas" id="a4-canvas"><!-- HEADER -->
+     <div class="flex items-center gap-4 mb-2 border-b-2 border-gray-300 pb-3">
+      <div style="height:80px;width:80px;flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:8px;background:#f3f4f6;"><img src="https://drive.google.com/uc?export=view&amp;id=1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" alt="Logo" style="max-height:100%;max-width:100%;object-fit:contain;" loading="lazy" onerror="console.error('Image failed:',this.src);this.style.display='none';this.parentElement.innerHTML='<div style=&quot;font-size:28px;font-weight:900;color:#2563eb;&quot;>IBOL</div>';">
       </div>
-     </div><!-- Body: Zone Grid -->
-     <div class="canvas-body">
-      <div class="zone-grid" id="zoneGrid"></div>
+      <div class="flex-1">
+       <div class="flex items-baseline gap-3"><span id="main-title-display" style="font-size:40px;font-weight:800;color:#111;line-height:1;font-family:'Outfit',sans-serif;">I.B.O.L</span> <span style="font-size:40px;font-weight:700;color:#111;line-height:1;">DAY</span> <select id="day-select" style="font-size:40px;font-weight:700;color:#111;border:none;outline:none;background:transparent;cursor:pointer;-webkit-appearance:none;-moz-appearance:none;appearance:none;padding:0 8px;"> </select>
+       </div>
+       <div id="date-display" style="font-size:24px;color:#ef4444;font-weight:600;margin-top:2px;">
+        Select Date
+       </div>
+      </div><input type="date" id="date-picker" class="no-print text-sm border border-gray-300 rounded px-2 py-1" style="max-width:150px;">
+     </div><!-- ZONES GRID -->
+     <div id="zones-grid" class="grid gap-3 mt-4" style="grid-template-columns: repeat(3, 1fr);">
+     </div><!-- STANDBY -->
+     <div class="mt-4">
+      <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+       Standby
+      </div>
+      <div class="standby-container">
+       <div id="standby-drop" class="zone-drop-area" style="min-height:50px;"></div>
+      </div>
+     </div><!-- TOTALS -->
+     <div class="flex justify-end gap-6 mt-4 pt-2 border-t border-gray-200">
+      <div class="text-right"><span class="font-bold text-sm text-gray-700">Total Working: </span> <span id="total-working" class="font-extrabold text-lg text-green-700">0</span>
+      </div>
+      <div class="text-right"><span class="font-bold text-sm text-gray-700">Total Standby: </span> <span id="total-standby" class="font-extrabold text-lg text-orange-600">0</span>
+      </div>
      </div>
     </div>
-   </div><!-- RIGHT SIDEBAR: ZONES CONTROL -->
-   <div class="right-sidebar">
-    <div class="zones-title">
-     ZONES
-    </div><button id="addZoneBtn" class="add-zone-btn">+ Add Zone</button>
-    <div id="zonesList"></div>
-   </div><!-- Color Picker Modal (hidden by default) -->
-   <div id="colorPickerOverlay" class="color-picker-overlay" style="display: none;"></div>
-   <div id="colorPickerModal" class="color-picker-modal" style="display: none;">
-    <div style="font-weight: bold; margin-bottom: 12px; font-size: 14px;">
-     Select Color
+   </div><!-- RIGHT SIDEBAR -->
+   <div class="no-print flex flex-col h-full bg-slate-900 border-l border-slate-700" style="width:20%; min-width:180px;">
+    <div class="p-3 border-b border-slate-700">
+     <h2 class="text-white font-bold text-sm tracking-wider flex items-center gap-2"><i data-lucide="settings" style="width:16px;height:16px;color:#60a5fa;"></i> CONTROLS</h2>
     </div>
-    <div class="color-grid" id="colorGrid"></div>
-   </div><!-- Title Edit Modal (hidden by default) -->
-   <div id="titleEditOverlay" class="title-edit-overlay" style="display: none;"></div>
-   <div id="titleEditModal" class="title-edit-modal" style="display: none;">
-    <div style="font-weight: bold; margin-bottom: 12px; font-size: 14px;">
-     Edit Zone Text
-    </div>
-    <div style="margin-bottom: 12px;">
-     <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Title (Dark Blue)</label> <input type="text" id="editTitleInput" placeholder="Enter title" style="width: 100%; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px;">
-    </div>
-    <div style="margin-bottom: 16px;">
-     <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Subtitle (Red)</label> <input type="text" id="editSubtitleInput" placeholder="Enter subtitle" style="width: 100%; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px;">
-    </div>
-    <div style="display: flex; gap: 8px;">
-     <button id="saveTitleBtn" style="flex: 1; background: #3b82f6; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer;">Save</button> <button id="cancelTitleBtn" style="flex: 1; background: #e5e7eb; color: #333; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer;">Cancel</button>
-    </div>
-   </div><!-- Header Edit Modal (hidden by default) -->
-   <div id="headerEditOverlay" class="title-edit-overlay" style="display: none;"></div>
-   <div id="headerEditModal" class="title-edit-modal" style="display: none;">
-    <div style="font-weight: bold; margin-bottom: 12px; font-size: 14px;">
-     Edit Zone Header
-    </div>
-    <div style="margin-bottom: 16px;">
-     <label style="display: block; font-size: 12px; color: #666; margin-bottom: 4px;">Zone Name</label> <input type="text" id="editHeaderInput" placeholder="Enter zone name" style="width: 100%; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px;">
-    </div>
-    <div style="display: flex; gap: 8px;">
-     <button id="saveHeaderBtn" style="flex: 1; background: #3b82f6; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer;">Save</button> <button id="cancelHeaderBtn" style="flex: 1; background: #e5e7eb; color: #333; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer;">Cancel</button>
-    </div>
-   </div><!-- Calendar Modal -->
-   <div id="calendarOverlay" class="calendar-overlay" style="display: none;"></div>
-   <div id="calendarModal" class="calendar-modal" style="display: none;">
-    <div class="calendar-header"><button class="calendar-nav-btn" id="prevMonthBtn">←</button> <span id="calendarMonthYear"></span> <button class="calendar-nav-btn" id="nextMonthBtn">→</button>
-    </div>
-    <div class="calendar-weekdays">
-     <div>
-      Min
+    <div class="p-3 flex flex-col gap-3 flex-1 overflow-y-auto sidebar-scroll"><button id="add-zone-btn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg px-4 py-3 text-sm font-bold transition-colors flex items-center justify-center gap-2"> <i data-lucide="plus-square" style="width:18px;height:18px;"></i> Add Zone </button> <button id="download-btn" class="w-full bg-blue-600 hover:bg-blue-500 text-white rounded-lg px-4 py-3 text-sm font-bold transition-colors flex items-center justify-center gap-2"> <i data-lucide="download" style="width:18px;height:18px;"></i> Download JPEG </button>
+     <div class="mt-4 border-t border-slate-700 pt-3">
+      <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">
+       Zone List
+      </div>
+      <div id="zone-list-controls" class="flex flex-col gap-2"></div>
      </div>
-     <div>
-      Sen
-     </div>
-     <div>
-      Sel
-     </div>
-     <div>
-      Rab
-     </div>
-     <div>
-      Kam
-     </div>
-     <div>
-      Jum
-     </div>
-     <div>
-      Sab
-     </div>
-    </div>
-    <div class="calendar-days" id="calendarDays"></div>
-    <div class="calendar-actions"><button class="btn-confirm" id="confirmDateBtn">Pilih</button> <button class="btn-cancel" id="cancelDateBtn">Batal</button>
     </div>
    </div>
-   <script>
-    // === STATE MANAGEMENT ===
-    const state = {
-      poolNames: [
-        // Blue names
-        { name: 'Fredy Chidotz', color: '#3b82f6' },
-        { name: 'Deni Sandy', color: '#3b82f6' },
-        { name: 'Hamdan', color: '#3b82f6' },
-        { name: 'Iman Udeng', color: '#3b82f6' },
-        { name: 'Pingki Sopian', color: '#3b82f6' },
-        // Yellow names
-        { name: 'Adi Susanto', color: '#fbbf24' },
-        { name: 'Alif', color: '#fbbf24' },
-        { name: 'Ikhwani', color: '#fbbf24' },
-        { name: 'Yudi', color: '#fbbf24' },
-        { name: 'Fahmi', color: '#fbbf24' },
-        { name: 'Aditya Arisandi', color: '#fbbf24' },
-        { name: 'Kikin', color: '#fbbf24' },
-        { name: 'Samsul Hidayat', color: '#fbbf24' },
-        // Orange names
-        { name: 'Supriyadi', color: '#f97316' },
-        { name: 'Hendri', color: '#f97316' },
-        { name: 'Basori', color: '#f97316' },
-        { name: 'Acep', color: '#f97316' },
-        { name: 'Edi', color: '#f97316' },
-        { name: 'Sudarmansyah', color: '#f97316' },
-        { name: 'Ryan Hermawan', color: '#f97316' },
-        { name: 'Iwan A. setiawan', color: '#f97316' },
-        // Red names
-        { name: 'Heri Suherman', color: '#ef4444' },
-        { name: 'Ismail', color: '#ef4444' },
-        { name: 'Rahmat', color: '#ef4444' },
-        { name: 'Rendi', color: '#ef4444' },
-        { name: 'Dafa', color: '#ef4444' },
-        { name: 'Anggi Yanuar', color: '#ef4444' },
-        { name: 'Caryana', color: '#ef4444' },
-        { name: 'Pryambudi', color: '#ef4444' },
-        { name: 'Asep A. Setiawan', color: '#ef4444' },
-        { name: 'Sandi permana', color: '#ef4444' },
-        { name: 'Aditiya A. Aziz', color: '#ef4444' },
-        { name: 'Wawan Kurniawan', color: '#ef4444' },
-        { name: 'Rizki N. Huda', color: '#ef4444' },
-        { name: 'M. Dian Saputra', color: '#ef4444' }
-      ],
-      zones: [],
-      selectedDate: new Date(),
-      draggedItem: null,
-      activeColorPickerZoneId: null,
-      activeColorPickerNameId: null,
-      nameColors: {},
-      daySelected: 1,
-      editingZoneId: null,
-      editingFieldType: null,
-      tempSelectedDate: new Date(),
-      calendarViewMonth: new Date()
-    };
-
-    const colors = [
-      { name: 'RED', hex: '#ef4444' },
-      { name: 'YELLOW', hex: '#fbbf24' },
-      { name: 'ORANGE', hex: '#f97316' },
-      { name: 'BLUE', hex: '#3b82f6' },
-      { name: 'LIGHT PINK', hex: '#fbcfe8' },
-      { name: 'GREEN', hex: '#10b981' }
-    ];
-
-    // === INITIALIZATION ===
-    function init() {
-      setupDaySelector();
-      setupDateDisplay();
-      renderPoolList();
-      setupColorGrid();
-      setupEventListeners();
-      state.selectedDate = new Date();
-      updateDateDisplay();
-      addInitialZone();
-    }
-
-    // === DAY SELECTOR ===
-    function setupDaySelector() {
-      const selector = document.getElementById('daySelector');
-      for (let i = 1; i <= 40; i++) {
-        const option = document.createElement('option');
-        option.value = i;
-        option.textContent = i;
-        selector.appendChild(option);
-      }
-      selector.addEventListener('change', (e) => {
-        state.daySelected = parseInt(e.target.value);
-      });
-    }
-
-    // === DATE DISPLAY & PICKER ===
-    function setupDateDisplay() {
-      const dateDisplay = document.getElementById('dateDisplay');
-      dateDisplay.addEventListener('click', openCalendarModal);
-    }
-
-    function openCalendarModal() {
-      state.tempSelectedDate = new Date(state.selectedDate);
-      state.calendarViewMonth = new Date(state.selectedDate);
-      renderCalendar();
-      document.getElementById('calendarOverlay').style.display = 'block';
-      document.getElementById('calendarModal').style.display = 'block';
-    }
-
-    function closeCalendarModal() {
-      document.getElementById('calendarOverlay').style.display = 'none';
-      document.getElementById('calendarModal').style.display = 'none';
-    }
-
-    function renderCalendar() {
-      const monthYear = document.getElementById('calendarMonthYear');
-      const daysContainer = document.getElementById('calendarDays');
-      const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-      
-      monthYear.textContent = `${months[state.calendarViewMonth.getMonth()]} ${state.calendarViewMonth.getFullYear()}`;
-      daysContainer.innerHTML = '';
-
-      const firstDay = new Date(state.calendarViewMonth.getFullYear(), state.calendarViewMonth.getMonth(), 1);
-      const lastDay = new Date(state.calendarViewMonth.getFullYear(), state.calendarViewMonth.getMonth() + 1, 0);
-      const prevLastDay = new Date(state.calendarViewMonth.getFullYear(), state.calendarViewMonth.getMonth(), 0);
-      
-      const firstDayOfWeek = firstDay.getDay();
-      const lastDateOfMonth = lastDay.getDate();
-      const lastDateOfPrevMonth = prevLastDay.getDate();
-
-      // Previous month's days
-      for (let i = firstDayOfWeek - 1; i >= 0; i--) {
-        const day = document.createElement('div');
-        day.className = 'calendar-day other-month';
-        day.textContent = lastDateOfPrevMonth - i;
-        daysContainer.appendChild(day);
-      }
-
-      // Current month's days
-      const today = new Date();
-      for (let date = 1; date <= lastDateOfMonth; date++) {
-        const day = document.createElement('div');
-        day.className = 'calendar-day';
-        day.textContent = date;
-        
-        const currentDate = new Date(state.calendarViewMonth.getFullYear(), state.calendarViewMonth.getMonth(), date);
-        
-        // Check if today
-        if (currentDate.toDateString() === today.toDateString()) {
-          day.classList.add('today');
-        }
-        
-        // Check if selected
-        if (currentDate.toDateString() === state.tempSelectedDate.toDateString()) {
-          day.classList.add('selected');
-        }
-        
-        day.addEventListener('click', () => {
-          state.tempSelectedDate = new Date(currentDate);
-          renderCalendar();
-        });
-        
-        daysContainer.appendChild(day);
-      }
-
-      // Next month's days
-      const totalCells = daysContainer.children.length;
-      const remainingCells = 42 - totalCells;
-      for (let i = 1; i <= remainingCells; i++) {
-        const day = document.createElement('div');
-        day.className = 'calendar-day other-month';
-        day.textContent = i;
-        daysContainer.appendChild(day);
-      }
-    }
-
-    function confirmCalendarDate() {
-      state.selectedDate = new Date(state.tempSelectedDate);
-      updateDateDisplay();
-      closeCalendarModal();
-    }
-
-    document.getElementById('prevMonthBtn').addEventListener('click', () => {
-      state.calendarViewMonth.setMonth(state.calendarViewMonth.getMonth() - 1);
-      renderCalendar();
-    });
-
-    document.getElementById('nextMonthBtn').addEventListener('click', () => {
-      state.calendarViewMonth.setMonth(state.calendarViewMonth.getMonth() + 1);
-      renderCalendar();
-    });
-
-    document.getElementById('confirmDateBtn').addEventListener('click', confirmCalendarDate);
-
-    document.getElementById('cancelDateBtn').addEventListener('click', closeCalendarModal);
-
-    document.getElementById('calendarOverlay').addEventListener('click', closeCalendarModal);
-
-    function updateDateDisplay() {
-      const date = state.selectedDate;
-      const daysOfWeek = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-      const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-      
-      const dayName = daysOfWeek[date.getDay()];
-      const dayNum = date.getDate();
-      const monthName = months[date.getMonth()];
-      const yearShort = String(date.getFullYear()).slice(-2);
-
-      document.getElementById('dateDisplay').textContent = `${dayName}, ${dayNum} ${monthName} ${yearShort}`;
-    }
-
-    // === POOL LIST RENDERING ===
-    function renderPoolList() {
-      const poolList = document.getElementById('poolList');
-      poolList.innerHTML = '';
-      state.poolNames.forEach((item, index) => {
-        const card = document.createElement('div');
-        card.className = 'pool-card border border-gray-200 rounded-lg p-3 mb-2 text-sm font-semibold text-white shadow-sm hover:shadow-md';
-        card.style.backgroundColor = item.color;
-        card.draggable = true;
-        card.textContent = item.name;
-        card.dataset.index = index;
-
-        card.addEventListener('dragstart', (e) => {
-          state.draggedItem = { type: 'pool', name: item.name, index };
-          card.classList.add('dragging');
-          e.dataTransfer.effectAllowed = 'copy';
-        });
-
-        card.addEventListener('dragend', () => {
-          card.classList.remove('dragging');
-        });
-
-        poolList.appendChild(card);
-      });
-    }
-
-    // === ZONE MANAGEMENT ===
-    function addInitialZone() {
-      const zone = {
-        id: Date.now(),
-        names: [],
-        zoneName: 'Zone 1',
-        title: 'Zone Title',
-        subtitle: 'Zone Subtitle'
-      };
-      state.zones.push(zone);
-      renderZones();
-      renderZonesList();
-    }
-
-    function addZone() {
-      const zone = {
-        id: Date.now() + Math.random(),
-        names: [],
-        zoneName: `Zone ${state.zones.length + 1}`,
-        title: 'Zone Title',
-        subtitle: 'Zone Subtitle'
-      };
-      state.zones.push(zone);
-      renderZones();
-      renderZonesList();
-    }
-
-    function deleteZone(zoneId) {
-      state.zones = state.zones.filter(z => z.id !== zoneId);
-      renderZones();
-      renderZonesList();
-    }
-
-    // === ZONE RENDERING ===
-    function renderZones() {
-      const grid = document.getElementById('zoneGrid');
-      grid.innerHTML = '';
-
-      state.zones.forEach((zone, index) => {
-        // Wrapper untuk zone header + container
-        const wrapper = document.createElement('div');
-        wrapper.className = 'zone-wrapper';
-
-        // Zone Header (OUTSIDE container, above it)
-        const headerWrapper = document.createElement('div');
-        headerWrapper.className = 'zone-header-wrapper';
-        
-        const headerDiv = document.createElement('div');
-        headerDiv.className = 'zone-header';
-        headerDiv.textContent = zone.zoneName || `Zone ${index + 1}`;
-        headerDiv.addEventListener('click', () => openZoneHeaderEditModal(zone.id));
-        headerWrapper.appendChild(headerDiv);
-        wrapper.appendChild(headerWrapper);
-
-        // Container (INSIDE)
-        const zoneDiv = document.createElement('div');
-        zoneDiv.className = 'zone-container';
-        zoneDiv.dataset.zoneId = zone.id;
-
-        // Zone Title Container (Title & Subtitle only)
-        const titleContainer = document.createElement('div');
-        titleContainer.className = 'zone-title-container';
-        
-        const titleDiv = document.createElement('div');
-        titleDiv.className = 'zone-title';
-        titleDiv.textContent = zone.title || 'Zone Title';
-        titleDiv.addEventListener('click', () => openTitleEditModal(zone.id, 'title'));
-        
-        const subtitleDiv = document.createElement('div');
-        subtitleDiv.className = 'zone-subtitle';
-        subtitleDiv.textContent = zone.subtitle || 'Zone Subtitle';
-        subtitleDiv.addEventListener('click', () => openTitleEditModal(zone.id, 'subtitle'));
-        
-        titleContainer.appendChild(titleDiv);
-        titleContainer.appendChild(subtitleDiv);
-        zoneDiv.appendChild(titleContainer);
-
-        zoneDiv.addEventListener('dragover', (e) => {
-          e.preventDefault();
-          e.dataTransfer.dropEffect = 'copy';
-          zoneDiv.classList.add('drag-over');
-        });
-
-        zoneDiv.addEventListener('dragleave', () => {
-          zoneDiv.classList.remove('drag-over');
-        });
-
-        zoneDiv.addEventListener('drop', (e) => {
-          e.preventDefault();
-          zoneDiv.classList.remove('drag-over');
-
-          if (state.draggedItem && state.draggedItem.type === 'pool') {
-            const poolItem = state.poolNames[state.draggedItem.index];
-            const nameId = `${zone.id}-${Date.now()}`;
-            const newNameObj = {
-              id: nameId,
-              name: state.draggedItem.name,
-              color: poolItem.color // Use the original pool color
-            };
-            zone.names.push(newNameObj);
-            
-            // Only add the new name to DOM, don't re-render entire zone
-            const nameDiv = createNameElement(zone, newNameObj, zoneDiv);
-            zoneDiv.appendChild(nameDiv);
-          }
-        });
-
-        // Render names in zone
-        zone.names.forEach(nameObj => {
-          const nameDiv = createNameElement(zone, nameObj, zoneDiv);
-          zoneDiv.appendChild(nameDiv);
-        });
-
-        wrapper.appendChild(zoneDiv);
-        grid.appendChild(wrapper);
-      });
-    }
-
-    function createNameElement(zone, nameObj, parentZoneDiv) {
-      const nameDiv = document.createElement('div');
-      nameDiv.className = 'name-in-zone';
-      nameDiv.style.backgroundColor = nameObj.color || '#e5e7eb';
-      nameDiv.textContent = nameObj.name;
-      nameDiv.dataset.nameId = nameObj.id;
-      nameDiv.dataset.zoneId = zone.id;
-      nameDiv.draggable = true;
-
-      let clickCount = 0;
-      let clickTimer = null;
-
-      // Single/double click untuk color picker
-      nameDiv.addEventListener('click', (e) => {
-        e.stopPropagation();
-        clickCount++;
-        
-        if (clickCount === 1) {
-          clickTimer = setTimeout(() => {
-            clickCount = 0;
-          }, 300);
-        } else if (clickCount === 2) {
-          clearTimeout(clickTimer);
-          clickCount = 0;
-          state.activeColorPickerZoneId = zone.id;
-          state.activeColorPickerNameId = nameObj.id;
-          openColorPicker();
-        }
-      });
-
-      // Drag to reorder
-      nameDiv.addEventListener('dragstart', (e) => {
-        state.draggedItem = { type: 'name', nameId: nameObj.id, zoneId: zone.id, nameObj: nameObj };
-        nameDiv.style.opacity = '0.5';
-        e.dataTransfer.effectAllowed = 'move';
-      });
-
-      nameDiv.addEventListener('dragend', () => {
-        nameDiv.style.opacity = '1';
-      });
-
-      nameDiv.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-        
-        if (state.draggedItem && state.draggedItem.type === 'name') {
-          const rect = nameDiv.getBoundingClientRect();
-          const midpoint = rect.top + rect.height / 2;
-          
-          if (e.clientY < midpoint) {
-            nameDiv.style.borderTop = '3px solid #d4a017';
-            nameDiv.style.borderBottom = 'none';
-          } else {
-            nameDiv.style.borderTop = 'none';
-            nameDiv.style.borderBottom = '3px solid #d4a017';
-          }
-        }
-      });
-
-      nameDiv.addEventListener('dragleave', () => {
-        nameDiv.style.borderTop = 'none';
-        nameDiv.style.borderBottom = 'none';
-      });
-
-      nameDiv.addEventListener('drop', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        nameDiv.style.borderTop = 'none';
-        nameDiv.style.borderBottom = 'none';
-
-        if (state.draggedItem && state.draggedItem.type === 'name' && state.draggedItem.zoneId === zone.id) {
-          const draggedNameId = state.draggedItem.nameId;
-          const targetNameId = nameObj.id;
-
-          if (draggedNameId !== targetNameId) {
-            const draggedIndex = zone.names.findIndex(n => n.id === draggedNameId);
-            const targetIndex = zone.names.findIndex(n => n.id === targetNameId);
-
-            if (draggedIndex !== -1 && targetIndex !== -1) {
-              // Simple swap
-              [zone.names[draggedIndex], zone.names[targetIndex]] = [zone.names[targetIndex], zone.names[draggedIndex]];
-              
-              // Update UI hanya untuk zone ini
-              updateZoneNamesUI(zone);
-            }
-          }
-        }
-      });
-
-      return nameDiv;
-    }
-
-    function updateZoneNamesUI(zone) {
-      const zoneContainer = document.querySelector(`[data-zone-id="${zone.id}"]`);
-      if (!zoneContainer) return;
-      
-      // Hapus semua name elements
-      const allNames = zoneContainer.querySelectorAll('[data-name-id]');
-      allNames.forEach(el => el.remove());
-      
-      // Re-render names dalam urutan baru
-      zone.names.forEach(nameItem => {
-        const newNameDiv = createNameElement(zone, nameItem, zoneContainer);
-        zoneContainer.appendChild(newNameDiv);
-      });
-    }
-
-    function renderZonesList() {
-      const list = document.getElementById('zonesList');
-      list.innerHTML = '';
-
-      state.zones.forEach((zone, index) => {
-        const item = document.createElement('div');
-        item.className = 'zone-item';
-        
-        const nameSpan = document.createElement('span');
-        nameSpan.className = 'zone-item-name';
-        nameSpan.textContent = `Zone ${index + 1}`;
-
-        const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'zone-delete-btn';
-        deleteBtn.textContent = '×';
-        deleteBtn.addEventListener('click', () => deleteZone(zone.id));
-
-        item.appendChild(nameSpan);
-        item.appendChild(deleteBtn);
-        list.appendChild(item);
-      });
-    }
-
-    // === COLOR PICKER ===
-    function setupColorGrid() {
-      const grid = document.getElementById('colorGrid');
-      colors.forEach(color => {
-        const option = document.createElement('div');
-        option.className = 'color-option';
-        option.style.backgroundColor = color.hex;
-        option.title = color.name;
-        option.addEventListener('click', () => {
-          applyColor(color.hex);
-          closeColorPicker();
-        });
-        grid.appendChild(option);
-      });
-    }
-
-    function openColorPicker() {
-      document.getElementById('colorPickerOverlay').style.display = 'block';
-      document.getElementById('colorPickerModal').style.display = 'block';
-    }
-
-    function closeColorPicker() {
-      document.getElementById('colorPickerOverlay').style.display = 'none';
-      document.getElementById('colorPickerModal').style.display = 'none';
-    }
-
-    function applyColor(hex) {
-      if (state.activeColorPickerZoneId !== null && state.activeColorPickerNameId !== null) {
-        const zone = state.zones.find(z => z.id === state.activeColorPickerZoneId);
-        if (zone) {
-          const nameObj = zone.names.find(n => n.id === state.activeColorPickerNameId);
-          if (nameObj) {
-            nameObj.color = hex;
-            // Find the specific name element by both zone ID and name ID, update ONLY its color
-            const nameElement = document.querySelector(`[data-name-id="${state.activeColorPickerNameId}"][data-zone-id="${state.activeColorPickerZoneId}"]`);
-            if (nameElement) {
-              nameElement.style.backgroundColor = hex;
-            }
-          }
-        }
-      }
-    }
-
-    // === TITLE EDIT MODAL ===
-    function openTitleEditModal(zoneId, fieldType) {
-      const zone = state.zones.find(z => z.id === zoneId);
-      if (!zone) return;
-
-      state.editingZoneId = zoneId;
-      state.editingFieldType = fieldType;
-      
-      if (fieldType === 'title') {
-        document.getElementById('editTitleInput').value = zone.title || '';
-        document.getElementById('editSubtitleInput').value = zone.subtitle || '';
-      }
-      
-      document.getElementById('titleEditOverlay').style.display = 'block';
-      document.getElementById('titleEditModal').style.display = 'block';
-    }
-
-    function openZoneHeaderEditModal(zoneId) {
-      const zone = state.zones.find(z => z.id === zoneId);
-      if (!zone) return;
-
-      state.editingZoneId = zoneId;
-      document.getElementById('editHeaderInput').value = zone.zoneName || '';
-      document.getElementById('headerEditOverlay').style.display = 'block';
-      document.getElementById('headerEditModal').style.display = 'block';
-      document.getElementById('editHeaderInput').focus();
-    }
-
-    function closeHeaderEditModal() {
-      document.getElementById('headerEditOverlay').style.display = 'none';
-      document.getElementById('headerEditModal').style.display = 'none';
-      state.editingZoneId = null;
-    }
-
-    function saveHeaderEdit() {
-      if (state.editingZoneId === null) return;
-
-      const zone = state.zones.find(z => z.id === state.editingZoneId);
-      if (zone) {
-        const headerValue = document.getElementById('editHeaderInput').value.trim();
-        if (headerValue) {
-          zone.zoneName = headerValue;
-          renderZones();
-          renderZonesList();
-        }
-      }
-      closeHeaderEditModal();
-    }
-
-    function closeTitleEditModal() {
-      document.getElementById('titleEditOverlay').style.display = 'none';
-      document.getElementById('titleEditModal').style.display = 'none';
-      state.editingZoneId = null;
-    }
-
-    function saveTitleEdit() {
-      if (state.editingZoneId === null) return;
-
-      const zone = state.zones.find(z => z.id === state.editingZoneId);
-      if (zone) {
-        const titleValue = document.getElementById('editTitleInput').value || 'Zone Title';
-        const subtitleValue = document.getElementById('editSubtitleInput').value || 'Zone Subtitle';
-        
-        if (state.editingFieldType === 'title') {
-          zone.title = titleValue;
-          zone.subtitle = subtitleValue;
-        }
-        
-        renderZones();
-      }
-      closeTitleEditModal();
-    }
-
-    // === EVENT LISTENERS ===
-    function setupEventListeners() {
-      document.getElementById('addZoneBtn').addEventListener('click', addZone);
-
-      document.getElementById('addNameBtn').addEventListener('click', () => {
-        const input = document.getElementById('customNameInput');
-        const name = input.value.trim();
-        if (name) {
-          state.poolNames.push({ name: name, color: '#d1d5db' });
-          renderPoolList();
-          input.value = '';
-        }
-      });
-
-      document.getElementById('customNameInput').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-          document.getElementById('addNameBtn').click();
-        }
-      });
-
-      document.getElementById('colorPickerOverlay').addEventListener('click', closeColorPicker);
-
-      document.getElementById('titleEditOverlay').addEventListener('click', closeTitleEditModal);
-
-      document.getElementById('saveTitleBtn').addEventListener('click', saveTitleEdit);
-
-      document.getElementById('cancelTitleBtn').addEventListener('click', closeTitleEditModal);
-
-      document.getElementById('headerEditOverlay').addEventListener('click', closeHeaderEditModal);
-
-      document.getElementById('saveHeaderBtn').addEventListener('click', saveHeaderEdit);
-
-      document.getElementById('cancelHeaderBtn').addEventListener('click', closeHeaderEditModal);
-
-      document.getElementById('editHeaderInput').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-          saveHeaderEdit();
-        }
-      });
-
-      document.getElementById('editTitleInput').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-          saveTitleEdit();
-        }
-      });
-
-      document.getElementById('editSubtitleInput').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-          saveTitleEdit();
-        }
-      });
-
-      // Element SDK initialization
-      if (window.elementSdk) {
-        window.elementSdk.init({
-          defaultConfig: { main_title: 'I.B.O.L' },
-          onConfigChange: (config) => {
-            if (config.main_title) {
-              document.getElementById('mainTitle').textContent = config.main_title;
-            }
-          },
-          mapToCapabilities: () => ({
-            recolorables: [],
-            borderables: [],
-            fontEditable: undefined,
-            fontSizeable: undefined
-          }),
-          mapToEditPanelValues: (config) => new Map([['main_title', config.main_title]])
-        });
-      }
-    }
-
-    // Start app
-    init();
-  </script>
+  </div><!-- COLOR PICKER POPUP -->
+  <div id="color-picker" class="color-picker-popup" style="display:none;">
+   <div class="cp-swatch color-blue" data-color="blue"></div>
+   <div class="cp-swatch color-yellow" data-color="yellow"></div>
+   <div class="cp-swatch color-orange" data-color="orange"></div>
+   <div class="cp-swatch color-red" data-color="red"></div>
+   <div class="cp-swatch color-green" data-color="green"></div>
+   <div class="cp-swatch color-pink" data-color="pink"></div>
+   <div class="cp-swatch color-grey" data-color="grey"></div>
   </div>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9eed0b8135768193',t:'MTc3NjYxMzYxNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+  <script>
+// ===== STATE =====
+let idCounter = 0;
+const uid = () => 'item-' + (++idCounter);
+
+const COLOR_ORDER = ['blue','yellow','orange','red','green','pink','grey'];
+
+const initialPool = [
+  {names:['Fredy Chidotz','Deni Sandy','Hamdan','Iman Udeng','Pingki Sopian'],color:'blue'},
+  {names:['Adi Susanto','Alif','Ikhwani','Yudi','Fahmi','Aditya Arisandi','Kikin','Samsul Hidayat'],color:'yellow'},
+  {names:['Supriyadi','Hendri','Basori','Acep','Edi','Sudarmansyah','Ryan Hermawan','Iwan A. setiawan'],color:'orange'},
+  {names:['Heri Suherman','Ismail','Rahmat','Rendi','Dafa','Anggi Yanuar','Caryana','Pryambudi','Asep A. Setiawan','Sandi permana','Aditiya A. Aziz','Wawan Kurniawan','Rizki N. Huda','M. Dian Saputra'],color:'red'}
+];
+
+let items = [];
+initialPool.forEach(g => g.names.forEach(n => items.push({id:uid(),name:n,color:g.color})));
+
+let zones = [];
+let zoneCounter = 0;
+let sortables = [];
+let colorPickerTarget = null;
+
+// ===== HELPERS =====
+function makeItemEl(item, showNum) {
+  const el = document.createElement('div');
+  el.className = `pool-item color-${item.color}`;
+  el.dataset.id = item.id;
+  el.innerHTML = `${showNum !== undefined ? `<span class="num-badge">${showNum}</span>` : ''}<span class="item-name">${item.name}</span>`;
+  el.addEventListener('dblclick', (e) => openColorPicker(e, item.id));
+  return el;
+}
+
+function getItem(id) { return items.find(i => i.id === id); }
+
+function recalcNumbers(container) {
+  const children = [...container.children];
+  const colorCounts = {};
+  children.forEach(el => {
+    const item = getItem(el.dataset.id);
+    if (!item) return;
+    if (!colorCounts[item.color]) colorCounts[item.color] = 0;
+    colorCounts[item.color]++;
+    const badge = el.querySelector('.num-badge');
+    if (badge) badge.textContent = colorCounts[item.color];
+    else {
+      const b = document.createElement('span');
+      b.className = 'num-badge';
+      b.textContent = colorCounts[item.color];
+      el.insertBefore(b, el.firstChild);
+    }
+  });
+}
+
+function updateTotals() {
+  let working = 0, standby = 0;
+  zones.forEach(z => {
+    working += document.getElementById('zone-drop-' + z.id).children.length;
+  });
+  standby = document.getElementById('standby-drop').children.length;
+  document.getElementById('total-working').textContent = working;
+  document.getElementById('total-standby').textContent = standby;
+}
+
+// ===== COLOR PICKER =====
+function openColorPicker(e, itemId) {
+  e.stopPropagation();
+  const picker = document.getElementById('color-picker');
+  colorPickerTarget = itemId;
+  picker.style.display = 'flex';
+  picker.style.left = Math.min(e.clientX, window.innerWidth - 250) + 'px';
+  picker.style.top = Math.min(e.clientY - 40, window.innerHeight - 50) + 'px';
+}
+
+document.getElementById('color-picker').addEventListener('click', (e) => {
+  const swatch = e.target.closest('.cp-swatch');
+  if (!swatch || !colorPickerTarget) return;
+  const newColor = swatch.dataset.color;
+  const item = getItem(colorPickerTarget);
+  if (item) {
+    item.color = newColor;
+    document.querySelectorAll(`[data-id="${item.id}"]`).forEach(el => {
+      el.className = `pool-item color-${newColor}`;
+      const parent = el.closest('.zone-drop-area');
+      if (parent) recalcNumbers(parent);
+    });
+  }
+  document.getElementById('color-picker').style.display = 'none';
+  colorPickerTarget = null;
+  updateTotals();
+});
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.color-picker-popup') && !e.target.closest('.pool-item')) {
+    document.getElementById('color-picker').style.display = 'none';
+    colorPickerTarget = null;
+  }
+});
+
+// ===== POOL RENDERING =====
+function renderPool() {
+  const pool = document.getElementById('pool-list');
+  const zoneItemIds = new Set();
+  zones.forEach(z => {
+    [...document.getElementById('zone-drop-' + z.id).children].forEach(c => zoneItemIds.add(c.dataset.id));
+  });
+  [...document.getElementById('standby-drop').children].forEach(c => zoneItemIds.add(c.dataset.id));
+  
+  const poolItems = items.filter(i => !zoneItemIds.has(i.id));
+  
+  // Keep existing, remove gone, add new
+  const existing = new Map([...pool.children].map(el => [el.dataset.id, el]));
+  const newIds = new Set(poolItems.map(i => i.id));
+  
+  existing.forEach((el, id) => { if (!newIds.has(id)) el.remove(); });
+  
+  poolItems.forEach(item => {
+    if (!existing.has(item.id)) {
+      pool.appendChild(makeItemEl(item));
+    } else {
+      const el = existing.get(item.id);
+      el.className = `pool-item color-${item.color}`;
+    }
+  });
+}
+
+function initPoolSortable() {
+  new Sortable(document.getElementById('pool-list'), {
+    group: 'crew',
+    animation: 150,
+    sort: true,
+    onEnd: () => { refreshAllNumbers(); updateTotals(); renderPool(); }
+  });
+}
+
+// ===== ZONES =====
+function addZone(outerTitle, innerTitle, innerSub) {
+  zoneCounter++;
+  const z = {
+    id: 'zone-' + zoneCounter,
+    outerTitle: outerTitle || 'ZONE ' + zoneCounter,
+    innerTitle: innerTitle || 'Location',
+    innerSub: innerSub || 'Description'
+  };
+  zones.push(z);
+  renderZones();
+  renderZoneControls();
+  updateTotals();
+}
+
+function renderZones() {
+  const grid = document.getElementById('zones-grid');
+  
+  zones.forEach(z => {
+    if (document.getElementById(z.id)) return;
+    const div = document.createElement('div');
+    div.className = 'zone-container';
+    div.id = z.id;
+    div.innerHTML = `
+      <div class="zone-outer-title"><span contenteditable="true" class="editable-title" data-field="outerTitle" data-zone="${z.id}">${z.outerTitle}</span></div>
+      <div class="zone-inner-title"><span contenteditable="true" class="editable-title" data-field="innerTitle" data-zone="${z.id}">${z.innerTitle}</span></div>
+      <div class="zone-inner-subtitle"><span contenteditable="true" class="editable-title" data-field="innerSub" data-zone="${z.id}">${z.innerSub}</span></div>
+      <div class="zone-drop-area" id="zone-drop-${z.id}"></div>
+    `;
+    grid.appendChild(div);
+    
+    const dropArea = document.getElementById('zone-drop-' + z.id);
+    const s = new Sortable(dropArea, {
+      group: 'crew',
+      animation: 150,
+      onEnd: () => { refreshAllNumbers(); updateTotals(); renderPool(); }
+    });
+    sortables.push(s);
+  });
+
+  // Editable title sync
+  document.querySelectorAll('.editable-title').forEach(el => {
+    el.addEventListener('blur', () => {
+      const z = zones.find(z => z.id === el.dataset.zone);
+      if (z) z[el.dataset.field] = el.textContent;
+    });
+  });
+}
+
+function removeZone(zoneId) {
+  const dropArea = document.getElementById('zone-drop-' + zoneId);
+  if (dropArea) {
+    // Move items back to pool
+    [...dropArea.children].forEach(c => {
+      document.getElementById('pool-list').appendChild(c);
+    });
+  }
+  const el = document.getElementById(zoneId);
+  if (el) el.remove();
+  zones = zones.filter(z => z.id !== zoneId);
+  renderZoneControls();
+  updateTotals();
+  renderPool();
+}
+
+function renderZoneControls() {
+  const list = document.getElementById('zone-list-controls');
+  list.innerHTML = '';
+  zones.forEach(z => {
+    const div = document.createElement('div');
+    div.className = 'flex items-center justify-between bg-slate-800 rounded-lg px-3 py-2';
+    div.innerHTML = `
+      <span class="text-white text-xs font-semibold truncate">${z.outerTitle}</span>
+      <button class="text-red-400 hover:text-red-300 transition-colors" data-remove="${z.id}">
+        <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
+      </button>
+    `;
+    div.querySelector('[data-remove]').addEventListener('click', () => removeZone(z.id));
+    list.appendChild(div);
+  });
+  lucide.createIcons();
+}
+
+function refreshAllNumbers() {
+  zones.forEach(z => {
+    const drop = document.getElementById('zone-drop-' + z.id);
+    if (drop) recalcNumbers(drop);
+  });
+  const standby = document.getElementById('standby-drop');
+  if (standby) recalcNumbers(standby);
+}
+
+// ===== STANDBY SORTABLE =====
+function initStandbySortable() {
+  new Sortable(document.getElementById('standby-drop'), {
+    group: 'crew',
+    animation: 150,
+    onEnd: () => { refreshAllNumbers(); updateTotals(); renderPool(); }
+  });
+}
+
+// ===== DAY SELECT =====
+function initDaySelect() {
+  const sel = document.getElementById('day-select');
+  for (let i = 1; i <= 40; i++) {
+    const opt = document.createElement('option');
+    opt.value = i; opt.textContent = i;
+    sel.appendChild(opt);
+  }
+}
+
+// ===== DATE PICKER =====
+document.getElementById('date-picker').addEventListener('change', (e) => {
+  const d = new Date(e.target.value);
+  if (!isNaN(d)) {
+    document.getElementById('date-display').textContent = d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  }
+});
+
+// ===== ADD NAME =====
+document.getElementById('add-name-btn').addEventListener('click', () => {
+  const input = document.getElementById('new-name-input');
+  const name = input.value.trim();
+  if (!name) return;
+  const item = { id: uid(), name, color: 'grey' };
+  items.push(item);
+  document.getElementById('pool-list').appendChild(makeItemEl(item));
+  input.value = '';
+});
+document.getElementById('new-name-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('add-name-btn').click();
+});
+
+// ===== ADD ZONE BUTTON =====
+document.getElementById('add-zone-btn').addEventListener('click', () => addZone());
+
+// ===== DOWNLOAD =====
+document.getElementById('download-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('download-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="animate-pulse">Exporting...</span>';
+  
+  try {
+    const canvas = await html2canvas(document.getElementById('a4-canvas'), {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      logging: false
+    });
+    const link = document.createElement('a');
+    link.download = 'callsheet-day-' + document.getElementById('day-select').value + '.jpeg';
+    link.href = canvas.toDataURL('image/jpeg', 0.95);
+    link.click();
+  } catch(err) {
+    console.error('Export failed:', err);
+  }
+  
+  btn.disabled = false;
+  btn.innerHTML = '<i data-lucide="download" style="width:18px;height:18px;"></i> Download JPEG';
+  lucide.createIcons();
+});
+
+// ===== ELEMENT SDK =====
+const defaultConfig = {
+  main_title: 'I.B.O.L',
+  date_text: '',
+  background_color: '#000033',
+  surface_color: '#0f172a',
+  text_color: '#ffffff',
+  primary_action: '#2563eb',
+  secondary_action: '#10b981',
+  font_family: 'Outfit',
+  font_size: 14
+};
+
+window.elementSdk.init({
+  defaultConfig,
+  onConfigChange: async (config) => {
+    const title = config.main_title || defaultConfig.main_title;
+    document.getElementById('main-title-display').textContent = title;
+    
+    if (config.date_text) {
+      document.getElementById('date-display').textContent = config.date_text;
+    }
+    
+    const font = config.font_family || defaultConfig.font_family;
+    document.body.style.fontFamily = `${font}, Outfit, sans-serif`;
+  },
+  mapToCapabilities: (config) => ({
+    recolorables: [
+      { get: () => config.background_color || defaultConfig.background_color, set: (v) => { config.background_color = v; window.elementSdk.setConfig({background_color:v}); }},
+      { get: () => config.surface_color || defaultConfig.surface_color, set: (v) => { config.surface_color = v; window.elementSdk.setConfig({surface_color:v}); }},
+      { get: () => config.text_color || defaultConfig.text_color, set: (v) => { config.text_color = v; window.elementSdk.setConfig({text_color:v}); }},
+      { get: () => config.primary_action || defaultConfig.primary_action, set: (v) => { config.primary_action = v; window.elementSdk.setConfig({primary_action:v}); }},
+      { get: () => config.secondary_action || defaultConfig.secondary_action, set: (v) => { config.secondary_action = v; window.elementSdk.setConfig({secondary_action:v}); }}
+    ],
+    borderables: [],
+    fontEditable: {
+      get: () => config.font_family || defaultConfig.font_family,
+      set: (v) => { config.font_family = v; window.elementSdk.setConfig({font_family:v}); }
+    },
+    fontSizeable: {
+      get: () => config.font_size || defaultConfig.font_size,
+      set: (v) => { config.font_size = v; window.elementSdk.setConfig({font_size:v}); }
+    }
+  }),
+  mapToEditPanelValues: (config) => new Map([
+    ['main_title', config.main_title || defaultConfig.main_title],
+    ['date_text', config.date_text || '']
+  ])
+});
+
+// ===== INIT =====
+initDaySelect();
+renderPool();
+initPoolSortable();
+initStandbySortable();
+addZone('ZONE 1', 'Main Location', 'Primary Work Area');
+lucide.createIcons();
+</script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9eee13fa5381a98e',t:'MTc3NjYyNDQ1MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
