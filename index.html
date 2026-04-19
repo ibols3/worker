@@ -79,7 +79,8 @@ html, body { height: 100%; margin: 0; }
      <div class="zone-dot" style="background:#ca8a04;"></div><span id="pool-name">Pool List</span> <span id="pool-count" class="zone-count" style="background:#ca8a0420;color:#ca8a04;">10</span>
     </div>
     <div id="pool" class="zone-container" style="border-color:#ca8a0440; background:#ca8a0408; margin-bottom: 12px;"></div>
-    <div style="display:flex; gap:6px;"><input type="text" id="new-name-input" class="config-input" placeholder="Ketik nama baru..." style="flex:1; margin:0;"> <button class="btn btn-primary btn-sm" onclick="addNameToPool()" style="padding:8px 10px;">+ Add</button>
+    <div style="display:flex; gap:6px;">
+     <input type="text" id="new-name-input" class="config-input" placeholder="Ketik nama baru..." style="flex:1; margin:0;"> <button class="btn btn-primary btn-sm" onclick="addNameToPool()" style="padding:8px 10px;">+ Add</button>
     </div>
    </div>
    <div class="canvas-section">
@@ -147,7 +148,7 @@ function createCard(name, zone) {
   const customColor = cardColors[name];
   const color = customColor || getZoneColor(zone);
   
-  div.style.cssText = `background:${color}20; border-color:${color}60; color:#1a1a1a; display: flex; align-items: center; justify-content: space-between;`;
+  div.style.cssText = `background:${color}; border-color:${color}; color:#fff; display: flex; align-items: center; justify-content: space-between;`;
   div.setAttribute('data-color', color);
   
   const nameSpan = document.createElement('span');
@@ -168,7 +169,11 @@ function createCard(name, zone) {
   div.appendChild(nameSpan);
   div.appendChild(editBtn);
   
-  div.addEventListener('mousedown', (e) => handleCardClick(e, div));
+  div.addEventListener('mousedown', (e) => {
+    if (e.button === 0 && !e.target.closest('button')) {
+      handleCardMouseDown(e, div);
+    }
+  });
   div.addEventListener('touchstart', (e) => handleCardTouchStart(e, div), false);
   
   return div;
@@ -248,7 +253,7 @@ function showColorPicker(cardName, cardElement) {
     }
     colorOption.addEventListener('click', () => {
       cardColors[cardName] = hex;
-      cardElement.style.cssText = `background:${hex}20; border-color:${hex}60; color:#1a1a1a; display: flex; align-items: center; justify-content: space-between;`;
+      cardElement.style.cssText = `background:${hex}; border-color:${hex}; color:#fff; display: flex; align-items: center; justify-content: space-between;`;
       cardElement.setAttribute('data-color', hex);
       backdrop.remove();
     });
@@ -269,17 +274,82 @@ function getZoneColor(zoneId) {
   return zone ? zone.color : '#a78bfa';
 }
 
+function startSelectionBox(e) {
+  // Cek apakah klik pada card atau button
+  if (e.target.closest('.name-card') || e.target.closest('button')) return;
+  
+  const startX = e.clientX;
+  const startY = e.clientY;
+  let isSelecting = false;
+  
+  const moveListener = (moveE) => {
+    const dx = Math.abs(moveE.clientX - startX);
+    const dy = Math.abs(moveE.clientY - startY);
+    
+    if (dx > 3 || dy > 3) {
+      isSelecting = true;
+    }
+    
+    if (isSelecting) {
+      const x1 = Math.min(startX, moveE.clientX);
+      const y1 = Math.min(startY, moveE.clientY);
+      const x2 = Math.max(startX, moveE.clientX);
+      const y2 = Math.max(startY, moveE.clientY);
+      
+      let box = document.querySelector('.selection-box');
+      if (!box) {
+        box = document.createElement('div');
+        box.className = 'selection-box';
+        document.body.appendChild(box);
+      }
+      
+      box.style.left = x1 + 'px';
+      box.style.top = y1 + 'px';
+      box.style.width = (x2 - x1) + 'px';
+      box.style.height = (y2 - y1) + 'px';
+      
+      // Select cards inside box
+      const allCards = document.querySelectorAll('.name-card');
+      selectedCards.clear();
+      
+      allCards.forEach(card => {
+        const rect = card.getBoundingClientRect();
+        if (rect.left < x2 && rect.right > x1 && rect.top < y2 && rect.bottom > y1) {
+          selectedCards.add(card);
+          card.classList.add('selected');
+        } else {
+          card.classList.remove('selected');
+        }
+      });
+    }
+  };
+  
+  const upListener = (upE) => {
+    document.removeEventListener('mousemove', moveListener);
+    document.removeEventListener('mouseup', upListener);
+    
+    const box = document.querySelector('.selection-box');
+    if (box) box.remove();
+    
+    if (!isSelecting) {
+      selectedCards.clear();
+      document.querySelectorAll('.name-card').forEach(c => c.classList.remove('selected'));
+    }
+  };
+  
+  document.addEventListener('mousemove', moveListener);
+  document.addEventListener('mouseup', upListener);
+}
+
 function handleCardMouseDown(e, card) {
   if (e.button !== 0) return;
-  
-  // If double-clicking, don't start drag
-  if (e.detail > 1) return;
-  
-  // If clicking on button (edit btn), don't start drag
   if (e.target.closest('button')) return;
   
-  // Prevent default only for actual drag, not for clicks
+  e.stopPropagation();
+  
   let hasMoved = false;
+  const startX = e.clientX;
+  const startY = e.clientY;
   
   const draggedCards = Array.from(selectedCards);
   if (!draggedCards.includes(card)) {
@@ -293,22 +363,28 @@ function handleCardMouseDown(e, card) {
   const originalParents = new Map(draggedCards.map(c => [c, c.parentElement]));
   
   const moveListener = (moveE) => {
-    hasMoved = true;
-    e.preventDefault();
+    const dx = Math.abs(moveE.clientX - startX);
+    const dy = Math.abs(moveE.clientY - startY);
     
-    draggedCards.forEach((c, idx) => {
-      if (!c.classList.contains('dragging')) {
-        c.classList.add('dragging', 'dragging-ghost');
-        document.body.appendChild(c);
-      }
-      if (idx === 0) {
-        c.style.left = (moveE.clientX - 50) + 'px';
-        c.style.top = (moveE.clientY - 15) + 'px';
-      } else {
-        c.style.left = (moveE.clientX - 50) + 'px';
-        c.style.top = (moveE.clientY - 15 + idx * 28) + 'px';
-      }
-    });
+    if (dx > 5 || dy > 5) {
+      hasMoved = true;
+    }
+    
+    if (hasMoved) {
+      draggedCards.forEach((c, idx) => {
+        if (!c.classList.contains('dragging')) {
+          c.classList.add('dragging', 'dragging-ghost');
+          document.body.appendChild(c);
+        }
+        if (idx === 0) {
+          c.style.left = (moveE.clientX - 50) + 'px';
+          c.style.top = (moveE.clientY - 15) + 'px';
+        } else {
+          c.style.left = (moveE.clientX - 50) + 'px';
+          c.style.top = (moveE.clientY - 15 + idx * 28) + 'px';
+        }
+      });
+    }
   };
   
   const upListener = (upE) => {
@@ -316,13 +392,11 @@ function handleCardMouseDown(e, card) {
     document.removeEventListener('mouseup', upListener);
     
     if (!hasMoved) {
-      // Just a click, trigger color picker
       const name = card.getAttribute('data-name');
       showColorPicker(name, card);
       return;
     }
     
-    // It was a drag
     if (draggedCards.length > 0) {
       const targetZone = getTargetZone(upE.clientX, upE.clientY);
       if (targetZone) {
@@ -336,7 +410,7 @@ function handleCardMouseDown(e, card) {
           targetContainer.appendChild(c);
           c.setAttribute('data-zone', targetZone);
           const color = getZoneColor(targetZone);
-          c.style.cssText = `background:${color}20; border-color:${color}60; color:#1a1a1a; display: flex; align-items: center; justify-content: space-between;`;
+          c.style.cssText = `background:${color}; border-color:${color}; color:#fff; display: flex; align-items: center; justify-content: space-between;`;
           c.classList.remove('dragging-ghost');
         });
         updateCounts();
@@ -407,36 +481,31 @@ function handleCardTouchStart(e, card) {
           targetContainer.appendChild(card);
           card.setAttribute('data-zone', targetZone);
           const color = getZoneColor(targetZone);
-          card.style.cssText = `background:${color}20; border-color:${color}60; color:#1a1a1a;`;
+          card.style.cssText = `background:${color}; border-color:${color}; color:#fff;`;
           card.classList.remove('dragging-ghost');
         });
         updateCounts();
-      } else {
-        draggedCards.forEach(card => {
-          card.classList.remove('dragging', 'dragging-ghost');
-          card.style.position = '';
-          card.style.left = '';
-          card.style.top = '';
-          card.style.zIndex = '';
-          const originalParent = originalParents.get(card);
+          c.classList.remove('dragging', 'dragging-ghost');
+          c.style.position = '';
+          c.style.left = '';
+          c.style.top = '';
+          c.style.zIndex = '';
+          const originalParent = originalParents.get(c);
           if (originalParent) {
-            originalParent.appendChild(card);
+            originalParent.appendChild(c);
           }
         });
       }
     }
-    document.removeEventListener('touchmove', moveListener);
-    document.removeEventListener('touchend', endListener);
-    dragSource = null;
-    isDraggingMultiple = false;
   };
   
   document.addEventListener('touchmove', moveListener, false);
   document.addEventListener('touchend', endListener, false);
+  dragSource = null;
+  isDraggingMultiple = false;
 }
 
 function handleCardClick(e, card) {
-  // Single click/drag detection
   if (e.button !== 0) return;
   if (e.target.closest('button')) return;
   
@@ -486,7 +555,6 @@ function handleCardClick(e, card) {
       return;
     }
     
-    // It was a drag
     if (draggedCards.length > 0) {
       const targetZone = getTargetZone(upE.clientX, upE.clientY);
       if (targetZone) {
@@ -500,7 +568,7 @@ function handleCardClick(e, card) {
           targetContainer.appendChild(c);
           c.setAttribute('data-zone', targetZone);
           const color = getZoneColor(targetZone);
-          c.style.cssText = `background:${color}20; border-color:${color}60; color:#1a1a1a; display: flex; align-items: center; justify-content: space-between;`;
+          c.style.cssText = `background:${color}; border-color:${color}; color:#fff; display: flex; align-items: center; justify-content: space-between;`;
           c.classList.remove('dragging-ghost');
         });
         updateCounts();
@@ -764,6 +832,9 @@ window.elementSdk.init({
 // Initialize
 renderCanvas();
 lucide.createIcons();
+
+// Add selection box listener to entire document
+document.addEventListener('mousedown', startSelectionBox);
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9eec1c913200fdfb',t:'MTc3NjYwMzgzMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9eec2810d0e2fdfb',t:'MTc3NjYwNDMwMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
