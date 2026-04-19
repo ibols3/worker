@@ -69,38 +69,38 @@ input:focus,select:focus{outline:none}
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
  <body class="h-full">
-  <div class="app-wrap" id="app">
-   <!-- LEFT SIDEBAR -->
+  <div class="app-wrap" id="app"><!-- LEFT SIDEBAR -->
    <div class="sidebar-left">
-    <div class="sidebar-title flex items-center gap-2"><i data-lucide="users" style="width:16px;height:16px"></i> Pool List
+    <div class="sidebar-title flex items-center gap-2">
+     <i data-lucide="users" style="width:16px;height:16px"></i> Pool List
     </div>
     <div class="scroll-y" id="poolList"></div>
     <div style="padding:8px;border-top:1px solid #1a1a5e;flex-shrink:0">
-     <form id="addForm" class="flex gap-1">
-      <select id="addType" class="bg-transparent border border-gray-600 rounded px-2 py-1 text-xs text-white" style="cursor:pointer"> <option value="worker">Worker</option> <option value="subheading">Sub-Head</option> </select> <input id="addInput" type="text" placeholder="Add name..." class="flex-1 bg-transparent border border-gray-600 rounded px-2 py-1 text-xs text-white" style="min-width:0"> <button type="submit" class="btn-sm bg-emerald-600 text-white hover:bg-emerald-500"><i data-lucide="plus" style="width:14px;height:14px"></i></button>
+     <form id="addForm" class="flex gap-1"><select id="addType" class="bg-transparent border border-gray-600 rounded px-2 py-1 text-xs text-white" style="cursor:pointer"> <option value="worker">Worker</option> <option value="subheading">Sub-Head</option> </select> <input id="addInput" type="text" placeholder="Add name..." class="flex-1 bg-transparent border border-gray-600 rounded px-2 py-1 text-xs text-white" style="min-width:0"> <button type="submit" class="btn-sm bg-emerald-600 text-white hover:bg-emerald-500"><i data-lucide="plus" style="width:14px;height:14px"></i></button>
      </form>
     </div>
    </div><!-- CENTER -->
    <div class="center-area" id="centerScroll">
-    <div class="a4-canvas" id="a4canvas">
-     <!-- HEADER -->
+    <div class="a4-canvas" id="a4canvas"><!-- HEADER -->
      <div style="display:flex;align-items:flex-start;gap:24px;margin-bottom:12px">
-      <div style="height:80px;flex-shrink:0"><img src="https://lh3.googleusercontent.com/d/1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" style="height:80px;object-fit:contain" alt="Logo" loading="lazy" onerror="this.style.background='#e5e7eb';this.alt='Logo unavailable';this.style.width='80px'">
+      <div style="height:80px;flex-shrink:0">
+       <img src="https://lh3.googleusercontent.com/d/1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" style="height:80px;object-fit:contain" alt="Logo" loading="lazy" onerror="this.style.background='#e5e7eb';this.alt='Logo unavailable';this.style.width='80px'">
       </div>
       <div style="flex:1;text-align:center;padding-top:8px">
        <div style="font-size:40px;font-weight:800;line-height:1.1">
         <div id="canvasMainTitle">
          I.B.O.L
         </div>
-        <div style="display:flex;align-items:center;gap:8px;justify-content:center">
-         <span id="canvasDayLabel">DAY</span> <select id="daySelect" style="font-size:40px;font-weight:800;border:none;background:transparent;appearance:none;width:70px;cursor:pointer;text-align:center;padding:0;margin:0"></select>
+        <div style="display:flex;align-items:center;gap:8px;justify-content:center"><span id="canvasDayLabel">DAY</span> <select id="daySelect" style="font-size:40px;font-weight:800;border:none;background:transparent;appearance:none;width:70px;cursor:pointer;text-align:center;padding:0;margin:0"></select>
         </div>
        </div>
       </div>
-      <div style="padding-top:8px">
-       <div id="dateFormatted" style="font-size:16px;color:#CC0000;font-weight:700;text-align:right;cursor:pointer;user-select:none;padding:4px 8px;border-radius:4px;transition:background 0.2s" title="Click to change date">
-        MINGGU, 19 APRIL 26
-       </div><input type="date" id="dateInput" style="display:none" title="Select date">
+      <div style="padding-top:8px;text-align:right">
+       <div style="position:relative;display:inline-block">
+        <div id="dateFormatted" style="font-size:16px;color:#CC0000;font-weight:700;user-select:none;padding:4px 8px;border-radius:4px;transition:all 0.2s;display:inline-block;pointer-events:none" title="Click to change date">
+         MINGGU, 19 APRIL 26
+        </div><input type="date" id="dateInput" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;display:block !important;margin:0;padding:0;border:none;background:transparent">
+       </div>
       </div>
      </div><!-- ZONES GRID -->
      <div class="zones-grid" id="zonesGrid"></div><!-- STANDBY -->
@@ -111,18 +111,20 @@ input:focus,select:focus{outline:none}
       <div class="standby-names" id="standbyNames"></div>
      </div><!-- COUNTER -->
      <div style="margin-top:12px;padding-top:8px;border-top:1px solid #ddd;text-align:left;font-size:13px;font-weight:700">
-      <div style="margin-bottom:4px"><span style="color:#CC0000">TOTAL PEKERJA BEKERJA: <span id="countWork" style="color:#CC0000">0</span></span>
+      <div style="margin-bottom:4px">
+       <span style="color:#CC0000">TOTAL PEKERJA BEKERJA: <span id="countWork" style="color:#CC0000">0</span></span>
       </div>
-      <div><span style="color:#7c3aed">TOTAL PEKERJA STANDBY: <span id="countStandby" style="color:#7c3aed">0</span></span>
+      <div>
+       <span style="color:#7c3aed">TOTAL PEKERJA STANDBY: <span id="countStandby" style="color:#7c3aed">0</span></span>
       </div>
      </div>
     </div>
    </div><!-- RIGHT SIDEBAR -->
    <div class="sidebar-right">
-    <div class="sidebar-title flex items-center gap-2"><i data-lucide="layout" style="width:16px;height:16px"></i> Zone &amp; Export
+    <div class="sidebar-title flex items-center gap-2">
+     <i data-lucide="layout" style="width:16px;height:16px"></i> Zone &amp; Export
     </div>
-    <div class="scroll-y" style="padding:10px;display:flex;flex-direction:column;gap:8px">
-     <button id="btnAddZone" class="btn-sm bg-blue-600 text-white hover:bg-blue-500 w-full"><i data-lucide="plus-square" style="width:14px;height:14px"></i> Add Zone</button> <button id="btnExport" class="btn-sm bg-amber-600 text-white hover:bg-amber-500 w-full"><i data-lucide="download" style="width:14px;height:14px"></i> Download JPEG</button>
+    <div class="scroll-y" style="padding:10px;display:flex;flex-direction:column;gap:8px"><button id="btnAddZone" class="btn-sm bg-blue-600 text-white hover:bg-blue-500 w-full"><i data-lucide="plus-square" style="width:14px;height:14px"></i> Add Zone</button> <button id="btnExport" class="btn-sm bg-amber-600 text-white hover:bg-amber-500 w-full"><i data-lucide="download" style="width:14px;height:14px"></i> Download JPEG</button>
      <div class="text-xs text-gray-400 mt-4">
       <p class="mb-2">• Drag names from pool to zones</p>
       <p class="mb-2">• Double-click name on canvas to change color</p>
@@ -203,21 +205,40 @@ function formatDateIndo(dateStr) {
   return `${dayName}, ${dayNum} ${monthName} ${yearShort}`;
 }
 
-// Update formatted date on load and when changed
+// Update formatted date on page load
 function updateDateDisplay() {
   document.getElementById('dateFormatted').textContent = formatDateIndo(dateInput.value);
 }
 
-// Date picker click handler
-document.getElementById('dateFormatted').addEventListener('click', () => {
-  dateInput.click();
+// Trigger date picker when clicking on date text
+const dateDisplay = document.getElementById('dateFormatted');
+dateDisplay.addEventListener('click', function() {
+  const dateInputEl = document.getElementById('dateInput');
+  dateInputEl.click();
 });
 
-// Date input change handler
-dateInput.addEventListener('change', updateDateDisplay);
+// Handle date input change - triggered when user selects from date picker
+dateInput.addEventListener('change', function() {
+  if(this.value) {
+    document.getElementById('dateFormatted').textContent = formatDateIndo(this.value);
+  }
+});
+
+// Hover effects on date text
+dateDisplay.addEventListener('mouseenter', function() {
+  this.style.opacity = '0.7';
+  this.style.textDecoration = 'underline';
+  this.style.textDecorationColor = '#CC0000';
+  this.style.textDecorationThickness = '1px';
+  this.style.textUnderlineOffset = '3px';
+});
+
+dateDisplay.addEventListener('mouseleave', function() {
+  this.style.opacity = '1';
+  this.style.textDecoration = 'none';
+});
 
 updateDateDisplay();
-dateInput.value = new Date().toISOString().split('T')[0];
 
 // ---- POOL RENDER ----
 function renderPool(){
@@ -854,5 +875,5 @@ addZone();addZone();
 updateCounts();
 lucide.createIcons();
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9eee666074b3ea77',t:'MTc3NjYyNzgyNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9eee72ab859cea81',t:'MTc3NjYyODMyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
