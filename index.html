@@ -11,8 +11,9 @@
   <style>
 * { font-family: 'DM Sans', sans-serif; box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
-#app-wrapper { height: 100%; display: flex; gap: 20px; padding: 20px; background: #f5f5f5; overflow-y: auto; }
+#app-wrapper { height: 100%; display: flex; gap: 20px; padding: 20px; background: #f5f5f5; overflow-y: auto; flex-direction: row; }
 .canvas-section { flex: 1; min-width: 0; }
+.pool-section { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 280px; height: fit-content; flex-shrink: 0; }
 .config-panel { width: 300px; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); height: fit-content; overflow-y: auto; max-height: 100vh; }
 .config-panel h3 { margin: 0 0 12px 0; font-size: 14px; font-weight: 600; color: #1a1a1a; }
 .config-section { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
@@ -42,7 +43,7 @@ html, body { height: 100%; margin: 0; }
 .a4-title { font-size: 24px; font-weight: 700; color: #1a1a1a; margin: 0; }
 .a4-subtitle { font-size: 12px; color: #666; margin: 4px 0 0 0; }
 .a4-content { flex: 1; display: flex; gap: 15px; padding: 20px 25px; overflow: hidden; transition: gap 0.3s, flex-direction 0.3s; }
-.a4-left { flex: 0 0 35%; display: flex; flex-direction: column; gap: 10px; }
+.a4-left { display: none; }
 .a4-right { flex: 1; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; overflow-x: hidden; }
 .zone-header { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
 .zone-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
@@ -73,6 +74,14 @@ html, body { height: 100%; margin: 0; }
  </head>
  <body class="h-full" style="background:#f5f5f5;">
   <div id="app-wrapper">
+   <div class="pool-section">
+    <div class="zone-header" style="color:#ca8a04; margin-bottom: 12px;">
+     <div class="zone-dot" style="background:#ca8a04;"></div><span id="pool-name">Pool List</span> <span id="pool-count" class="zone-count" style="background:#ca8a0420;color:#ca8a04;">10</span>
+    </div>
+    <div id="pool" class="zone-container" style="border-color:#ca8a0440; background:#ca8a0408; margin-bottom: 12px;"></div>
+    <div style="display:flex; gap:6px;"><input type="text" id="new-name-input" class="config-input" placeholder="Ketik nama baru..." style="flex:1; margin:0;"> <button class="btn btn-primary btn-sm" onclick="addNameToPool()" style="padding:8px 10px;">+ Add</button>
+    </div>
+   </div>
    <div class="canvas-section">
     <div class="a4-canvas">
      <div class="a4-header">
@@ -80,16 +89,6 @@ html, body { height: 100%; margin: 0; }
       <p id="board-subtitle" class="a4-subtitle">Drag names to assign members</p>
      </div>
      <div class="a4-content">
-      <div class="a4-left">
-       <div class="zone-header" style="color:#a78bfa;">
-        <div class="zone-dot" style="background:#a78bfa;"></div><span id="pool-name">Pool List</span> <span id="pool-count" class="zone-count" style="background:#a78bfa20;color:#a78bfa;">10</span>
-        <div class="zone-header-actions"><button class="zone-header-btn" title="Toggle visibility" data-zone="pool" data-action="toggle">👁️</button>
-        </div>
-       </div>
-       <div id="pool" class="zone-container" style="border-color:#a78bfa40; background:#a78bfa08;"></div>
-       <div style="display:flex; gap:6px; margin-top:8px;"><input type="text" id="new-name-input" class="config-input" placeholder="Ketik nama baru..." style="flex:1; margin:0;"> <button class="btn btn-primary btn-sm" onclick="addNameToPool()" style="padding:8px 10px;">+ Add</button>
-       </div>
-      </div>
       <div class="a4-right" id="zones-container"></div>
      </div>
     </div>
@@ -97,24 +96,20 @@ html, body { height: 100%; margin: 0; }
    <div class="config-panel">
     <h3>⚙️ Configuration</h3>
     <div class="config-section">
-     <h4 style="margin: 0 0 12px 0; font-size: 13px;">📋 Draggable Lists</h4>
-     <div id="lists-config"></div><button class="btn btn-primary" style="width:100%; margin-top: 8px;" onclick="addNewList()">+ Add List</button>
-    </div>
-    <div class="config-section">
      <h4 style="margin: 0 0 12px 0; font-size: 13px;">📦 Drop Zones</h4>
      <div id="zones-config"></div><button class="btn btn-primary" style="width:100%; margin-top: 8px;" onclick="addNewZone()">+ Add Zone</button>
     </div>
    </div>
   </div>
   <script>
-// Color palette
+// Color palette - BOLD colors
 const colorOptions = {
-  merah: '#ef4444',
-  kuning: '#eab308',
-  oren: '#f97316',
-  biru: '#3b82f6',
-  pink: '#ec4899',
-  hijau: '#10b981'
+  merah: '#dc2626',
+  kuning: '#ca8a04',
+  oren: '#ea580c',
+  biru: '#1d4ed8',
+  pink: '#be185d',
+  hijau: '#047857'
 };
 
 const colorNames = {
@@ -173,9 +168,8 @@ function createCard(name, zone) {
   div.appendChild(nameSpan);
   div.appendChild(editBtn);
   
-  div.addEventListener('mousedown', (e) => handleCardMouseDown(e, div));
+  div.addEventListener('mousedown', (e) => handleCardClick(e, div));
   div.addEventListener('touchstart', (e) => handleCardTouchStart(e, div), false);
-  div.addEventListener('click', (e) => handleCardClick(e, div));
   
   return div;
 }
@@ -276,25 +270,32 @@ function getZoneColor(zoneId) {
 }
 
 function handleCardMouseDown(e, card) {
-  e.preventDefault();
   if (e.button !== 0) return;
   
-  if (!selectedCards.has(card)) {
-    if (!e.ctrlKey && !e.metaKey && !e.shiftKey) {
-      selectedCards.forEach(c => c.classList.remove('selected'));
-      selectedCards.clear();
-    }
+  // If double-clicking, don't start drag
+  if (e.detail > 1) return;
+  
+  // If clicking on button (edit btn), don't start drag
+  if (e.target.closest('button')) return;
+  
+  // Prevent default only for actual drag, not for clicks
+  let hasMoved = false;
+  
+  const draggedCards = Array.from(selectedCards);
+  if (!draggedCards.includes(card)) {
+    draggedCards.length = 0;
+    draggedCards.push(card);
+    selectedCards.clear();
     selectedCards.add(card);
     card.classList.add('selected');
   }
   
-  dragSource = card;
-  isDraggingMultiple = selectedCards.size > 1;
-  
-  const draggedCards = Array.from(selectedCards);
   const originalParents = new Map(draggedCards.map(c => [c, c.parentElement]));
   
   const moveListener = (moveE) => {
+    hasMoved = true;
+    e.preventDefault();
+    
     draggedCards.forEach((c, idx) => {
       if (!c.classList.contains('dragging')) {
         c.classList.add('dragging', 'dragging-ghost');
@@ -311,41 +312,48 @@ function handleCardMouseDown(e, card) {
   };
   
   const upListener = (upE) => {
-    if (dragSource && selectedCards.size > 0) {
+    document.removeEventListener('mousemove', moveListener);
+    document.removeEventListener('mouseup', upListener);
+    
+    if (!hasMoved) {
+      // Just a click, trigger color picker
+      const name = card.getAttribute('data-name');
+      showColorPicker(name, card);
+      return;
+    }
+    
+    // It was a drag
+    if (draggedCards.length > 0) {
       const targetZone = getTargetZone(upE.clientX, upE.clientY);
       if (targetZone) {
         const targetContainer = document.getElementById(targetZone);
-        draggedCards.forEach(card => {
-          card.classList.remove('dragging');
-          card.style.position = '';
-          card.style.left = '';
-          card.style.top = '';
-          card.style.zIndex = '';
-          targetContainer.appendChild(card);
-          card.setAttribute('data-zone', targetZone);
+        draggedCards.forEach(c => {
+          c.classList.remove('dragging');
+          c.style.position = '';
+          c.style.left = '';
+          c.style.top = '';
+          c.style.zIndex = '';
+          targetContainer.appendChild(c);
+          c.setAttribute('data-zone', targetZone);
           const color = getZoneColor(targetZone);
-          card.style.cssText = `background:${color}20; border-color:${color}60; color:#1a1a1a;`;
-          card.classList.remove('dragging-ghost');
+          c.style.cssText = `background:${color}20; border-color:${color}60; color:#1a1a1a; display: flex; align-items: center; justify-content: space-between;`;
+          c.classList.remove('dragging-ghost');
         });
         updateCounts();
       } else {
-        draggedCards.forEach(card => {
-          card.classList.remove('dragging', 'dragging-ghost');
-          card.style.position = '';
-          card.style.left = '';
-          card.style.top = '';
-          card.style.zIndex = '';
-          const originalParent = originalParents.get(card);
+        draggedCards.forEach(c => {
+          c.classList.remove('dragging', 'dragging-ghost');
+          c.style.position = '';
+          c.style.left = '';
+          c.style.top = '';
+          c.style.zIndex = '';
+          const originalParent = originalParents.get(c);
           if (originalParent) {
-            originalParent.appendChild(card);
+            originalParent.appendChild(c);
           }
         });
       }
     }
-    document.removeEventListener('mousemove', moveListener);
-    document.removeEventListener('mouseup', upListener);
-    dragSource = null;
-    isDraggingMultiple = false;
   };
   
   document.addEventListener('mousemove', moveListener);
@@ -428,30 +436,92 @@ function handleCardTouchStart(e, card) {
 }
 
 function handleCardClick(e, card) {
-  if (e.ctrlKey || e.metaKey) {
-    if (selectedCards.has(card)) {
-      selectedCards.delete(card);
-      card.classList.remove('selected');
-    } else {
-      selectedCards.add(card);
-      card.classList.add('selected');
-    }
-  } else if (e.shiftKey && dragSource) {
-    const allCards = [...document.querySelectorAll('.name-card')];
-    const dragIdx = allCards.indexOf(dragSource);
-    const cardIdx = allCards.indexOf(card);
-    const [start, end] = dragIdx < cardIdx ? [dragIdx, cardIdx] : [cardIdx, dragIdx];
+  // Single click/drag detection
+  if (e.button !== 0) return;
+  if (e.target.closest('button')) return;
+  
+  e.stopPropagation();
+  
+  let hasMoved = false;
+  const startX = e.clientX;
+  const startY = e.clientY;
+  
+  const draggedCards = [card];
+  if (!selectedCards.has(card)) {
     selectedCards.forEach(c => c.classList.remove('selected'));
     selectedCards.clear();
-    for (let i = start; i <= end; i++) {
-      selectedCards.add(allCards[i]);
-      allCards[i].classList.add('selected');
-    }
-  } else {
-    // Default: show color picker on click
-    const name = card.getAttribute('data-name');
-    showColorPicker(name, card);
+    selectedCards.add(card);
+    card.classList.add('selected');
   }
+  
+  const originalParents = new Map(draggedCards.map(c => [c, c.parentElement]));
+  
+  const moveListener = (moveE) => {
+    const dx = Math.abs(moveE.clientX - startX);
+    const dy = Math.abs(moveE.clientY - startY);
+    
+    if (dx > 5 || dy > 5) {
+      hasMoved = true;
+    }
+    
+    if (hasMoved) {
+      draggedCards.forEach((c) => {
+        if (!c.classList.contains('dragging')) {
+          c.classList.add('dragging', 'dragging-ghost');
+          document.body.appendChild(c);
+        }
+        c.style.left = (moveE.clientX - 50) + 'px';
+        c.style.top = (moveE.clientY - 15) + 'px';
+      });
+    }
+  };
+  
+  const upListener = (upE) => {
+    document.removeEventListener('mousemove', moveListener);
+    document.removeEventListener('mouseup', upListener);
+    
+    if (!hasMoved) {
+      const name = card.getAttribute('data-name');
+      showColorPicker(name, card);
+      return;
+    }
+    
+    // It was a drag
+    if (draggedCards.length > 0) {
+      const targetZone = getTargetZone(upE.clientX, upE.clientY);
+      if (targetZone) {
+        const targetContainer = document.getElementById(targetZone);
+        draggedCards.forEach(c => {
+          c.classList.remove('dragging');
+          c.style.position = '';
+          c.style.left = '';
+          c.style.top = '';
+          c.style.zIndex = '';
+          targetContainer.appendChild(c);
+          c.setAttribute('data-zone', targetZone);
+          const color = getZoneColor(targetZone);
+          c.style.cssText = `background:${color}20; border-color:${color}60; color:#1a1a1a; display: flex; align-items: center; justify-content: space-between;`;
+          c.classList.remove('dragging-ghost');
+        });
+        updateCounts();
+      } else {
+        draggedCards.forEach(c => {
+          c.classList.remove('dragging', 'dragging-ghost');
+          c.style.position = '';
+          c.style.left = '';
+          c.style.top = '';
+          c.style.zIndex = '';
+          const originalParent = originalParents.get(c);
+          if (originalParent) {
+            originalParent.appendChild(c);
+          }
+        });
+      }
+    }
+  };
+  
+  document.addEventListener('mousemove', moveListener);
+  document.addEventListener('mouseup', upListener);
 }
 
 function getTargetZone(x, y) {
@@ -521,31 +591,7 @@ function renderCanvas() {
 }
 
 function renderConfig() {
-  // Render draggable lists config
-  const listsConfig = document.getElementById('lists-config');
-  listsConfig.innerHTML = '';
-  
-  draggableLists.forEach(list => {
-    const item = document.createElement('div');
-    item.className = 'list-item';
-    item.innerHTML = `
-      <div style="flex:1;">
-        <input type="text" class="config-input" value="${list.name}" style="margin-bottom:4px;" onchange="updateListName('${list.id}', this.value)">
-        <div class="color-palette">
-          ${Object.entries(colorOptions).map(([name, hex]) => `
-            <button class="color-btn ${list.color === hex ? 'active' : ''}" 
-              style="background:${hex};" 
-              onclick="updateListColor('${list.id}', '${hex}')"
-              title="${name}"></button>
-          `).join('')}
-        </div>
-      </div>
-      <button class="btn btn-danger btn-sm" onclick="removeList('${list.id}')" style="margin-left:8px;">✕</button>
-    `;
-    listsConfig.appendChild(item);
-  });
-  
-  // Render drop zones config
+  // Render drop zones config only
   const zonesConfig = document.getElementById('zones-config');
   zonesConfig.innerHTML = '';
   
@@ -575,7 +621,7 @@ function addNewList() {
   draggableLists.push({
     id: newId,
     name: 'New List',
-    color: '#a78bfa',
+    color: '#ca8a04',
     visible: true,
     items: []
   });
@@ -587,7 +633,7 @@ function addNewZone() {
   dropZones.push({
     id: newId,
     name: 'New Zone',
-    color: '#f59e0b',
+    color: '#ea580c',
     visible: true
   });
   renderCanvas();
@@ -719,5 +765,5 @@ window.elementSdk.init({
 renderCanvas();
 lucide.createIcons();
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9eec108210b0fdfb',t:'MTc3NjYwMzMzNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9eec1c913200fdfb',t:'MTc3NjYwMzgzMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
