@@ -41,8 +41,8 @@ body{background:#000033;color:#fff}
 .color-popup{position:fixed;z-index:9999;background:#1e1e2e;border:1px solid #444;border-radius:8px;padding:8px;display:flex;gap:6px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
 .color-popup .swatch{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .15s}
 .color-popup .swatch:hover{transform:scale(1.2);border-color:#fff}
-.marquee{position:fixed;border:1px dashed #4f8fff;background:rgba(79,143,255,.1);z-index:9998;pointer-events:none}
-.selected-name{outline:2px solid #4f8fff;outline-offset:1px}
+.marquee{position:fixed;border:2px dashed #3b82f6;background:rgba(59,130,246,0.15);z-index:9998;pointer-events:none}
+.selected-name{background:#fbbf24 !important;border:2px solid #fff;box-shadow:0 0 8px rgba(251,191,36,0.8);outline:none !important}
 .zones-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .btn-sm{padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:none;display:flex;align-items:center;gap:4px;justify-content:center;transition:background .2s}
 .scroll-y{overflow-y:auto;flex:1;min-height:0}
@@ -222,9 +222,56 @@ function onPoolDragStart(e){
 function onCanvasDragStart(e){
   const id=e.currentTarget.dataset.id;
   const src=e.currentTarget.closest('.zone-names,.standby-names');
+  
   if(selectedIds.size>0 && selectedIds.has(id)){
+    // Multi-select drag: move all selected names together
     dragData={type:'multi',ids:[...selectedIds],source:'canvas',srcEl:src};
+    
+    // Create professional ghost image showing all selected items
+    const dragImg = document.createElement('div');
+    dragImg.style.position='fixed';
+    dragImg.style.zIndex='10000';
+    dragImg.style.pointerEvents='none';
+    dragImg.style.opacity='0.9';
+    dragImg.style.background='#1e1e2e';
+    dragImg.style.border='2px solid #3b82f6';
+    dragImg.style.borderRadius='6px';
+    dragImg.style.padding='8px';
+    dragImg.style.minWidth='120px';
+    dragImg.style.boxShadow='0 10px 30px rgba(0,0,0,0.7)';
+    
+    let count=0;
+    const shownIds=[];
+    dragData.ids.forEach(selId=>{
+      const elem=document.querySelector(`.canvas-name[data-id="${selId}"]`);
+      if(elem && count<3){
+        const clone=elem.cloneNode(true);
+        clone.style.margin='3px 0';
+        clone.style.fontSize='11px';
+        clone.style.padding='4px 8px';
+        dragImg.appendChild(clone);
+        shownIds.push(selId);
+        count++;
+      }
+    });
+    
+    if(dragData.ids.length>3){
+      const more=document.createElement('div');
+      more.textContent=`+${dragData.ids.length-3} more`;
+      more.style.fontSize='10px';
+      more.style.padding='4px 8px';
+      more.style.textAlign='center';
+      more.style.color='#60a5fa';
+      more.style.fontWeight='600';
+      more.style.borderTop='1px solid #444';
+      dragImg.appendChild(more);
+    }
+    
+    document.body.appendChild(dragImg);
+    e.dataTransfer.setDragImage(dragImg,60,20);
+    setTimeout(()=>dragImg.remove(),0);
   } else {
+    // Single drag
     dragData={type:'single',id,source:'canvas',srcEl:src};
   }
   e.dataTransfer.effectAllowed='move';
@@ -279,12 +326,55 @@ function createCanvasName(entry){
   d.addEventListener('dragstart',onCanvasDragStart);
   d.addEventListener('touchstart',onTouchStart,{passive:false});
   d.addEventListener('dblclick',e=>openColorPicker(e,d));
+  d.addEventListener('click',e=>{
+    if(e.target.closest('.del'))return;
+    if(e.shiftKey || e.ctrlKey){
+      if(selectedIds.has(entry.id)){
+        selectedIds.delete(entry.id);
+        d.classList.remove('selected-name');
+      } else {
+        selectedIds.add(entry.id);
+        d.classList.add('selected-name');
+      }
+    } else {
+      selectedIds.clear();
+      document.querySelectorAll('.selected-name').forEach(n=>n.classList.remove('selected-name'));
+      selectedIds.add(entry.id);
+      d.classList.add('selected-name');
+    }
+  });
   d.querySelector('.del').addEventListener('click',()=>{
     const name=d.querySelector('.nm').textContent;
     const color=d.dataset.color;
+    selectedIds.delete(entry.id);
     d.remove();
+    
+    // Restore to pool - find original category and re-insert
+    const colorName = Object.keys(COLORS).find(k=>COLORS[k]===color) || 'gray';
+    const originalCat = INITIAL_POOL.find(g=>COLORS[g.cat]===color);
+    
     poolNames.push({id:entry.id, name, color});
-    renderPool();renumberAll();updateCounts();
+    
+    // Sort to maintain original category order and within-category insertion order
+    const catOrder={blue:0,yellow:1,orange:2,red:3,gray:4};
+    poolNames.sort((a,b)=>{
+      const catA=Object.keys(COLORS).find(k=>COLORS[k]===a.color)||'gray';
+      const catB=Object.keys(COLORS).find(k=>COLORS[k]===b.color)||'gray';
+      const oa=catOrder[catA]||4, ob=catOrder[catB]||4;
+      if(oa!==ob) return oa-ob;
+      
+      // Within same category, maintain insertion order from INITIAL_POOL
+      if(oa===catOrder[catA]){
+        const origIdxA = originalCat?.names.indexOf(a.name) ?? 999;
+        const origIdxB = originalCat?.names.indexOf(b.name) ?? 999;
+        if(origIdxA!==999 && origIdxB!==999) return origIdxA-origIdxB;
+      }
+      return 0;
+    });
+    
+    renderPool();
+    renumberAll();
+    updateCounts();
   });
   return d;
 }
@@ -349,39 +439,70 @@ document.addEventListener('click',e=>{
 
 // ---- MARQUEE SELECTION ----
 const centerArea = document.getElementById('centerScroll');
+let marqueeStartInViewport = null;
+
 centerArea.addEventListener('mousedown',e=>{
   if(e.target.closest('.canvas-name,.pool-item,.zone-label,.zone-title,.zone-subtitle,[contenteditable],.color-popup'))return;
   if(e.button!==0)return;
+  
   marqueeActive=true;
-  marqueeStart={x:e.clientX,y:e.clientY};
-  selectedIds.clear();
-  document.querySelectorAll('.selected-name').forEach(n=>n.classList.remove('selected-name'));
+  const scrollLeft = centerArea.scrollLeft;
+  const scrollTop = centerArea.scrollTop;
+  marqueeStartInViewport={x:e.clientX, y:e.clientY};
+  marqueeStart={x:e.clientX + scrollLeft, y:e.clientY + scrollTop};
+  
+  // Only clear selection if shift/ctrl not held
+  if(!e.shiftKey && !e.ctrlKey) {
+    selectedIds.clear();
+    document.querySelectorAll('.selected-name').forEach(n=>n.classList.remove('selected-name'));
+  }
+  
   const m=document.getElementById('marquee');
   m.style.display='block';
-  m.style.left=e.clientX+'px';m.style.top=e.clientY+'px';
-  m.style.width='0';m.style.height='0';
+  m.style.left=marqueeStartInViewport.x+'px';
+  m.style.top=marqueeStartInViewport.y+'px';
+  m.style.width='0';
+  m.style.height='0';
 });
+
 document.addEventListener('mousemove',e=>{
   if(!marqueeActive)return;
   const m=document.getElementById('marquee');
-  const x=Math.min(marqueeStart.x,e.clientX), y=Math.min(marqueeStart.y,e.clientY);
-  const w=Math.abs(e.clientX-marqueeStart.x), h=Math.abs(e.clientY-marqueeStart.y);
-  m.style.left=x+'px';m.style.top=y+'px';m.style.width=w+'px';m.style.height=h+'px';
+  const x=Math.min(marqueeStartInViewport.x,e.clientX);
+  const y=Math.min(marqueeStartInViewport.y,e.clientY);
+  const w=Math.abs(e.clientX-marqueeStartInViewport.x);
+  const h=Math.abs(e.clientY-marqueeStartInViewport.y);
+  m.style.left=x+'px';
+  m.style.top=y+'px';
+  m.style.width=w+'px';
+  m.style.height=h+'px';
+  
+  // Real-time collision detection for all canvas names
+  const mr=m.getBoundingClientRect();
+  const shouldAddMode = e.shiftKey || e.ctrlKey;
+  
+  document.querySelectorAll('.canvas-name').forEach(n=>{
+    const r=n.getBoundingClientRect();
+    const isIntersecting=r.left<mr.right&&r.right>mr.left&&r.top<mr.bottom&&r.bottom>mr.top;
+    const isSelected=selectedIds.has(n.dataset.id);
+    
+    if(isIntersecting && !isSelected){
+      // Enter marquee box - add to selection
+      selectedIds.add(n.dataset.id);
+      n.classList.add('selected-name');
+    } else if(!isIntersecting && isSelected && !shouldAddMode){
+      // Left marquee box - remove from selection (only if not in add mode)
+      selectedIds.delete(n.dataset.id);
+      n.classList.remove('selected-name');
+    }
+  });
 });
+
 document.addEventListener('mouseup',e=>{
   if(!marqueeActive)return;
   marqueeActive=false;
   const m=document.getElementById('marquee');
-  const mr=m.getBoundingClientRect();
   m.style.display='none';
-  if(mr.width<5&&mr.height<5)return;
-  document.querySelectorAll('.canvas-name').forEach(n=>{
-    const r=n.getBoundingClientRect();
-    if(r.left<mr.right&&r.right>mr.left&&r.top<mr.bottom&&r.bottom>mr.top){
-      selectedIds.add(n.dataset.id);
-      n.classList.add('selected-name');
-    }
-  });
 });
 
 // ---- TOUCH DND ----
@@ -526,5 +647,5 @@ addZone();addZone();
 updateCounts();
 lucide.createIcons();
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9eee2c4364450d23',t:'MTc3NjYyNTQ0NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9eee3a81e012fde8',t:'MTc3NjYyNjAyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
