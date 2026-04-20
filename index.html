@@ -171,7 +171,8 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
  <body class="h-full">
-  <div class="app-wrap"><!-- MOBILE MENU BUTTON --> <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button> <!-- DRAWER OVERLAY -->
+  <div class="app-wrap">
+   <!-- MOBILE MENU BUTTON --> <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button> <!-- DRAWER OVERLAY -->
    <div class="drawer-overlay" id="drawerOverlay"></div><!-- LEFT SIDEBAR -->
    <div class="sidebar-left" id="sidebarLeft">
     <div style="padding:10px 10px 6px;border-bottom:1px solid #1e3a5f">
@@ -179,28 +180,25 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
     </div>
     <div class="scroll-pool" id="poolList"></div>
     <div style="padding:8px;border-top:1px solid #1e3a5f;display:flex;flex-direction:column;gap:6px">
-     <div style="display:flex;gap:4px;flex-wrap:wrap">
-      <input id="newNameInput" type="text" placeholder="Worker name..." style="flex:1;min-width:100px;padding:8px;border-radius:5px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:11px;outline:none;min-height:36px"> <button id="addNameBtn" style="padding:8px 12px;background:#3b82f6;color:#fff;border:none;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;min-width:36px;min-height:36px">Add</button>
+     <div style="display:flex;gap:4px;flex-wrap:wrap"><input id="newNameInput" type="text" placeholder="Worker name..." style="flex:1;min-width:100px;padding:8px;border-radius:5px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:11px;outline:none;min-height:36px"> <button id="addNameBtn" style="padding:8px 12px;background:#3b82f6;color:#fff;border:none;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;min-width:36px;min-height:36px">Add</button>
      </div>
-     <div style="display:flex;gap:4px;flex-wrap:wrap">
-      <input id="newSubInput" type="text" placeholder="Sub header..." style="flex:1;min-width:100px;padding:8px;border-radius:5px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:11px;outline:none;min-height:36px"> <button id="addSubBtn" style="padding:8px 12px;background:#6b7280;color:#fff;border:none;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;min-width:36px;min-height:36px">Sub</button>
+     <div style="display:flex;gap:4px;flex-wrap:wrap"><input id="newSubInput" type="text" placeholder="Sub header..." style="flex:1;min-width:100px;padding:8px;border-radius:5px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:11px;outline:none;min-height:36px"> <button id="addSubBtn" style="padding:8px 12px;background:#6b7280;color:#fff;border:none;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;min-width:36px;min-height:36px">Sub</button>
      </div>
     </div>
    </div><!-- CANVAS AREA -->
    <div class="canvas-area" id="canvasScroll">
     <div class="a4-canvas" id="a4Canvas">
-     <div class="a4-inner" id="a4Inner"><!-- HEADER -->
+     <div class="a4-inner" id="a4Inner">
+      <!-- HEADER -->
       <div class="canvas-header">
-       <div class="canvas-logo">
-        <img src="https://lh3.googleusercontent.com/d/1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" alt="Logo" loading="lazy" onerror="this.style.background='#e5e7eb';this.alt='Logo unavailable';">
+       <div class="canvas-logo"><img src="https://lh3.googleusercontent.com/d/1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" alt="Logo" loading="lazy" onerror="this.style.background='#e5e7eb';this.alt='Logo unavailable';">
        </div>
        <div class="canvas-header-center">
         <div class="header-title" id="headerTitle">
          I.B.O.L
         </div>
         <div class="day-selection-row">
-         <div class="day-label-group">
-          <select id="dayTypeSelect" class="day-dropdown"> <option value="PREPS DAY">PREPS DAY</option> <option value="SHOOT DAY">SHOOT DAY</option> <option value="BONGKARAN DAY">BONGKARAN DAY</option> </select> <select id="numberSelect" class="number-dropdown"> </select>
+         <div class="day-label-group"><select id="dayTypeSelect" class="day-dropdown"> <option value="PREPS DAY">PREPS DAY</option> <option value="SHOOT DAY">SHOOT DAY</option> <option value="BONGKARAN DAY">BONGKARAN DAY</option> </select> <select id="numberSelect" class="number-dropdown"> </select>
          </div>
         </div>
        </div>
@@ -219,9 +217,11 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
        <div style="flex:1"></div>
       </div><!-- FOOTER -->
       <div class="footer-counts" id="footerCounts">
-       <div><span class="working">TOTAL PEKERJA BEKERJA: <span id="countWorking">0</span></span>
+       <div>
+        <span class="working">TOTAL PEKERJA BEKERJA: <span id="countWorking">0</span></span>
        </div>
-       <div><span class="standby">TOTAL PEKERJA STANDBY: <span id="countStandby">0</span></span>
+       <div>
+        <span class="standby">TOTAL PEKERJA STANDBY: <span id="countStandby">0</span></span>
        </div>
       </div>
      </div>
@@ -231,7 +231,8 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
     <div style="padding:10px;border-bottom:1px solid #1e3a5f">
      <h2 style="font-size:14px;font-weight:800;color:#93c5fd;display:flex;align-items:center;gap:6px"><i data-lucide="layout" style="width:16px;height:16px"></i> Zone &amp; Export</h2>
     </div>
-    <div style="padding:10px;display:flex;flex-direction:column;gap:8px"><button id="addZoneBtn" style="padding:10px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px"><i data-lucide="plus-square" style="width:13px;height:13px"></i> Add Zone</button> <button id="downloadBtn" style="padding:10px;background:#059669;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px"><i data-lucide="download" style="width:13px;height:13px"></i> Download</button>
+    <div style="padding:10px;display:flex;flex-direction:column;gap:8px">
+     <button id="addZoneBtn" style="padding:10px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px"><i data-lucide="plus-square" style="width:13px;height:13px"></i> Add Zone</button> <button id="downloadBtn" style="padding:10px;background:#059669;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px"><i data-lucide="download" style="width:13px;height:13px"></i> Download</button>
      <hr style="border-color:#1e3a5f">
      <div style="font-size:10px;color:#94a3b8">
       <p style="margin-bottom:2px"><strong>Tips:</strong></p>
@@ -246,8 +247,7 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px" id="swatchGrid"></div>
   </div><!-- CALENDAR POPUP -->
   <div class="calendar-popup" id="calendarPopup">
-   <div class="calendar-header">
-    <button id="prevMonth">◀ Bulan Sebelumnya</button>
+   <div class="calendar-header"><button id="prevMonth">◀ Bulan Sebelumnya</button>
     <div id="monthYear" style="font-weight:700;text-align:center;flex:1;font-size:16px;color:#1f2937"></div><button id="nextMonth">Bulan Berikutnya ▶</button>
    </div>
    <div class="calendar-grid" id="calendarGrid"></div>
@@ -1035,29 +1035,26 @@ document.addEventListener('click',e=>{
 // ============ MARQUEE SELECTION ============
 let marqueeActive=false,marqueeStart={x:0,y:0};
 const marqueeBox=document.getElementById('marqueeBox');
+let marqueeSelectMode=false; // Touch marquee mode flag
 
-document.addEventListener('mousedown',e=>{
-  // Prevent marquee when clicking on interactive elements
-  if(e.target.closest('.pool-item')||e.target.closest('.zone-item')||e.target.closest('input')||e.target.closest('button')||e.target.closest('select')||e.target.closest('textarea'))return;
-  
+function startMarqueeSelection(startX,startY){
   marqueeActive=true;
-  marqueeStart={x:e.clientX,y:e.clientY};
+  marqueeSelectMode=true;
+  marqueeStart={x:startX,y:startY};
   marqueeBox.style.display='block';
-  marqueeBox.style.left=e.clientX+'px';
-  marqueeBox.style.top=e.clientY+'px';
+  marqueeBox.style.left=startX+'px';
+  marqueeBox.style.top=startY+'px';
   marqueeBox.style.width='0';
   marqueeBox.style.height='0';
   selectedItems.clear();
   document.querySelectorAll('.selected-highlight').forEach(el=>el.classList.remove('selected-highlight'));
-});
+}
 
-document.addEventListener('mousemove',e=>{
-  if(!marqueeActive)return;
-  
-  const x=Math.min(e.clientX,marqueeStart.x);
-  const y=Math.min(e.clientY,marqueeStart.y);
-  const w=Math.abs(e.clientX-marqueeStart.x);
-  const h=Math.abs(e.clientY-marqueeStart.y);
+function updateMarqueeBox(currentX,currentY){
+  const x=Math.min(currentX,marqueeStart.x);
+  const y=Math.min(currentY,marqueeStart.y);
+  const w=Math.abs(currentX-marqueeStart.x);
+  const h=Math.abs(currentY-marqueeStart.y);
   
   marqueeBox.style.left=x+'px';
   marqueeBox.style.top=y+'px';
@@ -1102,14 +1099,30 @@ document.addEventListener('mousemove',e=>{
       el.classList.remove('selected-highlight');
     }
   });
-});
+}
 
-document.addEventListener('mouseup',()=>{
+function endMarqueeSelection(){
   if(marqueeActive){
     marqueeActive=false;
+    marqueeSelectMode=false;
     marqueeBox.style.display='none';
   }
+}
+
+// ============ MOUSE MARQUEE SELECTION ============
+document.addEventListener('mousedown',e=>{
+  // Prevent marquee when clicking on interactive elements
+  if(e.target.closest('.pool-item')||e.target.closest('.zone-item')||e.target.closest('input')||e.target.closest('button')||e.target.closest('select')||e.target.closest('textarea'))return;
+  
+  startMarqueeSelection(e.clientX,e.clientY);
 });
+
+document.addEventListener('mousemove',e=>{
+  if(!marqueeActive)return;
+  updateMarqueeBox(e.clientX,e.clientY);
+});
+
+document.addEventListener('mouseup',endMarqueeSelection);
 
 // ============ COUNTS ============
 function updateCounts(){
@@ -1166,6 +1179,77 @@ document.getElementById('downloadBtn').addEventListener('click',async()=>{
   }
 });
 
+// ============ TOUCH MARQUEE SELECTION ============
+let touchMarqueeTimer=null;
+let touchMarqueeActive=false;
+let touchMarqueeStart={x:0,y:0};
+const MARQUEE_LONG_PRESS_DURATION=500;
+const MARQUEE_TOUCH_THRESHOLD=15;
+
+function startTouchMarqueeTimer(touchX,touchY){
+  touchMarqueeTimer=setTimeout(()=>{
+    touchMarqueeActive=true;
+    startMarqueeSelection(touchX,touchY);
+    // Haptic feedback on mobile
+    if(navigator.vibrate)navigator.vibrate(80);
+  },MARQUEE_LONG_PRESS_DURATION);
+}
+
+function clearTouchMarqueeTimer(){
+  if(touchMarqueeTimer){
+    clearTimeout(touchMarqueeTimer);
+    touchMarqueeTimer=null;
+  }
+}
+
+document.addEventListener('touchstart',(e)=>{
+  // Only activate marquee for 1 finger on empty areas
+  if(e.touches.length!==1)return;
+  const touch=e.touches[0];
+  const target=e.target;
+  
+  // Don't trigger marquee on interactive elements
+  if(target.closest('.pool-item')||target.closest('.zone-item')||target.closest('input')||target.closest('button')||target.closest('select')||target.closest('textarea')){
+    clearTouchMarqueeTimer();
+    touchMarqueeActive=false;
+    return;
+  }
+  
+  touchMarqueeStart={x:touch.clientX,y:touch.clientY};
+  startTouchMarqueeTimer(touch.clientX,touch.clientY);
+},{passive:true});
+
+document.addEventListener('touchmove',(e)=>{
+  if(e.touches.length!==1){
+    clearTouchMarqueeTimer();
+    endMarqueeSelection();
+    return;
+  }
+  
+  const touch=e.touches[0];
+  const dx=Math.abs(touch.clientX-touchMarqueeStart.x);
+  const dy=Math.abs(touch.clientY-touchMarqueeStart.y);
+  
+  // If moved beyond threshold before long-press fired, cancel
+  if((dx+dy)>MARQUEE_TOUCH_THRESHOLD&&!touchMarqueeActive){
+    clearTouchMarqueeTimer();
+  }
+  
+  // If marquee is active, update the selection box
+  if(touchMarqueeActive){
+    updateMarqueeBox(touch.clientX,touch.clientY);
+    e.preventDefault();
+  }
+},{passive:false});
+
+document.addEventListener('touchend',(e)=>{
+  clearTouchMarqueeTimer();
+  if(touchMarqueeActive){
+    touchMarqueeActive=false;
+    endMarqueeSelection();
+  }
+},{passive:true});
+
 // ============ TWO-FINGER SCROLL GESTURE ============
 const scrollPool=document.getElementById('poolList');
 let touchStartY=0;
@@ -1175,6 +1259,10 @@ scrollPool.addEventListener('touchstart',(e)=>{
   touchFingerCount=e.touches.length;
   if(touchFingerCount===2){
     touchStartY=e.touches[0].clientY;
+    // Cancel any marquee selection on two-finger
+    endMarqueeSelection();
+    clearTouchMarqueeTimer();
+    touchMarqueeActive=false;
     // Enable scrolling for two-finger touch
     e.preventDefault();
   }
@@ -1210,5 +1298,5 @@ renderZones();
 
 lucide.createIcons();
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef343aba606d98b',t:'MTc3NjY3ODgzMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef35041d527a5d8',t:'MTc3NjY3OTM0Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
