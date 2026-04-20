@@ -32,21 +32,21 @@ body{background:#000033;color:#e2e8f0}
 .canvas-header-right{flex:0 0 auto;display:flex;align-items:center;justify-content:center;min-width:180px}
 .date-display{font-size:20px;font-weight:700;color:#ef4444;text-align:center;cursor:pointer;padding:8px 12px;border-radius:4px;transition:background .2s}
 .date-display:hover{background:rgba(239,68,68,.1)}
-.pool-item{padding:8px 10px;margin:3px 6px;border-radius:5px;cursor:grab;font-size:12px;font-weight:600;color:#fff;display:flex;align-items:center;gap:6px;user-select:none;transition:opacity .15s;border:1px solid #333;font-weight:700}
+.pool-item{padding:8px 12px;margin:3px 6px;border-radius:5px;cursor:grab;font-size:13px;font-weight:600;color:#fff;display:flex;align-items:center;gap:6px;user-select:none;transition:opacity .15s;border:1px solid #333;font-weight:700}
 .pool-item.blue{background:#2563eb}
 .pool-item.yellow{background:#eab308;color:#000}
 .pool-item.orange{background:#f97316;color:#fff}
 .pool-item.red{background:#ef4444}
 .pool-item.white{background:#fff;color:#000}
 .pool-item:active{cursor:grabbing;opacity:.7}
-.pool-sub-header{padding:8px 10px;margin:6px 6px 3px;border-radius:5px;font-size:11px;font-weight:700;color:#000;background:#6b7280;display:flex;align-items:center;user-select:none}
+.pool-sub-header{padding:10px 12px;margin:6px 6px 3px;border-radius:5px;font-size:12px;font-weight:700;color:#000;background:#6b7280;display:flex;align-items:center;user-select:none}
 .zone-container{border:2px solid #e5e7eb;border-radius:4px;min-height:100px;padding:0;margin:8px;flex:1;max-width:calc(33.333% - 16px);display:flex;flex-direction:column;position:relative}
 .zone-header-outside{font-size:26px;font-weight:700;color:#000;background:#9ca3af;padding:6px 8px;border-radius:3px 3px 0 0;cursor:text;text-align:left}
 .zone-titles{padding:8px;display:flex;flex-direction:column;gap:4px}
 .zone-main-title{font-size:14px;font-weight:700;color:#2563eb;outline:none;text-align:left}
 .zone-sub-title{font-size:12px;font-weight:700;font-style:italic;color:#ef4444;outline:none;text-align:left}
 .zone-body{flex:1;padding:6px;display:flex;flex-direction:column;gap:2px;min-height:150px;width:100%}
-.zone-item{padding:4px 8px;border-radius:3px;font-size:11px;font-weight:600;color:#fff;display:flex;align-items:center;gap:4px;cursor:grab;user-select:none}
+.zone-item{padding:8px 12px;border-radius:3px;font-size:14px;font-weight:600;color:#fff;display:flex;align-items:center;gap:4px;cursor:grab;user-select:none;transition:background 0.15s ease}
 .zone-item:active{cursor:grabbing}
 .zone-item .num{font-size:9px;min-width:18px;text-align:center;background:rgba(0,0,0,.25);border-radius:2px;padding:1px 2px}
 .zone-item .del-btn{margin-left:auto;cursor:pointer;opacity:.5;font-size:10px;padding:0 2px}
@@ -564,8 +564,9 @@ standbyBody.addEventListener('drop',e=>{
   selectedItems.clear();
   selectedItems.addAll=function(set){for(let v of set)this.add(v)};
   selectedItems.addAll(prevSelected);
-  renderPool();renderZones();renderStandby();
-  // Re-highlight selected items in standby
+  renderPool();
+  renderZones();
+  renderStandby();
   document.querySelectorAll('.standby-body .zone-item').forEach(el=>{
     if(selectedItems.has(el.dataset.itemId)){
       el.classList.add('selected-highlight');
@@ -586,14 +587,12 @@ function computeNumbering(items){
 // ============ DRAG HANDLERS ============
 function onPoolDragStart(e,item){
   const items=selectedItems.has(item.id)?poolItems.filter(p=>selectedItems.has(p.id)):[item];
-  dragData={source:'pool',itemId:item.id,items,selectedIds:new Set(items.map(i=>i.id))};
+  dragData={source:'pool',itemId:item.id,items:items.slice(),selectedIds:new Set(items.map(i=>i.id))};
   e.dataTransfer.effectAllowed='move';
-  // Keep selected items highlighted during drag
   e.dataTransfer.setDragImage(e.target,0,0);
 }
 
 function onZoneDragStart(e,zoneId,item){
-  // Include all selected zone items if current item is selected
   let items=[item];
   if(selectedItems.has(item.id)){
     const zone=zones.find(z=>z.id===zoneId);
@@ -601,19 +600,24 @@ function onZoneDragStart(e,zoneId,item){
       items=zone.items.filter(it=>selectedItems.has(it.id));
     }
   }
-  dragData={source:'zone',zoneId,itemId:item.id,items,selectedIds:new Set(items.map(i=>i.id))};
+  dragData={source:'zone',zoneId,itemId:item.id,items:items.slice(),selectedIds:new Set(items.map(i=>i.id))};
   e.dataTransfer.effectAllowed='move';
   e.dataTransfer.setDragImage(e.target,0,0);
 }
 
 function removeItemFromSource(itemId,source,zoneId){
   if(source==='pool'){
-    poolItems=poolItems.filter(p=>p.id!==itemId);
+    const idx=poolItems.findIndex(p=>p.id===itemId);
+    if(idx>-1)poolItems.splice(idx,1);
   }else if(source==='zone'&&zoneId){
     const zone=zones.find(z=>z.id===zoneId);
-    if(zone)zone.items=zone.items.filter(it=>it.id!==itemId);
+    if(zone){
+      const idx=zone.items.findIndex(it=>it.id===itemId);
+      if(idx>-1)zone.items.splice(idx,1);
+    }
   }else if(source==='standby'){
-    standbyItems=standbyItems.filter(s=>s.id!==itemId);
+    const idx=standbyItems.findIndex(s=>s.id===itemId);
+    if(idx>-1)standbyItems.splice(idx,1);
   }
 }
 
@@ -623,36 +627,35 @@ function onDropInZone(zoneId,body,e){
   if(!zone)return;
 
   const dropIndex=getDropIndex(body,e.clientY);
-
-  // Remove from source first
-  dragData.items.forEach(item=>{
-    removeItemFromSource(item.id,dragData.source,dragData.zoneId);
-  });
-
-  // Add to zone with preserved type
-  dragData.items.forEach(item=>{
-    zone.items.splice(dropIndex,0,{id:item.id,name:item.name,color:item.color,type:item.type});
-  });
-  
-  // Keep selected items in their set and maintain highlighting after drop
   const prevSelected=new Set(dragData.selectedIds);
+  
+  // Step 1: Remove all items from source
+  for(const item of dragData.items){
+    removeItemFromSource(item.id,dragData.source,dragData.zoneId);
+  }
+  
+  // Step 2: Add all items to destination
+  for(const item of dragData.items){
+    zone.items.splice(dropIndex,0,{id:item.id,name:item.name,color:item.color,type:item.type});
+  }
+  
+  // Step 3: Clear drag state before render
   dragData=null;
-  selectedItems.clear();
-  selectedItems.addAll=function(set){for(let v of set)this.add(v)};
-  selectedItems.addAll(prevSelected);
   
-  // Clear any lingering drag ghost elements
-  document.querySelectorAll('.sortable-ghost').forEach(el=>el.remove());
+  // Step 4: Single coordinated render pass
+  renderPool();
+  renderZones();
+  renderStandby();
   
-  renderPool();renderZones();renderStandby();
-  
-  // Re-highlight selected items in their new location
-  document.querySelectorAll('.zone-item, .pool-item').forEach(el=>{
-    const id=el.dataset.itemId||el.dataset.id;
-    if(selectedItems.has(id)){
-      el.classList.add('selected-highlight');
-    }
-  });
+  // Step 5: Restore selection
+  setTimeout(()=>{
+    document.querySelectorAll('.zone-item, .pool-item').forEach(el=>{
+      const id=el.dataset.itemId||el.dataset.id;
+      if(prevSelected.has(id)){
+        el.classList.add('selected-highlight');
+      }
+    });
+  },0);
 }
 
 function getDropIndex(body,clientY){
@@ -670,21 +673,33 @@ poolEl.addEventListener('drop',e=>{
   e.preventDefault();
   if(!dragData)return;
   const prevSelected=new Set(dragData.selectedIds);
-  dragData.items.forEach(item=>{
+  
+  // Step 1: Remove items from source
+  for(const item of dragData.items){
     removeItemFromSource(item.id,dragData.source,dragData.zoneId);
+  }
+  
+  // Step 2: Add items back to pool
+  for(const item of dragData.items){
     poolItems.push({id:item.id,name:item.name,color:item.color,type:item.type});
-  });
+  }
+  
+  // Step 3: Clear drag state
   dragData=null;
-  selectedItems.clear();
-  selectedItems.addAll=function(set){for(let v of set)this.add(v)};
-  selectedItems.addAll(prevSelected);
-  renderPool();renderZones();renderStandby();
-  // Re-highlight selected items in pool
-  document.querySelectorAll('#poolList .pool-item').forEach(el=>{
-    if(selectedItems.has(el.dataset.id)){
-      el.classList.add('selected-highlight');
-    }
-  });
+  
+  // Step 4: Single render pass
+  renderPool();
+  renderZones();
+  renderStandby();
+  
+  // Step 5: Restore selection
+  setTimeout(()=>{
+    document.querySelectorAll('#poolList .pool-item').forEach(el=>{
+      if(prevSelected.has(el.dataset.id)){
+        el.classList.add('selected-highlight');
+      }
+    });
+  },0);
 });
 
 // ============ DROP INDICATORS ============
@@ -734,13 +749,13 @@ function onTouchStart(e,source,zoneId,item){
       }else if(source==='pool'&&selectedItems.has(item.id)){
         items=poolItems.filter(p=>selectedItems.has(p.id));
       }
-      dragData={source,zoneId,itemId:item.id,items,selectedIds:new Set(items.map(i=>i.id))};
+      dragData={source,zoneId,itemId:item.id,items:items.slice(),selectedIds:new Set(items.map(i=>i.id))};
       touchClone=target.cloneNode(true);
       touchClone.style.cssText='position:fixed;z-index:10000;pointer-events:none;opacity:.8;transform:scale(1.05)';
       document.body.appendChild(touchClone);
     }
     
-    // Only update position if clone exists
+    // Update clone position only if it exists
     if(touchClone){
       touchClone.style.left=(t.clientX-40)+'px';
       touchClone.style.top=(t.clientY-12)+'px';
@@ -751,6 +766,7 @@ function onTouchStart(e,source,zoneId,item){
     document.removeEventListener('touchmove',onMove);
     document.removeEventListener('touchend',onEnd);
     
+    // Immediately remove clone
     if(touchClone){
       touchClone.remove();
       touchClone=null;
@@ -761,36 +777,58 @@ function onTouchStart(e,source,zoneId,item){
     const t=ev.changedTouches[0];
     const dropEl=document.elementFromPoint(t.clientX,t.clientY);
     const prevSelected=new Set(dragData.selectedIds);
+    
     if(dropEl){
       const zoneBody=dropEl.closest('.zone-body');
       const stBody=dropEl.closest('.standby-body');
       const poolArea=dropEl.closest('.scroll-pool');
+      
       if(zoneBody){
         const zId=zoneBody.dataset.zoneId;
         const zone=zones.find(z=>z.id===zId);
         if(zone){
           const di=getDropIndex(zoneBody,t.clientY);
-          dragData.items.forEach(it=>removeItemFromSource(it.id,dragData.source,dragData.zoneId));
-          zone.items.splice(di,0,...dragData.items.map(it=>({id:it.id,name:it.name,color:it.color})));
+          // Remove from source
+          for(const it of dragData.items){
+            removeItemFromSource(it.id,dragData.source,dragData.zoneId);
+          }
+          // Add to destination
+          for(const it of dragData.items){
+            zone.items.splice(di,0,{id:it.id,name:it.name,color:it.color,type:it.type});
+          }
         }
       }else if(stBody){
-        dragData.items.forEach(it=>{removeItemFromSource(it.id,dragData.source,dragData.zoneId);standbyItems.push(it)});
+        // Remove from source
+        for(const it of dragData.items){
+          removeItemFromSource(it.id,dragData.source,dragData.zoneId);
+          standbyItems.push(it);
+        }
       }else if(poolArea){
-        dragData.items.forEach(it=>{removeItemFromSource(it.id,dragData.source,dragData.zoneId);poolItems.push(it)});
+        // Remove from source
+        for(const it of dragData.items){
+          removeItemFromSource(it.id,dragData.source,dragData.zoneId);
+          poolItems.push(it);
+        }
       }
     }
+    
+    // Clear drag state before render
     dragData=null;
-    selectedItems.clear();
-    selectedItems.addAll=function(set){for(let v of set)this.add(v)};
-    selectedItems.addAll(prevSelected);
-    renderPool();renderZones();renderStandby();
-    // Re-highlight selected items
-    document.querySelectorAll('.zone-item, .pool-item, .standby-body .zone-item').forEach(el=>{
-      const id=el.dataset.itemId||el.dataset.id;
-      if(selectedItems.has(id)){
-        el.classList.add('selected-highlight');
-      }
-    });
+    
+    // Single render pass
+    renderPool();
+    renderZones();
+    renderStandby();
+    
+    // Restore selection
+    setTimeout(()=>{
+      document.querySelectorAll('.zone-item, .pool-item, .standby-body .zone-item').forEach(el=>{
+        const id=el.dataset.itemId||el.dataset.id;
+        if(prevSelected.has(id)){
+          el.classList.add('selected-highlight');
+        }
+      });
+    },0);
   }
 
   document.addEventListener('touchmove',onMove,{passive:false});
@@ -979,5 +1017,5 @@ renderZones();
 
 lucide.createIcons();
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef2c66ce70fce59',t:'MTc3NjY3MzcwMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef2e6e086da58c3',t:'MTc3NjY3NTAzMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
