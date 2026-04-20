@@ -35,8 +35,8 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
 
 .canvas-area{flex:1;overflow-y:auto;overflow-x:hidden;display:flex;justify-content:center;align-items:flex-start;padding:12px;flex-shrink:0;margin-top:56px;width:100%}
 
-.a4-canvas{width:100%;max-width:100%;min-height:1682px;background:#fff;color:#000;position:relative;box-shadow:0 8px 32px rgba(0,0,0,.5);flex-shrink:0;transform-origin:top center;height:auto;transform:none;margin:0 auto}
-.a4-inner{padding:16px 16px 16px;display:flex;flex-direction:column;width:100%}
+.a4-canvas{width:1189px;background:#fff;color:#000;position:relative;box-shadow:0 8px 32px rgba(0,0,0,.5);flex-shrink:0;transform-origin:top center;margin:0 auto;display:flex;flex-direction:column;min-height:auto;height:auto}
+.a4-inner{padding:48px 56px 56px;display:flex;flex-direction:column;width:100%;height:auto;overflow:visible}
 
 .canvas-header{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;border-bottom:2px solid #000;padding-bottom:8px;align-items:center;text-align:center}
 .canvas-logo{flex:0 0 auto;display:flex;align-items:center;justify-content:center;min-height:60px;min-width:80px}
@@ -70,7 +70,7 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
 .zone-body{flex:1;padding:3px;display:flex;flex-direction:column;gap:2px;min-height:60px;width:100%}
 .zone-item{padding:6px 6px !important;border-radius:3px;font-size:18px;font-weight:600;color:#fff;display:flex !important;flex-direction:row !important;align-items:center !important;justify-content:flex-start !important;gap:3px;cursor:grab;user-select:none;transition:background 0.15s ease;touch-action:none;height:44px !important;min-height:44px !important;line-height:normal !important;flex-wrap:nowrap;text-transform:uppercase;position:relative;margin-left:24px;margin-top:0 !important;margin-bottom:0 !important}
 .zone-item:active{cursor:grabbing;transform:scale(1.03);box-shadow:0 2px 8px rgba(0,0,0,.25)}
-.zone-item .num{position:absolute;left:-24px;width:20px;height:44px !important;display:flex !important;flex-direction:row !important;align-items:center !important;justify-content:center !important;font-size:14px;text-align:center;background:transparent;border-radius:2px;padding:0 !important;color:#000000 !important;font-weight:800 !important;box-shadow:none;line-height:normal !important;letter-spacing:0;margin:0 !important;top:50% !important;transform:translateY(-50%) !important}
+.zone-item .num{position:absolute;left:-24px;width:20px;height:44px !important;display:flex !important;flex-direction:row !important;align-items:center !important;justify-content:center !important;font-size:14px !important;text-align:center;background:transparent;border-radius:2px;padding:0 !important;color:#000000 !important;font-weight:800 !important;box-shadow:none;line-height:44px !important;letter-spacing:0;margin:0 !important;top:50% !important;transform:translateY(-50%) !important;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased}
 .zone-item .del-btn{margin-left:auto;cursor:pointer;opacity:.5;font-size:8px;padding:3px 4px;min-width:24px;min-height:24px;display:flex;align-items:center;justify-content:center;border-radius:4px}
 .zone-item .del-btn:hover{opacity:1;background:rgba(0,0,0,.2)}
 
@@ -123,23 +123,23 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
   .sidebar-right{display:flex !important;width:18%;min-width:180px;max-width:250px;background:#000044;border-left:1px solid #1e3a5f;flex-direction:column;height:100%;overflow-y:auto;overflow-x:hidden;flex-shrink:0;padding:10px}
   
   /* A4 Canvas - Responsive scaling within center column */
-  .a4-canvas{width:100%;max-width:100%;height:auto;background:#fff;color:#000;position:relative;box-shadow:0 8px 32px rgba(0,0,0,.5)}
-  .a4-inner{padding:20px 28px 28px}
+  .a4-canvas{width:1189px;background:#fff;color:#000;position:relative;box-shadow:0 8px 32px rgba(0,0,0,.5);display:flex;flex-direction:column;min-height:auto;height:auto}
+  .a4-inner{padding:48px 56px 56px;height:auto}
   
   .canvas-header{flex-direction:row;gap:16px;margin-bottom:16px;border-bottom:2px solid #000;padding-bottom:12px}
   .canvas-logo{min-height:90px;min-width:110px}
   .canvas-logo img{max-height:90px}
-  .header-title{font-size:84px;margin-bottom:6px}
-  .day-dropdown{font-size:28px;min-width:160px}
-  .number-dropdown{font-size:28px;min-width:50px}
+  .header-title{font-size:56px;font-weight:800;color:#000;margin-bottom:4px;text-align:center}
+  .day-dropdown{font-size:18px;min-width:120px}
+  .number-dropdown{font-size:18px;min-width:40px}
   .day-selection-row{flex-wrap:nowrap;gap:8px}
-  .date-display{font-size:32px;padding:6px 10px}
+  .date-display{font-size:28px;padding:6px 10px}
   
   .pool-item{padding:7px 10px !important;margin:3px 5px;font-size:12px;min-height:42px !important;display:flex !important;align-items:center !important;justify-content:center;line-height:normal !important;vertical-align:middle;flex-direction:row !important}
   .pool-sub-header{padding:8px 10px;margin:5px 5px 2px;font-size:11px;min-height:42px}
   
   .zone-container{min-height:90px;padding:0;margin:8px;max-width:calc(33.333% - 16px)}
-  .zone-header-outside{font-size:22px;padding:4px 6px}
+  .zone-header-outside{font-size:20px;padding:4px 6px}
   .zone-titles{padding:6px;gap:2px}
   .zone-main-title{font-size:12px}
   .zone-sub-title{font-size:11px}
@@ -148,7 +148,7 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
   .zone-item .num{font-size:8px;min-width:16px;padding:1px 2px !important;left:-24px;height:44px !important;display:flex !important;align-items:center !important;justify-content:center !important;top:50% !important;transform:translateY(-50%) !important;line-height:normal !important;margin:0 !important}
   .zone-item .del-btn{min-width:30px;min-height:30px;font-size:9px}
   .standby-container{min-height:90px;max-width:calc(33.333% - 16px)}
-  .standby-header{font-size:22px;padding:4px 6px}
+  .standby-header{font-size:20px;padding:4px 6px}
   .standby-body{padding:5px;min-height:130px}
   
   .scroll-pool{flex:1;overflow-y:auto;overflow-x:hidden}
@@ -1394,8 +1394,8 @@ async function performExport(){
   try{
     // Get exact dimensions - NO STYLE MODIFICATIONS
     const inner=canvas.querySelector('.a4-inner');
-    const captureWidth=inner?inner.offsetWidth:canvas.offsetWidth;
-    const captureHeight=inner?inner.scrollHeight:canvas.scrollHeight;
+    const captureWidth=1189;
+    const captureHeight=1682;
     
     console.log('[Export] Capture dimensions: '+captureWidth+'x'+captureHeight);
     console.log('[Export] Device pixel ratio: '+window.devicePixelRatio);
@@ -1674,5 +1674,5 @@ renderZones();
 
 lucide.createIcons();
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef4359e772ad8ca',t:'MTc3NjY4ODc0Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef44a009561d8ca',t:'MTc3NjY4OTU3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
