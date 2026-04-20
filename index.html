@@ -18,36 +18,31 @@ body{background:#000033;color:#fff}
 .sidebar-right{width:220px;min-width:220px;background:#000044;border-left:1px solid #1a1a5e;display:flex;flex-direction:column;height:100%;overflow:hidden}
 .center-area{flex:1;overflow:auto;display:flex;justify-content:center;align-items:flex-start;padding:20px;min-width:0}
 
-/* ===== A4 CANVAS (White Paper) ===== */
+/* ===== A4 CANVAS (Fixed Size - No Scaling) ===== */
 #a4-canvas {
     width: 794px !important;
     height: 1123px !important;
     background-color: #ffffff !important;
     color: #000 !important;
     margin: 40px auto !important;
-    padding: 20px !important;
+    padding: 40px !important;
     position: relative !important;
-    overflow: hidden !important;
     box-sizing: border-box !important;
     display: flex !important;
     flex-direction: column !important;
     flex-shrink: 0 !important;
     box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    overflow: visible !important;
 }
 
-/* ===== INNER CONTENT (Scalable) ===== */
+/* ===== INNER CONTENT (Fixed Layout) ===== */
 #inner-content {
     display: flex;
     flex-direction: column;
     gap: 0;
     width: 100%;
-    height: 100%;
     position: relative;
-    overflow: hidden;
-    zoom: 1;
-    transform-origin: top center;
-    transition: zoom 0.2s ease-out;
-    padding-bottom: 0;
+    overflow: visible;
 }
 
 /* ===== HEADER ===== */
@@ -138,15 +133,18 @@ body{background:#000033;color:#fff}
     height: 100%;
 }
 
-/* ===== ZONES CONTAINER ===== */
+/* ===== ZONES CONTAINER (Scrollable Area) ===== */
 .zones-container {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
     justify-content: flex-start;
-    flex-shrink: 0;
+    flex-shrink: 1;
     margin-bottom: 12px;
-    padding-bottom: 50px;
+    padding: 0;
+    max-height: 500px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .zone-box {
@@ -385,24 +383,27 @@ body{background:#000033;color:#fff}
     border: 1px solid #9ca3af;
 }
 
-/* ===== FOOTER COUNTER WRAPPER ===== */
-#sticky-footer {
-    display: block !important;
-    width: 100% !important;
-    margin-top: auto !important;
-    padding: 20px 0 !important;
+/* ===== FOOTER COUNTER WRAPPER (Fixed Position at Bottom) ===== */
+#footer-group {
+    position: absolute !important;
+    bottom: 40px !important;
+    left: 40px !important;
+    right: 40px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    border-top: 2px solid #ff0000 !important;
+    padding-top: 10px !important;
     background: white !important;
     z-index: 100;
     flex-shrink: 0;
-    border-top: 1px solid #eee;
 }
 
-.counter-text {
+.counter-item {
     display: block !important;
-    margin: 5px 0 !important;
-    line-height: 1.2 !important;
-    font-size: 13px !important;
-    font-weight: 700 !important;
+    font-weight: bold !important;
+    font-size: 14px !important;
+    margin: 2px 0 !important;
+    line-height: 1.3 !important;
     color: #000 !important;
 }
 
@@ -573,37 +574,34 @@ select:focus {
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
  <body class="h-full">
-  <div class="app-wrap" id="app"><!-- LEFT SIDEBAR -->
+  <div class="app-wrap" id="app">
+   <!-- LEFT SIDEBAR -->
    <div class="sidebar-left">
-    <div class="sidebar-title flex items-center gap-2">
-     <i data-lucide="users" style="width:16px;height:16px"></i> Pool List
+    <div class="sidebar-title flex items-center gap-2"><i data-lucide="users" style="width:16px;height:16px"></i> Pool List
     </div>
     <div class="scroll-y" id="poolList"></div>
     <div style="padding:8px;border-top:1px solid #1a1a5e;flex-shrink:0">
-     <form id="addForm" class="flex gap-1"><select id="addType" class="bg-transparent border border-gray-600 rounded px-2 py-1 text-xs text-white" style="cursor:pointer"> <option value="worker">Worker</option> <option value="subheading">Sub-Head</option> </select> <input id="addInput" type="text" placeholder="Add name..." class="flex-1 bg-transparent border border-gray-600 rounded px-2 py-1 text-xs text-white" style="min-width:0"> <button type="submit" class="btn-sm bg-emerald-600 text-white hover:bg-emerald-500"><i data-lucide="plus" style="width:14px;height:14px"></i></button>
+     <form id="addForm" class="flex gap-1">
+      <select id="addType" class="bg-transparent border border-gray-600 rounded px-2 py-1 text-xs text-white" style="cursor:pointer"> <option value="worker">Worker</option> <option value="subheading">Sub-Head</option> </select> <input id="addInput" type="text" placeholder="Add name..." class="flex-1 bg-transparent border border-gray-600 rounded px-2 py-1 text-xs text-white" style="min-width:0"> <button type="submit" class="btn-sm bg-emerald-600 text-white hover:bg-emerald-500"><i data-lucide="plus" style="width:14px;height:14px"></i></button>
      </form>
     </div>
    </div><!-- CENTER -->
    <div class="center-area" id="centerScroll">
     <div id="a4-canvas">
-     <div id="inner-content">
-      <!-- HEADER -->
+     <div id="inner-content"><!-- HEADER -->
       <div class="a4-header">
-       <div style="height:80px;flex-shrink:0">
-        <img src="https://lh3.googleusercontent.com/d/1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" style="height:80px;object-fit:contain" alt="Logo" loading="lazy" onerror="this.style.background='#e5e7eb';this.alt='Logo unavailable';this.style.width='80px'">
+       <div style="height:80px;flex-shrink:0"><img src="https://lh3.googleusercontent.com/d/1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" style="height:80px;object-fit:contain" alt="Logo" loading="lazy" onerror="this.style.background='#e5e7eb';this.alt='Logo unavailable';this.style.width='80px'">
        </div>
        <div class="a4-header-title">
         <div class="a4-header-title-main">
          <div id="canvasMainTitle">
           I.B.O.L
          </div>
-         <div class="a4-header-day">
-          <span id="canvasDayLabel">DAY</span> <select id="daySelect" class="a4-header-day"></select>
+         <div class="a4-header-day"><span id="canvasDayLabel">DAY</span> <select id="daySelect" class="a4-header-day"></select>
          </div>
         </div>
        </div>
-       <div class="a4-header-date">
-        <span class="a4-header-date-label" id="header-date-label">RABU, 31 MARET 26</span> <input type="date" id="header-date-input" class="a4-header-date-input" title="Click to change date">
+       <div class="a4-header-date"><span class="a4-header-date-label" id="header-date-label">RABU, 31 MARET 26</span> <input type="date" id="header-date-input" class="a4-header-date-input" title="Click to change date">
        </div>
       </div><!-- ZONES CONTAINER -->
       <div class="zones-container" id="zonesGrid"></div><!-- STANDBY -->
@@ -613,22 +611,20 @@ select:focus {
        </div>
        <div class="standby-names" id="standbyNames"></div>
       </div><!-- FOOTER COUNTER -->
-      <div id="sticky-footer">
-       <div class="counter-text">
-        <span style="color:#CC0000">TOTAL PEKERJA BEKERJA: <span id="countWork" style="color:#CC0000">0</span></span>
+      <div id="footer-group">
+       <div class="counter-item"><span style="color:#CC0000">TOTAL PEKERJA BEKERJA: <span id="countWork" style="color:#CC0000">0</span></span>
        </div>
-       <div class="counter-text">
-        <span style="color:#7c3aed">TOTAL PEKERJA STANDBY: <span id="countStandby" style="color:#7c3aed">0</span></span>
+       <div class="counter-item"><span style="color:#7c3aed">TOTAL PEKERJA STANDBY: <span id="countStandby" style="color:#7c3aed">0</span></span>
        </div>
       </div>
      </div>
     </div>
    </div><!-- RIGHT SIDEBAR -->
    <div class="sidebar-right">
-    <div class="sidebar-title flex items-center gap-2">
-     <i data-lucide="layout" style="width:16px;height:16px"></i> Zone &amp; Export
+    <div class="sidebar-title flex items-center gap-2"><i data-lucide="layout" style="width:16px;height:16px"></i> Zone &amp; Export
     </div>
-    <div class="scroll-y" style="padding:10px;display:flex;flex-direction:column;gap:8px"><button id="btnAddZone" class="btn-sm bg-blue-600 text-white hover:bg-blue-500 w-full"><i data-lucide="plus-square" style="width:14px;height:14px"></i> Add Zone</button> <button id="btnExport" class="btn-sm bg-amber-600 text-white hover:bg-amber-500 w-full"><i data-lucide="download" style="width:14px;height:14px"></i> Download JPEG</button>
+    <div class="scroll-y" style="padding:10px;display:flex;flex-direction:column;gap:8px">
+     <button id="btnAddZone" class="btn-sm bg-blue-600 text-white hover:bg-blue-500 w-full"><i data-lucide="plus-square" style="width:14px;height:14px"></i> Add Zone</button> <button id="btnExport" class="btn-sm bg-amber-600 text-white hover:bg-amber-500 w-full"><i data-lucide="download" style="width:14px;height:14px"></i> Download JPEG</button>
      <div class="text-xs text-gray-400 mt-4">
       <p class="mb-2">• Drag names from pool to zones</p>
       <p class="mb-2">• Double-click name on canvas to change color</p>
@@ -1235,49 +1231,8 @@ function updateCounts(){
 
 // ---- AUTO-SCALING & DYNAMIC LAYOUT ----
 function fitContentToCanvas(){
-  const innerContent = document.getElementById('inner-content');
-  const a4Canvas = document.getElementById('a4-canvas');
-  
-  if(!innerContent || !a4Canvas) return;
-  
-  // Force reflow to get accurate heights
-  const contentHeight = innerContent.scrollHeight;
-  const a4HeightPx = 1123; // Fixed A4 height in pixels (794x1123)
-  
-  // Calculate zoom ratio
-  let zoomRatio = 1;
-  if(contentHeight > a4HeightPx){
-    zoomRatio = a4HeightPx / contentHeight;
-    // Clamp between 0.5 and 1 to maintain readability
-    zoomRatio = Math.max(0.5, Math.min(1, zoomRatio));
-  }
-  
-  // Apply zoom to inner-content (not transform scale, which breaks html2canvas)
-  innerContent.style.zoom = zoomRatio;
-  
-  // Dynamic font size adjustment based on zone count
-  const zoneCount = document.querySelectorAll('.zone-box').length;
-  let fontScaleFactor = 1;
-  
-  if(zoneCount > 9){
-    fontScaleFactor = 0.85; // 15% reduction
-  } else if(zoneCount > 6){
-    fontScaleFactor = 0.92; // 8% reduction
-  }
-  
-  // Apply dynamic gap based on zoom
-  const zonesGrid = document.getElementById('zonesGrid');
-  if(zonesGrid){
-    if(zoomRatio < 0.7){
-      zonesGrid.style.gap = '2px';
-    } else if(zoomRatio < 0.8){
-      zonesGrid.style.gap = '3px';
-    } else if(zoomRatio < 0.9){
-      zonesGrid.style.gap = '4px';
-    } else {
-      zonesGrid.style.gap = '6px';
-    }
-  }
+  // No longer needed - canvas is fixed size
+  // Zones scroll internally if needed
 }
 
 const applyA4Fit = fitContentToCanvas; // Alias for compatibility
@@ -1473,39 +1428,26 @@ document.getElementById('btnExport').addEventListener('click',async()=>{
   
   try{
     const a4Canvas = document.getElementById('a4-canvas');
-    const innerContent = document.getElementById('inner-content');
     
-    if(!a4Canvas || !innerContent){
-      console.error('Canvas elements not found');
+    if(!a4Canvas){
+      console.error('A4 Canvas element not found');
       throw new Error('Canvas element missing');
     }
     
-    // Store original zoom value
-    const originalZoom = innerContent.style.zoom;
+    // Get current scroll position for coordinate fix
+    const scrollY = window.scrollY;
     
-    // Reset zoom to 1 for export to capture full-quality
-    innerContent.style.zoom = '1';
-    
-    // Force reflow
-    a4Canvas.offsetHeight;
-    
-    // Wait for DOM to update
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
-    // Export with fixed A4 dimensions (794x1123 at 96 DPI)
+    // Capture the specific canvas element
     const exportCanvas = await html2canvas(a4Canvas, {
       scale: 2,
+      logging: false,
       useCORS: true,
-      backgroundColor: '#ffffff',
-      allowTaint: true,
-      width: 794,
-      height: 1123,
+      scrollY: -scrollY,
+      windowWidth: 794,
       windowHeight: 1123,
-      windowWidth: 794
+      backgroundColor: '#ffffff',
+      allowTaint: true
     });
-    
-    // Restore zoom to previous value
-    innerContent.style.zoom = originalZoom;
     
     // Download as JPEG
     const link = document.createElement('a');
@@ -1513,19 +1455,19 @@ document.getElementById('btnExport').addEventListener('click',async()=>{
     link.href = exportCanvas.toDataURL('image/jpeg', 0.95);
     link.click();
     
-    console.log('Export successful');
+    console.log('Export successful - JPEG downloaded');
   }catch(err){
     console.error('Export error:', err);
-    alert('Export failed. Please check console for details.');
-    // Ensure zoom is restored even on error
-    const innerContent = document.getElementById('inner-content');
-    if(innerContent) innerContent.style.zoom = '1';
+    // Show inline error instead of alert (no browser dialogs)
+    const errMsg = document.createElement('div');
+    errMsg.style.cssText = 'position:fixed;top:20px;right:20px;background:#ef4444;color:white;padding:12px 16px;border-radius:6px;z-index:9999;font-weight:600;';
+    errMsg.textContent = 'Export failed. Please try again.';
+    document.body.appendChild(errMsg);
+    setTimeout(()=>errMsg.remove(), 3000);
   }finally{
     btn.innerHTML='<i data-lucide="download" style="width:14px;height:14px"></i> Download JPEG';
     btn.disabled=false;
     lucide.createIcons();
-    // Re-apply scaling for display
-    fitContentToCanvas();
   }
 });
 
@@ -1601,5 +1543,5 @@ document.addEventListener('dragend',()=>{
   document.querySelectorAll('.canvas-placeholder').forEach(p=>p.remove());
 });
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef16e044400f4a9',t:'MTc3NjY1OTU5NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef178257000a066',t:'MTc3NjY2MDAxMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
