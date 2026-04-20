@@ -68,7 +68,7 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
 .zone-main-title{font-size:10px;font-weight:700;color:#2563eb;outline:none;text-align:left}
 .zone-sub-title{font-size:9px;font-weight:700;font-style:italic;color:#ef4444;outline:none;text-align:left}
 .zone-body{flex:1;padding:3px;display:flex;flex-direction:column;gap:2px;min-height:60px;width:100%}
-.zone-item{padding:5px 6px;border-radius:3px;font-size:10px;font-weight:600;color:#fff;display:flex;align-items:center;justify-content:center;gap:3px;cursor:grab;user-select:none;transition:background 0.15s ease;touch-action:none;min-height:32px;line-height:1;vertical-align:middle}
+.zone-item{padding:5px 6px;border-radius:3px;font-size:10px;font-weight:600;color:#fff;display:flex;align-items:center;justify-content:center;gap:3px;cursor:grab;user-select:none;transition:background 0.15s ease;touch-action:none;min-height:32px;line-height:1;vertical-align:middle;flex-wrap:nowrap}
 .zone-item:active{cursor:grabbing;transform:scale(1.03);box-shadow:0 2px 8px rgba(0,0,0,.25)}
 .zone-item .num{font-size:7px;min-width:14px;text-align:center;background:rgba(0,0,0,.25);border-radius:2px;padding:0 2px}
 .zone-item .del-btn{margin-left:auto;cursor:pointer;opacity:.5;font-size:8px;padding:3px 4px;min-width:24px;min-height:24px;display:flex;align-items:center;justify-content:center;border-radius:4px}
@@ -171,7 +171,8 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
  <body class="h-full">
-  <div class="app-wrap"><!-- MOBILE MENU BUTTON --> <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button> <!-- DRAWER OVERLAY -->
+  <div class="app-wrap">
+   <!-- MOBILE MENU BUTTON --> <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button> <!-- DRAWER OVERLAY -->
    <div class="drawer-overlay" id="drawerOverlay"></div><!-- LEFT SIDEBAR -->
    <div class="sidebar-left" id="sidebarLeft">
     <div style="padding:10px 10px 6px;border-bottom:1px solid #1e3a5f">
@@ -179,28 +180,25 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
     </div>
     <div class="scroll-pool" id="poolList"></div>
     <div style="padding:8px;border-top:1px solid #1e3a5f;display:flex;flex-direction:column;gap:6px">
-     <div style="display:flex;gap:4px;flex-wrap:wrap">
-      <input id="newNameInput" type="text" placeholder="Worker name..." style="flex:1;min-width:100px;padding:8px;border-radius:5px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:11px;outline:none;min-height:36px"> <button id="addNameBtn" style="padding:8px 12px;background:#3b82f6;color:#fff;border:none;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;min-width:36px;min-height:36px">Add</button>
+     <div style="display:flex;gap:4px;flex-wrap:wrap"><input id="newNameInput" type="text" placeholder="Worker name..." style="flex:1;min-width:100px;padding:8px;border-radius:5px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:11px;outline:none;min-height:36px"> <button id="addNameBtn" style="padding:8px 12px;background:#3b82f6;color:#fff;border:none;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;min-width:36px;min-height:36px">Add</button>
      </div>
-     <div style="display:flex;gap:4px;flex-wrap:wrap">
-      <input id="newSubInput" type="text" placeholder="Sub header..." style="flex:1;min-width:100px;padding:8px;border-radius:5px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:11px;outline:none;min-height:36px"> <button id="addSubBtn" style="padding:8px 12px;background:#6b7280;color:#fff;border:none;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;min-width:36px;min-height:36px">Sub</button>
+     <div style="display:flex;gap:4px;flex-wrap:wrap"><input id="newSubInput" type="text" placeholder="Sub header..." style="flex:1;min-width:100px;padding:8px;border-radius:5px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:11px;outline:none;min-height:36px"> <button id="addSubBtn" style="padding:8px 12px;background:#6b7280;color:#fff;border:none;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;min-width:36px;min-height:36px">Sub</button>
      </div>
     </div>
    </div><!-- CANVAS AREA -->
    <div class="canvas-area" id="canvasScroll">
     <div class="a4-canvas" id="a4Canvas">
-     <div class="a4-inner" id="a4Inner"><!-- HEADER -->
+     <div class="a4-inner" id="a4Inner">
+      <!-- HEADER -->
       <div class="canvas-header">
-       <div class="canvas-logo">
-        <img src="https://lh3.googleusercontent.com/d/1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" alt="Logo" loading="lazy" onerror="this.style.background='#e5e7eb';this.alt='Logo unavailable';">
+       <div class="canvas-logo"><img src="https://lh3.googleusercontent.com/d/1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" alt="Logo" loading="lazy" onerror="this.style.background='#e5e7eb';this.alt='Logo unavailable';">
        </div>
        <div class="canvas-header-center">
         <div class="header-title" id="headerTitle">
          I.B.O.L
         </div>
         <div class="day-selection-row">
-         <div class="day-label-group">
-          <select id="dayTypeSelect" class="day-dropdown"> <option value="PREPS DAY">PREPS DAY</option> <option value="SHOOT DAY">SHOOT DAY</option> <option value="BONGKARAN DAY">BONGKARAN DAY</option> </select> <select id="numberSelect" class="number-dropdown"> </select>
+         <div class="day-label-group"><select id="dayTypeSelect" class="day-dropdown"> <option value="PREPS DAY">PREPS DAY</option> <option value="SHOOT DAY">SHOOT DAY</option> <option value="BONGKARAN DAY">BONGKARAN DAY</option> </select> <select id="numberSelect" class="number-dropdown"> </select>
          </div>
         </div>
        </div>
@@ -219,9 +217,11 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
        <div style="flex:1"></div>
       </div><!-- FOOTER -->
       <div class="footer-counts" id="footerCounts">
-       <div><span class="working">TOTAL PEKERJA BEKERJA: <span id="countWorking">0</span></span>
+       <div>
+        <span class="working">TOTAL PEKERJA BEKERJA: <span id="countWorking">0</span></span>
        </div>
-       <div><span class="standby">TOTAL PEKERJA STANDBY: <span id="countStandby">0</span></span>
+       <div>
+        <span class="standby">TOTAL PEKERJA STANDBY: <span id="countStandby">0</span></span>
        </div>
       </div>
      </div>
@@ -231,7 +231,8 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
     <div style="padding:10px;border-bottom:1px solid #1e3a5f">
      <h2 style="font-size:14px;font-weight:800;color:#93c5fd;display:flex;align-items:center;gap:6px"><i data-lucide="layout" style="width:16px;height:16px"></i> Zone &amp; Export</h2>
     </div>
-    <div style="padding:10px;display:flex;flex-direction:column;gap:8px"><button id="addZoneBtn" style="padding:10px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px"><i data-lucide="plus-square" style="width:13px;height:13px"></i> Add Zone</button> <button id="downloadBtn" style="padding:10px;background:#059669;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px"><i data-lucide="download" style="width:13px;height:13px"></i> Download</button>
+    <div style="padding:10px;display:flex;flex-direction:column;gap:8px">
+     <button id="addZoneBtn" style="padding:10px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px"><i data-lucide="plus-square" style="width:13px;height:13px"></i> Add Zone</button> <button id="downloadBtn" style="padding:10px;background:#059669;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px"><i data-lucide="download" style="width:13px;height:13px"></i> Download</button>
      <hr style="border-color:#1e3a5f">
      <div style="font-size:10px;color:#94a3b8">
       <p style="margin-bottom:2px"><strong>Tips:</strong></p>
@@ -246,8 +247,7 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px" id="swatchGrid"></div>
   </div><!-- CALENDAR POPUP -->
   <div class="calendar-popup" id="calendarPopup">
-   <div class="calendar-header">
-    <button id="prevMonth">◀ Bulan Sebelumnya</button>
+   <div class="calendar-header"><button id="prevMonth">◀ Bulan Sebelumnya</button>
     <div id="monthYear" style="font-weight:700;text-align:center;flex:1;font-size:16px;color:#1f2937"></div><button id="nextMonth">Bulan Berikutnya ▶</button>
    </div>
    <div class="calendar-grid" id="calendarGrid"></div>
@@ -1067,18 +1067,33 @@ function openColorPicker(e,itemId,zoneId){
   popup.style.top=Math.min(e.clientY,window.innerHeight-100)+'px';
 }
 document.addEventListener('click',e=>{
-  if(!e.target.closest('.color-picker-popup')&&!e.target.closest('.calendar-popup')&&e.target.id!=='dateDisplay')
+  if(!e.target.closest('.color-picker-popup')&&!e.target.closest('.calendar-popup')&&e.target.id!=='dateDisplay'){
     document.getElementById('colorPicker').style.display='none';
+    // Clear marquee selection when any popup closes
+    endMarqueeSelection();
+    clearTouchMarqueeTimer();
+    touchMarqueeActive=false;
+    touchMarqueeReady=false;
+  }
 });
 
 // ============ MARQUEE SELECTION ============
 let marqueeActive=false,marqueeStart={x:0,y:0};
 const marqueeBox=document.getElementById('marqueeBox');
-let marqueeSelectMode=false; // Touch marquee mode flag
+let marqueeSelectMode=false;
+let marqueeReady=false; // Flag: long-press has completed, ready to draw
+let marqueeReadyIndicator=null;
+
+function isPopupOpen(){
+  const colorPicker=document.getElementById('colorPicker');
+  const calendar=document.getElementById('calendarPopup');
+  return(colorPicker&&colorPicker.style.display!=='none')||(calendar&&calendar.style.display!=='none');
+}
 
 function startMarqueeSelection(startX,startY){
   marqueeActive=true;
   marqueeSelectMode=true;
+  marqueeReady=true; // Drawing can now happen
   marqueeStart={x:startX,y:startY};
   marqueeBox.style.display='block';
   marqueeBox.style.left=startX+'px';
@@ -1087,9 +1102,50 @@ function startMarqueeSelection(startX,startY){
   marqueeBox.style.height='0';
   selectedItems.clear();
   document.querySelectorAll('.selected-highlight').forEach(el=>el.classList.remove('selected-highlight'));
+  
+  // Remove ready indicator if it exists
+  if(marqueeReadyIndicator){
+    marqueeReadyIndicator.remove();
+    marqueeReadyIndicator=null;
+  }
+}
+
+function showMarqueeReadyIndicator(x,y){
+  if(marqueeReadyIndicator)marqueeReadyIndicator.remove();
+  marqueeReadyIndicator=document.createElement('div');
+  marqueeReadyIndicator.style.cssText=`
+    position:fixed;
+    width:24px;
+    height:24px;
+    left:${x-12}px;
+    top:${y-12}px;
+    border:2px solid #3b82f6;
+    border-radius:50%;
+    background:rgba(59,130,246,0.15);
+    pointer-events:none;
+    z-index:9997;
+    animation:pulseReady 0.3s ease-out;
+  `;
+  document.body.appendChild(marqueeReadyIndicator);
+}
+
+// Add pulse animation to page
+if(!document.getElementById('marquee-animation-style')){
+  const style=document.createElement('style');
+  style.id='marquee-animation-style';
+  style.textContent=`
+    @keyframes pulseReady {
+      0%{transform:scale(1);opacity:1}
+      100%{transform:scale(1.5);opacity:0}
+    }
+  `;
+  document.head.appendChild(style);
 }
 
 function updateMarqueeBox(currentX,currentY){
+  // Only draw marquee box after long-press is complete (either marqueeReady or touchMarqueeReady must be true)
+  if(!marqueeReady&&!touchMarqueeReady)return;
+  
   const x=Math.min(currentX,marqueeStart.x);
   const y=Math.min(currentY,marqueeStart.y);
   const w=Math.abs(currentX-marqueeStart.x);
@@ -1144,12 +1200,20 @@ function endMarqueeSelection(){
   if(marqueeActive){
     marqueeActive=false;
     marqueeSelectMode=false;
+    marqueeReady=false;
     marqueeBox.style.display='none';
+  }
+  if(marqueeReadyIndicator){
+    marqueeReadyIndicator.remove();
+    marqueeReadyIndicator=null;
   }
 }
 
 // ============ MOUSE MARQUEE SELECTION ============
 document.addEventListener('mousedown',e=>{
+  // Prevent marquee if popup is open
+  if(isPopupOpen())return;
+  
   // Prevent marquee when clicking on interactive elements
   if(e.target.closest('.pool-item')||e.target.closest('.zone-item')||e.target.closest('input')||e.target.closest('button')||e.target.closest('select')||e.target.closest('textarea'))return;
   
@@ -1207,36 +1271,85 @@ document.getElementById('newSubInput').addEventListener('keydown',e=>{
 // ============ DOWNLOAD ============
 document.getElementById('downloadBtn').addEventListener('click',async()=>{
   const canvas=document.getElementById('a4Canvas');
+  const container=document.getElementById('canvasScroll');
+  
+  if(!canvas){
+    console.error('Canvas element not found');
+    return;
+  }
+  
   try{
-    const c=await html2canvas(canvas,{
+    // Step 1: Temporarily override CSS to ensure full capture
+    const originalOverflow=canvas.style.overflow;
+    const originalTransform=canvas.style.transform;
+    const originalWidth=canvas.style.width;
+    const originalHeight=canvas.style.height;
+    
+    canvas.style.overflow='visible';
+    canvas.style.transform='none';
+    canvas.style.width='auto';
+    canvas.style.height='auto';
+    
+    // Step 2: Get actual content dimensions
+    const fullWidth=canvas.scrollWidth||canvas.offsetWidth;
+    const fullHeight=canvas.scrollHeight||canvas.offsetHeight;
+    
+    // Step 3: Capture with explicit dimensions
+    const canvasImg=await html2canvas(canvas,{
       scale:2,
       useCORS:true,
       backgroundColor:'#ffffff',
       logging:false,
       allowTaint:true,
-      foreignObjectRendering:true
+      foreignObjectRendering:true,
+      width:fullWidth,
+      height:fullHeight,
+      windowHeight:fullHeight,
+      windowWidth:fullWidth,
+      ignoreElements:(el)=>{
+        return el.id==='mobileMenuBtn'||el.id==='drawerOverlay'||el.classList.contains('sidebar-left')||el.classList.contains('sidebar-right');
+      }
     });
+    
+    // Step 4: Generate JPEG with proper quality
     const link=document.createElement('a');
     link.download='crew-report-day'+document.getElementById('numberSelect').value+'.jpg';
-    link.href=c.toDataURL('image/jpeg',0.95);
+    link.href=canvasImg.toDataURL('image/jpeg',0.95);
     link.click();
+    
+    // Step 5: Restore original CSS
+    canvas.style.overflow=originalOverflow;
+    canvas.style.transform=originalTransform;
+    canvas.style.width=originalWidth;
+    canvas.style.height=originalHeight;
+    
   }catch(err){
     console.error('Export failed:',err);
+    // Restore CSS on error too
+    canvas.style.overflow=originalOverflow;
+    canvas.style.transform=originalTransform;
+    canvas.style.width=originalWidth;
+    canvas.style.height=originalHeight;
   }
 });
 
-// ============ TOUCH MARQUEE SELECTION ============
+// ============ TOUCH MARQUEE SELECTION WITH LONG-PRESS DELAY ============
 let touchMarqueeTimer=null;
 let touchMarqueeActive=false;
 let touchMarqueeStart={x:0,y:0};
+let touchMarqueeReady=false;
 const MARQUEE_LONG_PRESS_DURATION=500;
 const MARQUEE_TOUCH_THRESHOLD=15;
 
 function startTouchMarqueeTimer(touchX,touchY){
   touchMarqueeTimer=setTimeout(()=>{
+    // Only start marquee if no popup is open
+    if(isPopupOpen())return;
+    
+    touchMarqueeReady=true;
     touchMarqueeActive=true;
     startMarqueeSelection(touchX,touchY);
-    // Haptic feedback on mobile
+    // Haptic feedback on mobile - stronger for marquee activation
     if(navigator.vibrate)navigator.vibrate(80);
   },MARQUEE_LONG_PRESS_DURATION);
 }
@@ -1246,6 +1359,7 @@ function clearTouchMarqueeTimer(){
     clearTimeout(touchMarqueeTimer);
     touchMarqueeTimer=null;
   }
+  touchMarqueeReady=false;
 }
 
 document.addEventListener('touchstart',(e)=>{
@@ -1258,16 +1372,32 @@ document.addEventListener('touchstart',(e)=>{
   if(target.closest('.pool-item')||target.closest('.zone-item')||target.closest('input')||target.closest('button')||target.closest('select')||target.closest('textarea')){
     clearTouchMarqueeTimer();
     touchMarqueeActive=false;
+    touchMarqueeReady=false;
+    endMarqueeSelection();
+    return;
+  }
+  
+  // Don't trigger if popup is open
+  if(isPopupOpen()){
+    clearTouchMarqueeTimer();
+    touchMarqueeActive=false;
+    touchMarqueeReady=false;
+    endMarqueeSelection();
     return;
   }
   
   touchMarqueeStart={x:touch.clientX,y:touch.clientY};
+  clearTouchMarqueeTimer();
   startTouchMarqueeTimer(touch.clientX,touch.clientY);
+  
+  // Show ready indicator while waiting for long-press
+  showMarqueeReadyIndicator(touch.clientX,touch.clientY);
 },{passive:true});
 
 document.addEventListener('touchmove',(e)=>{
   if(e.touches.length!==1){
     clearTouchMarqueeTimer();
+    touchMarqueeReady=false;
     endMarqueeSelection();
     return;
   }
@@ -1276,13 +1406,19 @@ document.addEventListener('touchmove',(e)=>{
   const dx=Math.abs(touch.clientX-touchMarqueeStart.x);
   const dy=Math.abs(touch.clientY-touchMarqueeStart.y);
   
-  // If moved beyond threshold before long-press fired, cancel
+  // If moved beyond threshold before long-press fired, cancel marquee prep
   if((dx+dy)>MARQUEE_TOUCH_THRESHOLD&&!touchMarqueeActive){
     clearTouchMarqueeTimer();
+    touchMarqueeReady=false;
+    // Remove ready indicator when user moves away
+    if(marqueeReadyIndicator){
+      marqueeReadyIndicator.remove();
+      marqueeReadyIndicator=null;
+    }
   }
   
-  // If marquee is active, update the selection box
-  if(touchMarqueeActive){
+  // If marquee is active and ready, update the selection box
+  if(touchMarqueeActive&&touchMarqueeReady){
     updateMarqueeBox(touch.clientX,touch.clientY);
     e.preventDefault();
   }
@@ -1292,6 +1428,7 @@ document.addEventListener('touchend',(e)=>{
   clearTouchMarqueeTimer();
   if(touchMarqueeActive){
     touchMarqueeActive=false;
+    touchMarqueeReady=false;
     endMarqueeSelection();
   }
 },{passive:true});
@@ -1344,5 +1481,5 @@ renderZones();
 
 lucide.createIcons();
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef35a90c5e53df4',t:'MTc3NjY3OTc3MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef371ba94dbce09',t:'MTc3NjY4MDcxOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
