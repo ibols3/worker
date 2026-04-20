@@ -1134,12 +1134,13 @@ document.addEventListener('click',e=>{
   }
 });
 
-// ============ MARQUEE SELECTION ============
-let marqueeActive=false,marqueeStart={x:0,y:0};
+// ============ MARQUEE SELECTION - A1 AWARE ============
+let marqueeActive=false;
+let marqueeStart={x:0,y:0};
 const marqueeBox=document.getElementById('marqueeBox');
-let marqueeSelectMode=false;
-let marqueeReady=false; // Flag: long-press has completed, ready to draw
+let marqueeReady=false;
 let marqueeReadyIndicator=null;
+let lastMarqueeUpdate=0;
 
 function isPopupOpen(){
   const colorPicker=document.getElementById('colorPicker');
@@ -1147,10 +1148,18 @@ function isPopupOpen(){
   return(colorPicker&&colorPicker.style.display!=='none')||(calendar&&calendar.style.display!=='none');
 }
 
+function isOnInteractiveElement(target){
+  return target.closest('.pool-item')||target.closest('.zone-item')||target.closest('input')||target.closest('button')||target.closest('select')||target.closest('textarea')||target.closest('.del-btn');
+}
+
+function getCanvasContainerRect(){
+  const canvas=document.getElementById('a4Canvas');
+  return canvas?canvas.getBoundingClientRect():{top:0,left:0,width:0,height:0};
+}
+
 function startMarqueeSelection(startX,startY){
   marqueeActive=true;
-  marqueeSelectMode=true;
-  marqueeReady=true; // Drawing can now happen
+  marqueeReady=true;
   marqueeStart={x:startX,y:startY};
   marqueeBox.style.display='block';
   marqueeBox.style.left=startX+'px';
@@ -1160,7 +1169,6 @@ function startMarqueeSelection(startX,startY){
   selectedItems.clear();
   document.querySelectorAll('.selected-highlight').forEach(el=>el.classList.remove('selected-highlight'));
   
-  // Remove ready indicator if it exists
   if(marqueeReadyIndicator){
     marqueeReadyIndicator.remove();
     marqueeReadyIndicator=null;
@@ -1186,7 +1194,6 @@ function showMarqueeReadyIndicator(x,y){
   document.body.appendChild(marqueeReadyIndicator);
 }
 
-// Add pulse animation to page
 if(!document.getElementById('marquee-animation-style')){
   const style=document.createElement('style');
   style.id='marquee-animation-style';
@@ -1200,8 +1207,11 @@ if(!document.getElementById('marquee-animation-style')){
 }
 
 function updateMarqueeBox(currentX,currentY){
-  // Only draw marquee box after long-press is complete (either marqueeReady or touchMarqueeReady must be true)
   if(!marqueeReady&&!touchMarqueeReady)return;
+  
+  const now=Date.now();
+  if(now-lastMarqueeUpdate<16)return;
+  lastMarqueeUpdate=now;
   
   const x=Math.min(currentX,marqueeStart.x);
   const y=Math.min(currentY,marqueeStart.y);
@@ -1216,7 +1226,7 @@ function updateMarqueeBox(currentX,currentY){
   const mRect={left:x,top:y,right:x+w,bottom:y+h};
   selectedItems.clear();
   
-  // Select from pool
+  // Select from pool (left sidebar)
   document.querySelectorAll('#poolList .pool-item').forEach(el=>{
     const r=el.getBoundingClientRect();
     const overlap=!(r.right<mRect.left||r.left>mRect.right||r.bottom<mRect.top||r.top>mRect.bottom);
@@ -1228,7 +1238,7 @@ function updateMarqueeBox(currentX,currentY){
     }
   });
   
-  // Select from zones
+  // Select from zones (center canvas)
   document.querySelectorAll('.zone-item').forEach(el=>{
     const r=el.getBoundingClientRect();
     const overlap=!(r.right<mRect.left||r.left>mRect.right||r.bottom<mRect.top||r.top>mRect.bottom);
@@ -1240,7 +1250,7 @@ function updateMarqueeBox(currentX,currentY){
     }
   });
   
-  // Select from standby
+  // Select from standby (bottom of canvas)
   document.querySelectorAll('.standby-body .zone-item').forEach(el=>{
     const r=el.getBoundingClientRect();
     const overlap=!(r.right<mRect.left||r.left>mRect.right||r.bottom<mRect.top||r.top>mRect.bottom);
@@ -1256,7 +1266,6 @@ function updateMarqueeBox(currentX,currentY){
 function endMarqueeSelection(){
   if(marqueeActive){
     marqueeActive=false;
-    marqueeSelectMode=false;
     marqueeReady=false;
     marqueeBox.style.display='none';
   }
@@ -1268,12 +1277,7 @@ function endMarqueeSelection(){
 
 // ============ MOUSE MARQUEE SELECTION ============
 document.addEventListener('mousedown',e=>{
-  // Prevent marquee if popup is open
-  if(isPopupOpen())return;
-  
-  // Prevent marquee when clicking on interactive elements
-  if(e.target.closest('.pool-item')||e.target.closest('.zone-item')||e.target.closest('input')||e.target.closest('button')||e.target.closest('select')||e.target.closest('textarea'))return;
-  
+  if(isPopupOpen()||isOnInteractiveElement(e.target))return;
   startMarqueeSelection(e.clientX,e.clientY);
 });
 
@@ -1536,13 +1540,10 @@ const MARQUEE_TOUCH_THRESHOLD=15;
 
 function startTouchMarqueeTimer(touchX,touchY){
   touchMarqueeTimer=setTimeout(()=>{
-    // Only start marquee if no popup is open
     if(isPopupOpen())return;
-    
     touchMarqueeReady=true;
     touchMarqueeActive=true;
     startMarqueeSelection(touchX,touchY);
-    // Haptic feedback on mobile - stronger for marquee activation
     if(navigator.vibrate)navigator.vibrate(80);
   },MARQUEE_LONG_PRESS_DURATION);
 }
@@ -1556,13 +1557,11 @@ function clearTouchMarqueeTimer(){
 }
 
 document.addEventListener('touchstart',(e)=>{
-  // Only activate marquee for 1 finger on empty areas
   if(e.touches.length!==1)return;
   const touch=e.touches[0];
   const target=e.target;
   
-  // Don't trigger marquee on interactive elements
-  if(target.closest('.pool-item')||target.closest('.zone-item')||target.closest('input')||target.closest('button')||target.closest('select')||target.closest('textarea')){
+  if(isOnInteractiveElement(target)){
     clearTouchMarqueeTimer();
     touchMarqueeActive=false;
     touchMarqueeReady=false;
@@ -1570,7 +1569,6 @@ document.addEventListener('touchstart',(e)=>{
     return;
   }
   
-  // Don't trigger if popup is open
   if(isPopupOpen()){
     clearTouchMarqueeTimer();
     touchMarqueeActive=false;
@@ -1582,8 +1580,6 @@ document.addEventListener('touchstart',(e)=>{
   touchMarqueeStart={x:touch.clientX,y:touch.clientY};
   clearTouchMarqueeTimer();
   startTouchMarqueeTimer(touch.clientX,touch.clientY);
-  
-  // Show ready indicator while waiting for long-press
   showMarqueeReadyIndicator(touch.clientX,touch.clientY);
 },{passive:true});
 
@@ -1599,18 +1595,15 @@ document.addEventListener('touchmove',(e)=>{
   const dx=Math.abs(touch.clientX-touchMarqueeStart.x);
   const dy=Math.abs(touch.clientY-touchMarqueeStart.y);
   
-  // If moved beyond threshold before long-press fired, cancel marquee prep
   if((dx+dy)>MARQUEE_TOUCH_THRESHOLD&&!touchMarqueeActive){
     clearTouchMarqueeTimer();
     touchMarqueeReady=false;
-    // Remove ready indicator when user moves away
     if(marqueeReadyIndicator){
       marqueeReadyIndicator.remove();
       marqueeReadyIndicator=null;
     }
   }
   
-  // If marquee is active and ready, update the selection box
   if(touchMarqueeActive&&touchMarqueeReady){
     updateMarqueeBox(touch.clientX,touch.clientY);
     e.preventDefault();
@@ -1674,5 +1667,5 @@ renderZones();
 
 lucide.createIcons();
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef44a009561d8ca',t:'MTc3NjY4OTU3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef452acf1ced8ca',t:'MTc3NjY4OTkzMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
