@@ -171,8 +171,7 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
  <body class="h-full">
-  <div class="app-wrap">
-   <!-- MOBILE MENU BUTTON --> <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button> <!-- DRAWER OVERLAY -->
+  <div class="app-wrap"><!-- MOBILE MENU BUTTON --> <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button> <!-- DRAWER OVERLAY -->
    <div class="drawer-overlay" id="drawerOverlay"></div><!-- LEFT SIDEBAR -->
    <div class="sidebar-left" id="sidebarLeft">
     <div style="padding:10px 10px 6px;border-bottom:1px solid #1e3a5f">
@@ -180,25 +179,28 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
     </div>
     <div class="scroll-pool" id="poolList"></div>
     <div style="padding:8px;border-top:1px solid #1e3a5f;display:flex;flex-direction:column;gap:6px;position:sticky;bottom:0;background:#000044;z-index:100">
-     <div style="display:flex;gap:4px;flex-wrap:wrap"><input id="newNameInput" type="text" placeholder="Worker name..." style="flex:1;min-width:100px;padding:8px;border-radius:5px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:11px;outline:none;min-height:36px"> <button id="addNameBtn" style="padding:8px 12px;background:#3b82f6;color:#fff;border:none;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;min-width:36px;min-height:36px">Add</button>
+     <div style="display:flex;gap:4px;flex-wrap:wrap">
+      <input id="newNameInput" type="text" placeholder="Worker name..." style="flex:1;min-width:100px;padding:8px;border-radius:5px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:11px;outline:none;min-height:36px"> <button id="addNameBtn" style="padding:8px 12px;background:#3b82f6;color:#fff;border:none;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;min-width:36px;min-height:36px">Add</button>
      </div>
-     <div style="display:flex;gap:4px;flex-wrap:wrap"><input id="newSubInput" type="text" placeholder="Sub header..." style="flex:1;min-width:100px;padding:8px;border-radius:5px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:11px;outline:none;min-height:36px"> <button id="addSubBtn" style="padding:8px 12px;background:#6b7280;color:#fff;border:none;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;min-width:36px;min-height:36px">Sub</button>
+     <div style="display:flex;gap:4px;flex-wrap:wrap">
+      <input id="newSubInput" type="text" placeholder="Sub header..." style="flex:1;min-width:100px;padding:8px;border-radius:5px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:11px;outline:none;min-height:36px"> <button id="addSubBtn" style="padding:8px 12px;background:#6b7280;color:#fff;border:none;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;min-width:36px;min-height:36px">Sub</button>
      </div>
     </div>
    </div><!-- CANVAS AREA -->
    <div class="canvas-area" id="canvasScroll">
     <div class="a4-canvas" id="a4Canvas">
-     <div class="a4-inner" id="a4Inner">
-      <!-- HEADER -->
+     <div class="a4-inner" id="a4Inner"><!-- HEADER -->
       <div class="canvas-header">
-       <div class="canvas-logo"><img src="https://lh3.googleusercontent.com/d/1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" alt="Logo" loading="lazy" onerror="this.style.background='#e5e7eb';this.alt='Logo unavailable';">
+       <div class="canvas-logo">
+        <img src="https://lh3.googleusercontent.com/d/1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" alt="Logo" loading="lazy" onerror="this.style.background='#e5e7eb';this.alt='Logo unavailable';">
        </div>
        <div class="canvas-header-center">
         <div class="header-title" id="headerTitle">
          I.B.O.L
         </div>
         <div class="day-selection-row">
-         <div class="day-label-group"><select id="dayTypeSelect" class="day-dropdown"> <option value="PREPS DAY">PREPS DAY</option> <option value="SHOOT DAY">SHOOT DAY</option> <option value="BONGKARAN DAY">BONGKARAN DAY</option> </select> <select id="numberSelect" class="number-dropdown"> </select>
+         <div class="day-label-group">
+          <select id="dayTypeSelect" class="day-dropdown"> <option value="PREPS DAY">PREPS DAY</option> <option value="SHOOT DAY">SHOOT DAY</option> <option value="BONGKARAN DAY">BONGKARAN DAY</option> </select> <select id="numberSelect" class="number-dropdown"> </select>
          </div>
         </div>
        </div>
@@ -217,11 +219,9 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
        <div style="flex:1"></div>
       </div><!-- FOOTER -->
       <div class="footer-counts" id="footerCounts">
-       <div>
-        <span class="working">TOTAL PEKERJA BEKERJA: <span id="countWorking">0</span></span>
+       <div><span class="working">TOTAL PEKERJA BEKERJA: <span id="countWorking">0</span></span>
        </div>
-       <div>
-        <span class="standby">TOTAL PEKERJA STANDBY: <span id="countStandby">0</span></span>
+       <div><span class="standby">TOTAL PEKERJA STANDBY: <span id="countStandby">0</span></span>
        </div>
       </div>
      </div>
@@ -231,8 +231,7 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
     <div style="padding:10px;border-bottom:1px solid #1e3a5f">
      <h2 style="font-size:14px;font-weight:800;color:#93c5fd;display:flex;align-items:center;gap:6px"><i data-lucide="layout" style="width:16px;height:16px"></i> Zone &amp; Export</h2>
     </div>
-    <div style="padding:10px;display:flex;flex-direction:column;gap:8px">
-     <button id="addZoneBtn" style="padding:10px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px"><i data-lucide="plus-square" style="width:13px;height:13px"></i> Add Zone</button> <button id="downloadBtn" style="padding:10px;background:#059669;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px"><i data-lucide="download" style="width:13px;height:13px"></i> Download</button>
+    <div style="padding:10px;display:flex;flex-direction:column;gap:8px"><button id="addZoneBtn" style="padding:10px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px"><i data-lucide="plus-square" style="width:13px;height:13px"></i> Add Zone</button> <button id="downloadBtn" style="padding:10px;background:#059669;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px"><i data-lucide="download" style="width:13px;height:13px"></i> Download</button>
      <hr style="border-color:#1e3a5f">
      <div style="font-size:10px;color:#94a3b8">
       <p style="margin-bottom:2px"><strong>Tips:</strong></p>
@@ -247,7 +246,8 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px" id="swatchGrid"></div>
   </div><!-- CALENDAR POPUP -->
   <div class="calendar-popup" id="calendarPopup">
-   <div class="calendar-header"><button id="prevMonth">◀ Bulan Sebelumnya</button>
+   <div class="calendar-header">
+    <button id="prevMonth">◀ Bulan Sebelumnya</button>
     <div id="monthYear" style="font-weight:700;text-align:center;flex:1;font-size:16px;color:#1f2937"></div><button id="nextMonth">Bulan Berikutnya ▶</button>
    </div>
    <div class="calendar-grid" id="calendarGrid"></div>
@@ -1358,7 +1358,7 @@ async function performExport(){
     throw new Error('Canvas element not found');
   }
   
-  console.log('[Export] Starting export process...');
+  console.log('[Export] Starting HD export process...');
   
   // Step 1: Hide UI overlays that shouldn't be captured
   if(marqueeBox)marqueeBox.style.display='none';
@@ -1385,12 +1385,13 @@ async function performExport(){
   originalStyles.set('canvas-boxShadow',canvas.style.boxShadow);
   originalStyles.set('canvas-padding',canvas.style.padding);
   
-  // Step 6: Remove heavy effects and optimize for mobile memory
-  console.log('[Export] Removing heavy effects for mobile optimization...');
+  // Step 6: Apply perfect vertical centering to all text containers
+  console.log('[Export] Applying HD centering fixes...');
   
-  // Remove box-shadow from canvas and all children
   canvas.querySelectorAll('*').forEach(el=>{
     const computed=window.getComputedStyle(el);
+    
+    // Store original styles
     if(computed.boxShadow!=='none'){
       stylesToRestore.push({el,prop:'boxShadow',value:el.style.boxShadow});
       el.style.boxShadow='none';
@@ -1398,6 +1399,25 @@ async function performExport(){
     if(computed.textShadow!=='none'){
       stylesToRestore.push({el,prop:'textShadow',value:el.style.textShadow});
       el.style.textShadow='none';
+    }
+    
+    // Apply perfect centering for text containers (zone items, pool items, headers, etc.)
+    if(el.classList.contains('zone-item')||el.classList.contains('pool-item')||el.classList.contains('pool-sub-header')||el.classList.contains('header-title')||el.classList.contains('zone-main-title')||el.classList.contains('zone-sub-title')||el.classList.contains('zone-header-outside')||el.classList.contains('standby-header')||el.classList.contains('canvas-logo')){
+      stylesToRestore.push({el,prop:'display',value:el.style.display});
+      stylesToRestore.push({el,prop:'alignItems',value:el.style.alignItems});
+      stylesToRestore.push({el,prop:'justifyContent',value:el.style.justifyContent});
+      stylesToRestore.push({el,prop:'textAlign',value:el.style.textAlign});
+      stylesToRestore.push({el,prop:'lineHeight',value:el.style.lineHeight});
+      stylesToRestore.push({el,prop:'paddingTop',value:el.style.paddingTop});
+      stylesToRestore.push({el,prop:'paddingBottom',value:el.style.paddingBottom});
+      
+      el.style.display='flex !important';
+      el.style.alignItems='center !important';
+      el.style.justifyContent='center !important';
+      el.style.textAlign='center !important';
+      el.style.lineHeight='normal !important';
+      el.style.paddingTop='0 !important';
+      el.style.paddingBottom='0 !important';
     }
   });
   
@@ -1412,7 +1432,7 @@ async function performExport(){
     canvas.style.padding='0';
     
     // Step 8: Wait for layout recalculation
-    await new Promise(resolve=>setTimeout(resolve,200));
+    await new Promise(resolve=>setTimeout(resolve,300));
     
     // Step 9: Get precise dimensions from canvas content
     const inner=canvas.querySelector('.a4-inner');
@@ -1422,14 +1442,17 @@ async function performExport(){
     const captureWidth=Math.max(contentWidth,800);
     const captureHeight=Math.max(contentHeight,1400);
     
-    console.log('[Export] Capturing canvas dimensions:',captureWidth,'x',captureHeight);
+    // Use device pixel ratio for adaptive scaling (2x for mobile, 4x for desktop by default)
+    const baseScale=window.devicePixelRatio?Math.min(window.devicePixelRatio*2,4):4;
     
-    // Step 10: Capture with mobile-optimized settings (reduced scale for memory)
+    console.log('[Export] HD Export: scale='+baseScale+', dimensions='+captureWidth+'x'+captureHeight+', DPR='+window.devicePixelRatio);
+    
+    // Step 10: Capture with HD settings
     let canvasImg;
     try{
-      console.log('[Export] Attempting capture with scale 1.5 (mobile optimized)...');
+      console.log('[Export] Attempting HD capture with scale '+baseScale+'...');
       canvasImg=await html2canvas(canvas,{
-        scale:1.5,
+        scale:baseScale,
         useCORS:true,
         allowTaint:false,
         backgroundColor:'#ffffff',
@@ -1447,21 +1470,32 @@ async function performExport(){
           return !canvas.contains(el);
         },
         onclone:(clonedDocument)=>{
-          // Remove any remaining shadows in cloned document
+          // Apply aggressive centering and cleanup in cloned document
           clonedDocument.querySelectorAll('*').forEach(el=>{
             el.style.boxShadow='none';
             el.style.textShadow='none';
             el.style.filter='none';
+            
+            // Perfect centering in clone
+            if(el.classList.contains('zone-item')||el.classList.contains('pool-item')||el.classList.contains('pool-sub-header')||el.classList.contains('header-title')||el.classList.contains('zone-main-title')||el.classList.contains('zone-sub-title')||el.classList.contains('zone-header-outside')||el.classList.contains('standby-header')||el.classList.contains('canvas-logo')){
+              el.style.display='flex';
+              el.style.alignItems='center';
+              el.style.justifyContent='center';
+              el.style.textAlign='center';
+              el.style.lineHeight='normal';
+              el.style.paddingTop='0';
+              el.style.paddingBottom='0';
+            }
           });
         }
       });
-      console.log('[Export] Capture successful');
+      console.log('[Export] HD capture successful');
     }catch(captureErr){
-      console.error('[Export] Initial capture failed:',captureErr);
-      console.log('[Export] Retrying with fallback settings (scale 1)...');
+      console.error('[Export] Initial HD capture failed:',captureErr);
+      console.log('[Export] Retrying with fallback HD settings (scale 2)...');
       
       canvasImg=await html2canvas(canvas,{
-        scale:1,
+        scale:2,
         useCORS:true,
         allowTaint:true,
         backgroundColor:'#ffffff',
@@ -1474,15 +1508,31 @@ async function performExport(){
             el.style.boxShadow='none';
             el.style.textShadow='none';
             el.style.filter='none';
+            if(el.classList.contains('zone-item')||el.classList.contains('pool-item')||el.classList.contains('pool-sub-header')||el.classList.contains('header-title')||el.classList.contains('zone-main-title')||el.classList.contains('zone-sub-title')||el.classList.contains('zone-header-outside')||el.classList.contains('standby-header')||el.classList.contains('canvas-logo')){
+              el.style.display='flex';
+              el.style.alignItems='center';
+              el.style.justifyContent='center';
+              el.style.textAlign='center';
+              el.style.lineHeight='normal';
+              el.style.paddingTop='0';
+              el.style.paddingBottom='0';
+            }
           });
         }
       });
-      console.log('[Export] Fallback capture successful');
+      console.log('[Export] Fallback HD capture successful');
     }
     
-    // Step 11: Verify canvas is not blank before download
-    console.log('[Export] Verifying canvas content...');
+    // Step 11: Apply image smoothing for crisp rendering
+    console.log('[Export] Applying HD image smoothing...');
     const ctx=canvasImg.getContext('2d');
+    if(ctx){
+      ctx.imageSmoothingEnabled=true;
+      ctx.imageSmoothingQuality='high';
+    }
+    
+    // Step 12: Verify canvas is not blank before download
+    console.log('[Export] Verifying canvas content...');
     const imageData=ctx.getImageData(0,0,Math.min(20,canvasImg.width),Math.min(20,canvasImg.height));
     let hasContent=false;
     for(let i=0;i<imageData.data.length;i+=4){
@@ -1495,11 +1545,11 @@ async function performExport(){
     if(!hasContent){
       console.warn('[Export] Canvas appears blank');
     }else{
-      console.log('[Export] Canvas verified with content');
+      console.log('[Export] Canvas verified with HD content');
     }
     
-    // Step 12: Convert to blob and download immediately
-    console.log('[Export] Converting to JPEG blob...');
+    // Step 13: Convert to high-quality JPEG blob
+    console.log('[Export] Converting to HD JPEG blob...');
     const blobReady=new Promise((resolve,reject)=>{
       try{
         canvasImg.toBlob((blob)=>{
@@ -1507,9 +1557,9 @@ async function performExport(){
             reject(new Error('Failed to create blob'));
             return;
           }
-          console.log('[Export] Blob created:',blob.size,'bytes');
+          console.log('[Export] HD Blob created:',blob.size,'bytes');
           resolve(blob);
-        },'image/jpeg',0.92);
+        },'image/jpeg',0.98);
       }catch(blobErr){
         reject(blobErr);
       }
@@ -1517,13 +1567,13 @@ async function performExport(){
     
     const blob=await blobReady;
     
-    // Step 13: Create object URL and trigger download
-    console.log('[Export] Triggering download...');
+    // Step 14: Create object URL and trigger download
+    console.log('[Export] Triggering HD download...');
     const url=URL.createObjectURL(blob);
     const link=document.createElement('a');
     link.href=url;
     const dayNum=document.getElementById('numberSelect').value;
-    link.download='Crew-Report-Day'+dayNum+'.jpg';
+    link.download='Crew-Report-Day'+dayNum+'.jpeg';
     link.style.display='none';
     document.body.appendChild(link);
     
@@ -1534,15 +1584,15 @@ async function performExport(){
     setTimeout(()=>{
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-      console.log('[Export] Download complete and cleanup finished');
+      console.log('[Export] HD download complete and cleanup finished');
     },100);
     
   }catch(err){
     console.error('[Export] Export failed:',err);
     throw err;
   }finally{
-    // Step 14: Restore all original styles
-    console.log('[Export] Restoring original styles...');
+    // Step 15: Restore all original styles
+    console.log('[Export] Restoring all original styles...');
     
     canvas.style.overflow=originalStyles.get('canvas-overflow');
     canvas.style.transform=originalStyles.get('canvas-transform');
@@ -1560,7 +1610,7 @@ async function performExport(){
     // Show marquee box again
     if(marqueeBox)marqueeBox.style.display='block';
     
-    console.log('[Export] All styles restored');
+    console.log('[Export] All HD export styles restored');
   }
 }
 
@@ -1725,5 +1775,5 @@ renderZones();
 
 lucide.createIcons();
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef39e1dd116df69',t:'MTc3NjY4MjUzNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef3a67673b03e4d',t:'MTc3NjY4Mjg3OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
