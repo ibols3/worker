@@ -17,25 +17,38 @@ body{background:#000033;color:#fff}
 .sidebar-left{width:240px;min-width:240px;background:#000044;border-right:1px solid #1a1a5e;display:flex;flex-direction:column;height:100%;overflow:hidden}
 .sidebar-right{width:220px;min-width:220px;background:#000044;border-left:1px solid #1a1a5e;display:flex;flex-direction:column;height:100%;overflow:hidden}
 .center-area{flex:1;overflow:auto;display:flex;justify-content:center;padding:20px;min-width:0}
-.a4-canvas{width:210mm;min-width:210mm;min-height:297mm;background:#fff;color:#000;position:relative;padding:8mm 8mm 12mm 8mm;font-family:'Inter',sans-serif;flex-shrink:0;display:flex;flex-direction:column}
-.pool-item{padding:5px 10px;margin:2px 6px;border-radius:4px;cursor:grab;font-size:12px;font-weight:600;color:#fff;user-select:none;display:flex;align-items:center;gap:6px;position:relative;transition:transform 150ms ease,opacity 150ms ease;text-transform:uppercase !important}
-.pool-item:active{cursor:grabbing;opacity:.8}
-.pool-item .grip{opacity:.4;font-size:10px}
-.pool-item .nm{text-transform:uppercase !important}
-.zone-box{border:2px solid #ddd;border-radius:6px;min-height:80px;margin-bottom:8px;overflow:hidden;break-inside:avoid}
-.zone-label{background:#6b7280;color:#fff;padding:3px 8px;font-weight:700;font-size:24px;cursor:text;display:block;margin-bottom:12px}
-.zone-inner{padding:4px}
-.zone-title{color:#2563eb;font-weight:700;font-size:13px;cursor:text;outline:none;min-height:16px}
-.zone-subtitle{color:#ef4444;font-weight:700;font-style:italic;font-size:11px;cursor:text;outline:none;min-height:14px}
-.zone-names{min-height:30px;display:flex;flex-direction:column;gap:1px;padding:0 4px}
-.canvas-name{padding:4px 8px;border-radius:3px;font-size:10px;font-weight:600;color:#fff;cursor:grab;user-select:none;display:flex;align-items:center;gap:4px;position:relative;transition:transform 300ms cubic-bezier(0.34,1.56,0.64,1),opacity 200ms ease,background-color 200ms ease,color 200ms ease,margin-top 300ms cubic-bezier(0.34,1.56,0.64,1),margin-bottom 300ms cubic-bezier(0.34,1.56,0.64,1);margin:2px 0;width:100%;text-transform:uppercase !important}
+/* Main A4 wrapper - this will be scaled if content overflows */
+.a4-wrapper{width:210mm;background:#fff;color:#000;position:relative;flex-shrink:0;transform-origin:top center;transition:transform 0.2s ease-out}
+/* Inner canvas content - maintain flow layout */
+.a4-canvas{width:100%;padding:8mm 8mm 20mm 8mm;font-family:'Inter',sans-serif;display:flex;flex-direction:column;gap:0;min-height:297mm}
+.a4-canvas-header{display:flex;align-items:flex-start;gap:24px;margin-bottom:12px;flex-shrink:0}
+.a4-canvas-header img{height:80px;object-fit:contain}
+.a4-canvas-title{flex:1;text-align:center;padding-top:8px}
+.a4-canvas-title-main{font-size:40px;font-weight:800;line-height:1.1}
+.a4-canvas-day{display:flex;align-items:center;gap:8px;justify-content:center}
+.a4-canvas-day span,.a4-canvas-day select{font-size:40px;font-weight:800}
+.a4-canvas-day select{border:none;background:transparent;appearance:none;width:70px;cursor:pointer;text-align:center;padding:0;margin:0}
+.a4-canvas-date{padding-top:8px;text-align:right;position:relative;display:inline-block}
+.a4-canvas-date-label{color:#ef4444;font-size:24px;font-weight:bold;display:block;height:28px;line-height:28px;pointer-events:none}
+.a4-canvas-date-input{position:absolute;top:0;left:0;right:0;bottom:0;background:transparent;border:none;color:transparent;font-size:24px;font-weight:bold;cursor:pointer;padding:0 8px;outline:none;opacity:0.001;width:100%;height:100%}
+/* Content area - flexbox with auto-grow */
+.a4-canvas-content{flex:1;display:flex;flex-direction:column;gap:0;min-height:0}
+/* Zones grid */
+.zones-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;flex-shrink:0}
+.zone-box{border:2px solid #ddd;border-radius:6px;min-height:auto;overflow:hidden;break-inside:avoid;position:relative;display:flex;flex-direction:column}
+.zone-label{background:#6b7280;color:#fff;padding:3px 8px;font-weight:700;font-size:24px;cursor:text;display:block;flex-shrink:0}
+.zone-inner{padding:4px;flex:1;display:flex;flex-direction:column;gap:0}
+.zone-title{color:#2563eb;font-weight:700;font-size:13px;cursor:text;outline:none;min-height:16px;flex-shrink:0}
+.zone-subtitle{color:#ef4444;font-weight:700;font-style:italic;font-size:11px;cursor:text;outline:none;min-height:14px;flex-shrink:0}
+.zone-names{min-height:30px;display:flex;flex-direction:column;gap:1px;padding:0 4px;flex:1}
+.canvas-name{padding:4px 8px;border-radius:3px;font-size:10px;font-weight:600;color:#fff;cursor:grab;user-select:none;display:flex;align-items:center;gap:4px;position:static;transition:transform 300ms cubic-bezier(0.34,1.56,0.64,1),opacity 200ms ease,background-color 200ms ease,color 200ms ease;margin:2px 0;width:100%;text-transform:uppercase !important;flex-shrink:0}
 .canvas-name:active{cursor:grabbing}
 .canvas-name .num{min-width:14px;text-align:right;opacity:.8;font-size:9px}
 .canvas-name .nm{flex:1;text-transform:uppercase !important}
 .canvas-name .del{opacity:0;cursor:pointer;font-size:10px;padding:0 2px}
 .canvas-name:hover .del{opacity:.7}
-.canvas-placeholder{height:28px;background:#3b82f6;border:2px dashed #60a5fa;border-radius:4px;margin:4px 0;opacity:0.4;transition:opacity 200ms ease;pointer-events:none}
-.canvas-subheading{padding:6px 10px;margin:2px 0;border-radius:3px;font-size:11px;font-weight:700;color:#000;user-select:none;display:flex;align-items:center;gap:4px;position:relative;background:#9ca3af;width:100%;cursor:grab;border:none;transition:transform 200ms cubic-bezier(0.25,0.46,0.45,0.94),opacity 200ms ease;text-transform:uppercase !important}
+.canvas-placeholder{height:28px;background:#3b82f6;border:2px dashed #60a5fa;border-radius:4px;margin:4px 0;opacity:0.4;transition:opacity 200ms ease;pointer-events:none;flex-shrink:0}
+.canvas-subheading{padding:6px 10px;margin:2px 0;border-radius:3px;font-size:11px;font-weight:700;color:#000;user-select:none;display:flex;align-items:center;gap:4px;position:static;background:#9ca3af;width:100%;cursor:grab;border:none;transition:transform 200ms cubic-bezier(0.25,0.46,0.45,0.94),opacity 200ms ease;text-transform:uppercase !important;flex-shrink:0}
 .canvas-subheading:active{cursor:grabbing}
 .canvas-subheading .num{display:none}
 .canvas-subheading .nm{flex:1;font-style:italic;text-transform:uppercase !important}
@@ -43,15 +56,20 @@ body{background:#000033;color:#fff}
 .canvas-subheading:hover .del{opacity:.7}
 .standby-names .canvas-subheading{background:#9ca3af;color:#000;border:1px solid #9ca3af;text-transform:uppercase !important}
 .standby-names .canvas-name{background:#E5E7EB !important;color:#000 !important;font-weight:700;border:1px solid #d1d5db;padding:4px 8px;text-transform:uppercase !important}
+.pool-item{padding:5px 10px;margin:2px 6px;border-radius:4px;cursor:grab;font-size:12px;font-weight:600;color:#fff;user-select:none;display:flex;align-items:center;gap:6px;position:relative;transition:transform 150ms ease,opacity 150ms ease;text-transform:uppercase !important}
+.pool-item:active{cursor:grabbing;opacity:.8}
+.pool-item .grip{opacity:.4;font-size:10px}
+.pool-item .nm{text-transform:uppercase !important}
 .pool-subheading{padding:5px 10px;margin:2px 6px;border-radius:4px;cursor:grab;font-size:12px;font-weight:600;color:#999;user-select:none;display:flex;align-items:center;gap:6px;position:relative;background:transparent;border:1px solid #666;font-style:italic;transition:transform 150ms ease,opacity 150ms ease;text-transform:uppercase !important}
 .pool-subheading:active{cursor:grabbing;opacity:.8}
 .pool-subheading .grip{opacity:.4;font-size:10px}
 .pool-subheading .nm{flex:1;outline:none;text-transform:uppercase !important}
-.standby-box{border:2px solid #999;border-radius:6px;min-height:60px;margin-top:8px}
-.standby-header{background:#6b7280;color:#fff;padding:3px 8px;font-weight:700;font-size:11px}
-.standby-names{min-height:30px;padding:4px;display:flex;flex-direction:column;gap:1px}
+.standby-box{border:2px solid #999;border-radius:6px;min-height:60px;margin-top:12px;margin-bottom:12px;flex-shrink:0;position:relative;display:flex;flex-direction:column;width:calc(33.333% - 4px)}
+.standby-header{background:#6b7280;color:#fff;padding:3px 8px;font-weight:700;font-size:11px;flex-shrink:0}
+.standby-names{min-height:30px;padding:4px;display:flex;flex-direction:column;gap:1px;flex:1}
 .standby-names .canvas-name{background:#E5E7EB;color:#000;font-weight:700;border:1px solid #d1d5db;padding:4px 8px}
 .standby-names .canvas-name:hover .del{opacity:.5}
+.a4-canvas-counter{margin-top:auto;padding-top:8px;border-top:1px solid #ddd;text-align:left;font-size:13px;font-weight:700;flex-shrink:0;display:flex;flex-direction:column;gap:4px}
 .drop-hover{background:#e0e7ff !important}
 .drag-ghost{opacity:.5}
 .color-popup{position:fixed;z-index:9999;background:#1e1e2e;border:1px solid #444;border-radius:8px;padding:8px;display:flex;gap:6px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
@@ -59,7 +77,6 @@ body{background:#000033;color:#fff}
 .color-popup .swatch:hover{transform:scale(1.2);border-color:#fff}
 .marquee{position:fixed;border:2px dashed #3b82f6;background:rgba(59,130,246,0.15);z-index:9998;pointer-events:none}
 .selected-name{background:#fbbf24 !important;border:2px solid #fff;box-shadow:0 0 8px rgba(251,191,36,0.8);outline:none !important}
-.zones-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .btn-sm{padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:none;display:flex;align-items:center;gap:4px;justify-content:center;transition:background .2s}
 .scroll-y{overflow-y:auto;flex:1;min-height:0}
 .sidebar-title{padding:10px 12px;font-weight:700;font-size:14px;border-bottom:1px solid #1a1a5e;flex-shrink:0}
@@ -71,36 +88,33 @@ input:focus,select:focus{outline:none}
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
  <body class="h-full">
-  <div class="app-wrap" id="app">
-   <!-- LEFT SIDEBAR -->
+  <div class="app-wrap" id="app"><!-- LEFT SIDEBAR -->
    <div class="sidebar-left">
-    <div class="sidebar-title flex items-center gap-2"><i data-lucide="users" style="width:16px;height:16px"></i> Pool List
+    <div class="sidebar-title flex items-center gap-2">
+     <i data-lucide="users" style="width:16px;height:16px"></i> Pool List
     </div>
     <div class="scroll-y" id="poolList"></div>
     <div style="padding:8px;border-top:1px solid #1a1a5e;flex-shrink:0">
-     <form id="addForm" class="flex gap-1">
-      <select id="addType" class="bg-transparent border border-gray-600 rounded px-2 py-1 text-xs text-white" style="cursor:pointer"> <option value="worker">Worker</option> <option value="subheading">Sub-Head</option> </select> <input id="addInput" type="text" placeholder="Add name..." class="flex-1 bg-transparent border border-gray-600 rounded px-2 py-1 text-xs text-white" style="min-width:0"> <button type="submit" class="btn-sm bg-emerald-600 text-white hover:bg-emerald-500"><i data-lucide="plus" style="width:14px;height:14px"></i></button>
+     <form id="addForm" class="flex gap-1"><select id="addType" class="bg-transparent border border-gray-600 rounded px-2 py-1 text-xs text-white" style="cursor:pointer"> <option value="worker">Worker</option> <option value="subheading">Sub-Head</option> </select> <input id="addInput" type="text" placeholder="Add name..." class="flex-1 bg-transparent border border-gray-600 rounded px-2 py-1 text-xs text-white" style="min-width:0"> <button type="submit" class="btn-sm bg-emerald-600 text-white hover:bg-emerald-500"><i data-lucide="plus" style="width:14px;height:14px"></i></button>
      </form>
     </div>
    </div><!-- CENTER -->
    <div class="center-area" id="centerScroll">
-    <div class="a4-canvas" id="a4canvas">
-     <!-- HEADER -->
+    <div class="a4-canvas" id="a4canvas"><!-- HEADER -->
      <div style="display:flex;align-items:flex-start;gap:24px;margin-bottom:12px">
-      <div style="height:80px;flex-shrink:0"><img src="https://lh3.googleusercontent.com/d/1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" style="height:80px;object-fit:contain" alt="Logo" loading="lazy" onerror="this.style.background='#e5e7eb';this.alt='Logo unavailable';this.style.width='80px'">
+      <div style="height:80px;flex-shrink:0">
+       <img src="https://lh3.googleusercontent.com/d/1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" style="height:80px;object-fit:contain" alt="Logo" loading="lazy" onerror="this.style.background='#e5e7eb';this.alt='Logo unavailable';this.style.width='80px'">
       </div>
       <div style="flex:1;text-align:center;padding-top:8px">
        <div style="font-size:40px;font-weight:800;line-height:1.1">
         <div id="canvasMainTitle">
          I.B.O.L
         </div>
-        <div style="display:flex;align-items:center;gap:8px;justify-content:center">
-         <span id="canvasDayLabel">DAY</span> <select id="daySelect" style="font-size:40px;font-weight:800;border:none;background:transparent;appearance:none;width:70px;cursor:pointer;text-align:center;padding:0;margin:0"></select>
+        <div style="display:flex;align-items:center;gap:8px;justify-content:center"><span id="canvasDayLabel">DAY</span> <select id="daySelect" style="font-size:40px;font-weight:800;border:none;background:transparent;appearance:none;width:70px;cursor:pointer;text-align:center;padding:0;margin:0"></select>
         </div>
        </div>
       </div>
-      <div style="padding-top:8px;text-align:right;position:relative;display:inline-block">
-       <span id="header-date-label" style="color:#ef4444;font-size:24px;font-weight:bold;font-family:inherit;text-transform:uppercase;display:block;height:28px;line-height:28px;pointer-events:none">RABU, 31 MARET 26</span> <input type="date" id="header-date-input" style="position:absolute;top:0;left:0;right:0;bottom:0;background:transparent;border:none;color:transparent;font-size:24px;font-weight:bold;font-family:inherit;cursor:pointer;padding:0 8px;outline:none;opacity:0.001;width:100%;height:100%" title="Click to change date">
+      <div style="padding-top:8px;text-align:right;position:relative;display:inline-block"><span id="header-date-label" style="color:#ef4444;font-size:24px;font-weight:bold;font-family:inherit;text-transform:uppercase;display:block;height:28px;line-height:28px;pointer-events:none">RABU, 31 MARET 26</span> <input type="date" id="header-date-input" style="position:absolute;top:0;left:0;right:0;bottom:0;background:transparent;border:none;color:transparent;font-size:24px;font-weight:bold;font-family:inherit;cursor:pointer;padding:0 8px;outline:none;opacity:0.001;width:100%;height:100%" title="Click to change date">
       </div>
      </div><!-- ZONES GRID -->
      <div class="zones-grid" id="zonesGrid"></div><!-- STANDBY -->
@@ -111,18 +125,20 @@ input:focus,select:focus{outline:none}
       <div class="standby-names" id="standbyNames"></div>
      </div><!-- COUNTER -->
      <div style="margin-top:12px;padding-top:8px;border-top:1px solid #ddd;text-align:left;font-size:13px;font-weight:700">
-      <div style="margin-bottom:4px"><span style="color:#CC0000">TOTAL PEKERJA BEKERJA: <span id="countWork" style="color:#CC0000">0</span></span>
+      <div style="margin-bottom:4px">
+       <span style="color:#CC0000">TOTAL PEKERJA BEKERJA: <span id="countWork" style="color:#CC0000">0</span></span>
       </div>
-      <div><span style="color:#7c3aed">TOTAL PEKERJA STANDBY: <span id="countStandby" style="color:#7c3aed">0</span></span>
+      <div>
+       <span style="color:#7c3aed">TOTAL PEKERJA STANDBY: <span id="countStandby" style="color:#7c3aed">0</span></span>
       </div>
      </div>
     </div>
    </div><!-- RIGHT SIDEBAR -->
    <div class="sidebar-right">
-    <div class="sidebar-title flex items-center gap-2"><i data-lucide="layout" style="width:16px;height:16px"></i> Zone &amp; Export
+    <div class="sidebar-title flex items-center gap-2">
+     <i data-lucide="layout" style="width:16px;height:16px"></i> Zone &amp; Export
     </div>
-    <div class="scroll-y" style="padding:10px;display:flex;flex-direction:column;gap:8px">
-     <button id="btnAddZone" class="btn-sm bg-blue-600 text-white hover:bg-blue-500 w-full"><i data-lucide="plus-square" style="width:14px;height:14px"></i> Add Zone</button> <button id="btnExport" class="btn-sm bg-amber-600 text-white hover:bg-amber-500 w-full"><i data-lucide="download" style="width:14px;height:14px"></i> Download JPEG</button>
+    <div class="scroll-y" style="padding:10px;display:flex;flex-direction:column;gap:8px"><button id="btnAddZone" class="btn-sm bg-blue-600 text-white hover:bg-blue-500 w-full"><i data-lucide="plus-square" style="width:14px;height:14px"></i> Add Zone</button> <button id="btnExport" class="btn-sm bg-amber-600 text-white hover:bg-amber-500 w-full"><i data-lucide="download" style="width:14px;height:14px"></i> Download JPEG</button>
      <div class="text-xs text-gray-400 mt-4">
       <p class="mb-2">• Drag names from pool to zones</p>
       <p class="mb-2">• Double-click name on canvas to change color</p>
@@ -686,42 +702,42 @@ function updateCounts(){
 }
 
 // ---- AUTO-SCALING & DYNAMIC LAYOUT ----
-function fitContentToCanvas(){
+function applyA4Fit(){
+  const wrapper = document.getElementById('a4wrapper');
   const canvas = document.getElementById('a4canvas');
   const zonesGrid = document.getElementById('zonesGrid');
-  const canvasHeight = 297 * 37.795; // A4 height in pixels (297mm)
   
-  // Get total content height (including header, zones, standby, counter)
+  // Force reflow to get accurate heights
   const contentHeight = canvas.scrollHeight;
+  const a4HeightPx = 297 * 3.7795; // A4 height: 297mm in pixels (96 DPI)
   
-  // Calculate scaling ratio
+  // Calculate scale ratio
   let scaleRatio = 1;
-  if(contentHeight > canvasHeight){
-    scaleRatio = (canvasHeight * 0.95) / contentHeight; // 95% to leave margin
-    // Clamp scale between 0.5 and 1 to maintain readability
+  if(contentHeight > a4HeightPx){
+    scaleRatio = a4HeightPx / contentHeight;
+    // Clamp between 0.5 and 1 to maintain readability
     scaleRatio = Math.max(0.5, Math.min(1, scaleRatio));
   }
   
-  // Apply scale transform
-  canvas.style.transform = `scale(${scaleRatio})`;
-  canvas.style.transformOrigin = 'top center';
+  // Apply scale to wrapper only (not canvas)
+  wrapper.style.transform = `scale(${scaleRatio})`;
   
   // Dynamic font size adjustment based on zone count
   const zoneCount = document.querySelectorAll('.zone-box').length;
   let fontScaleFactor = 1;
   
   if(zoneCount > 9){
-    fontScaleFactor = 0.85; // 15% reduction for many zones
+    fontScaleFactor = 0.85; // 15% reduction
   } else if(zoneCount > 6){
-    fontScaleFactor = 0.92; // 8% reduction for moderate zones
+    fontScaleFactor = 0.92; // 8% reduction
   }
   
-  // Apply dynamic font sizes
+  // Apply dynamic font sizes to all elements
   document.querySelectorAll('.canvas-name .nm').forEach(el => {
     el.style.fontSize = (10 * fontScaleFactor) + 'px';
   });
   
-  document.querySelectorAll('.canvas-subheading .nm').forEach(el => {
+  document.querySelectorAll('.canvas-subheading').forEach(el => {
     el.style.fontSize = (11 * fontScaleFactor) + 'px';
   });
   
@@ -733,25 +749,16 @@ function fitContentToCanvas(){
     el.style.fontSize = (11 * fontScaleFactor) + 'px';
   });
   
-  // Adjust grid gap based on content
-  if(scaleRatio < 0.9){
-    zonesGrid.style.gap = '4px';
-  } else if(scaleRatio < 0.75){
+  // Adjust grid gap and spacing based on content
+  if(scaleRatio < 0.7){
+    zonesGrid.style.gap = '2px';
+  } else if(scaleRatio < 0.8){
     zonesGrid.style.gap = '3px';
+  } else if(scaleRatio < 0.9){
+    zonesGrid.style.gap = '4px';
   } else {
     zonesGrid.style.gap = '6px';
   }
-  
-  // Adjust zone box margin and padding
-  document.querySelectorAll('.zone-box').forEach(box => {
-    if(scaleRatio < 0.8){
-      box.style.marginBottom = '4px';
-    } else if(scaleRatio < 0.9){
-      box.style.marginBottom = '6px';
-    } else {
-      box.style.marginBottom = '8px';
-    }
-  });
 }
 
 // ---- COLOR PICKER ----
@@ -942,30 +949,29 @@ document.getElementById('btnExport').addEventListener('click',async()=>{
   const btn=document.getElementById('btnExport');
   btn.textContent='Exporting...';btn.disabled=true;
   try{
-    const canvas=document.getElementById('a4canvas');
+    const wrapper = document.getElementById('a4wrapper');
+    const canvas = document.getElementById('a4canvas');
     
-    // Get current scale value to calculate proper export dimensions
-    const computedStyle = window.getComputedStyle(canvas);
+    // Get the actual scale value from transform
+    const computedStyle = window.getComputedStyle(wrapper);
     const transform = computedStyle.transform;
     let scaleValue = 1;
     
     if(transform && transform !== 'none'){
       const values = transform.split('(')[1].split(')')[0].split(',');
-      scaleValue = Math.abs(window.parseFloat(values[0]));
+      scaleValue = Math.abs(parseFloat(values[0]));
     }
     
-    // Create temporary wrapper to contain scaled content
-    const wrapper = document.createElement('div');
-    wrapper.style.transform = `scale(${scaleValue})`;
-    wrapper.style.transformOrigin = 'top center';
-    wrapper.style.width = canvas.offsetWidth + 'px';
-    wrapper.style.height = canvas.offsetHeight + 'px';
+    // Calculate export dimensions based on actual A4 size
+    const a4Width = 210; // mm
+    const a4Height = 297; // mm
+    const dpi = 96;
+    const mmToPixel = dpi / 25.4;
     
-    // Calculate export canvas size accounting for scale
-    const exportWidth = 210 * 3.78; // mm to px (A4 width)
-    const exportHeight = canvas.scrollHeight * scaleValue; // Include actual content height
+    const exportWidth = a4Width * mmToPixel;
+    const exportHeight = a4Height * mmToPixel;
     
-    // Export with proper scaling
+    // Create canvas with proper dimensions
     const exportCanvas = await html2canvas(canvas, {
       scale: 2,
       useCORS: true,
@@ -1044,11 +1050,11 @@ addZone();addZone();
 updateCounts();
 lucide.createIcons();
 
-// Trigger initial scaling on load
-setTimeout(fitContentToCanvas, 100);
+// Trigger initial scaling on load with delay
+setTimeout(applyA4Fit, 100);
 
 // Auto-scale on window resize
-window.addEventListener('resize', fitContentToCanvas);
+window.addEventListener('resize', applyA4Fit);
 
 // Clean up drag listeners on drag end
 document.addEventListener('dragend',()=>{
@@ -1057,5 +1063,5 @@ document.addEventListener('dragend',()=>{
   document.querySelectorAll('.canvas-placeholder').forEach(p=>p.remove());
 });
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef127cf54a25d0f',t:'MTc3NjY1NjcxOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef13b09224ef8f2',t:'MTc3NjY1NzUwNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
