@@ -68,7 +68,7 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
 .zone-main-title{font-size:10px;font-weight:700;color:#2563eb;outline:none;text-align:left}
 .zone-sub-title{font-size:9px;font-weight:700;font-style:italic;color:#ef4444;outline:none;text-align:left}
 .zone-body{flex:1;padding:3px;display:flex;flex-direction:column;gap:2px;min-height:60px;width:100%}
-.zone-item{padding:5px 6px;border-radius:3px;font-size:10px;font-weight:600;color:#fff;display:flex;align-items:center;gap:3px;cursor:grab;user-select:none;transition:background 0.15s ease;touch-action:none;min-height:32px}
+.zone-item{padding:5px 6px;border-radius:3px;font-size:10px;font-weight:600;color:#fff;display:flex;align-items:center;justify-content:center;gap:3px;cursor:grab;user-select:none;transition:background 0.15s ease;touch-action:none;min-height:32px;line-height:1;vertical-align:middle}
 .zone-item:active{cursor:grabbing;transform:scale(1.03);box-shadow:0 2px 8px rgba(0,0,0,.25)}
 .zone-item .num{font-size:7px;min-width:14px;text-align:center;background:rgba(0,0,0,.25);border-radius:2px;padding:0 2px}
 .zone-item .del-btn{margin-left:auto;cursor:pointer;opacity:.5;font-size:8px;padding:3px 4px;min-width:24px;min-height:24px;display:flex;align-items:center;justify-content:center;border-radius:4px}
@@ -135,7 +135,7 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
   .day-selection-row{flex-wrap:nowrap;gap:8px}
   .date-display{font-size:16px;padding:6px 10px}
   
-  .pool-item{padding:7px 10px;margin:3px 5px;font-size:12px;min-height:42px}
+  .pool-item{padding:7px 10px;margin:3px 5px;font-size:12px;min-height:42px;display:flex;align-items:center;justify-content:center;line-height:1;vertical-align:middle}
   .pool-sub-header{padding:8px 10px;margin:5px 5px 2px;font-size:11px;min-height:42px}
   
   .zone-container{min-height:90px;padding:0;margin:8px;max-width:calc(33.333% - 16px)}
@@ -171,8 +171,7 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
  <body class="h-full">
-  <div class="app-wrap">
-   <!-- MOBILE MENU BUTTON --> <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button> <!-- DRAWER OVERLAY -->
+  <div class="app-wrap"><!-- MOBILE MENU BUTTON --> <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button> <!-- DRAWER OVERLAY -->
    <div class="drawer-overlay" id="drawerOverlay"></div><!-- LEFT SIDEBAR -->
    <div class="sidebar-left" id="sidebarLeft">
     <div style="padding:10px 10px 6px;border-bottom:1px solid #1e3a5f">
@@ -180,25 +179,28 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
     </div>
     <div class="scroll-pool" id="poolList"></div>
     <div style="padding:8px;border-top:1px solid #1e3a5f;display:flex;flex-direction:column;gap:6px">
-     <div style="display:flex;gap:4px;flex-wrap:wrap"><input id="newNameInput" type="text" placeholder="Worker name..." style="flex:1;min-width:100px;padding:8px;border-radius:5px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:11px;outline:none;min-height:36px"> <button id="addNameBtn" style="padding:8px 12px;background:#3b82f6;color:#fff;border:none;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;min-width:36px;min-height:36px">Add</button>
+     <div style="display:flex;gap:4px;flex-wrap:wrap">
+      <input id="newNameInput" type="text" placeholder="Worker name..." style="flex:1;min-width:100px;padding:8px;border-radius:5px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:11px;outline:none;min-height:36px"> <button id="addNameBtn" style="padding:8px 12px;background:#3b82f6;color:#fff;border:none;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;min-width:36px;min-height:36px">Add</button>
      </div>
-     <div style="display:flex;gap:4px;flex-wrap:wrap"><input id="newSubInput" type="text" placeholder="Sub header..." style="flex:1;min-width:100px;padding:8px;border-radius:5px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:11px;outline:none;min-height:36px"> <button id="addSubBtn" style="padding:8px 12px;background:#6b7280;color:#fff;border:none;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;min-width:36px;min-height:36px">Sub</button>
+     <div style="display:flex;gap:4px;flex-wrap:wrap">
+      <input id="newSubInput" type="text" placeholder="Sub header..." style="flex:1;min-width:100px;padding:8px;border-radius:5px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:11px;outline:none;min-height:36px"> <button id="addSubBtn" style="padding:8px 12px;background:#6b7280;color:#fff;border:none;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;min-width:36px;min-height:36px">Sub</button>
      </div>
     </div>
    </div><!-- CANVAS AREA -->
    <div class="canvas-area" id="canvasScroll">
     <div class="a4-canvas" id="a4Canvas">
-     <div class="a4-inner" id="a4Inner">
-      <!-- HEADER -->
+     <div class="a4-inner" id="a4Inner"><!-- HEADER -->
       <div class="canvas-header">
-       <div class="canvas-logo"><img src="https://lh3.googleusercontent.com/d/1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" alt="Logo" loading="lazy" onerror="this.style.background='#e5e7eb';this.alt='Logo unavailable';">
+       <div class="canvas-logo">
+        <img src="https://lh3.googleusercontent.com/d/1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" alt="Logo" loading="lazy" onerror="this.style.background='#e5e7eb';this.alt='Logo unavailable';">
        </div>
        <div class="canvas-header-center">
         <div class="header-title" id="headerTitle">
          I.B.O.L
         </div>
         <div class="day-selection-row">
-         <div class="day-label-group"><select id="dayTypeSelect" class="day-dropdown"> <option value="PREPS DAY">PREPS DAY</option> <option value="SHOOT DAY">SHOOT DAY</option> <option value="BONGKARAN DAY">BONGKARAN DAY</option> </select> <select id="numberSelect" class="number-dropdown"> </select>
+         <div class="day-label-group">
+          <select id="dayTypeSelect" class="day-dropdown"> <option value="PREPS DAY">PREPS DAY</option> <option value="SHOOT DAY">SHOOT DAY</option> <option value="BONGKARAN DAY">BONGKARAN DAY</option> </select> <select id="numberSelect" class="number-dropdown"> </select>
          </div>
         </div>
        </div>
@@ -217,11 +219,9 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
        <div style="flex:1"></div>
       </div><!-- FOOTER -->
       <div class="footer-counts" id="footerCounts">
-       <div>
-        <span class="working">TOTAL PEKERJA BEKERJA: <span id="countWorking">0</span></span>
+       <div><span class="working">TOTAL PEKERJA BEKERJA: <span id="countWorking">0</span></span>
        </div>
-       <div>
-        <span class="standby">TOTAL PEKERJA STANDBY: <span id="countStandby">0</span></span>
+       <div><span class="standby">TOTAL PEKERJA STANDBY: <span id="countStandby">0</span></span>
        </div>
       </div>
      </div>
@@ -231,8 +231,7 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
     <div style="padding:10px;border-bottom:1px solid #1e3a5f">
      <h2 style="font-size:14px;font-weight:800;color:#93c5fd;display:flex;align-items:center;gap:6px"><i data-lucide="layout" style="width:16px;height:16px"></i> Zone &amp; Export</h2>
     </div>
-    <div style="padding:10px;display:flex;flex-direction:column;gap:8px">
-     <button id="addZoneBtn" style="padding:10px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px"><i data-lucide="plus-square" style="width:13px;height:13px"></i> Add Zone</button> <button id="downloadBtn" style="padding:10px;background:#059669;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px"><i data-lucide="download" style="width:13px;height:13px"></i> Download</button>
+    <div style="padding:10px;display:flex;flex-direction:column;gap:8px"><button id="addZoneBtn" style="padding:10px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px"><i data-lucide="plus-square" style="width:13px;height:13px"></i> Add Zone</button> <button id="downloadBtn" style="padding:10px;background:#059669;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px"><i data-lucide="download" style="width:13px;height:13px"></i> Download</button>
      <hr style="border-color:#1e3a5f">
      <div style="font-size:10px;color:#94a3b8">
       <p style="margin-bottom:2px"><strong>Tips:</strong></p>
@@ -247,7 +246,8 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px" id="swatchGrid"></div>
   </div><!-- CALENDAR POPUP -->
   <div class="calendar-popup" id="calendarPopup">
-   <div class="calendar-header"><button id="prevMonth">◀ Bulan Sebelumnya</button>
+   <div class="calendar-header">
+    <button id="prevMonth">◀ Bulan Sebelumnya</button>
     <div id="monthYear" style="font-weight:700;text-align:center;flex:1;font-size:16px;color:#1f2937"></div><button id="nextMonth">Bulan Berikutnya ▶</button>
    </div>
    <div class="calendar-grid" id="calendarGrid"></div>
@@ -437,38 +437,61 @@ for(let i=1;i<=40;i++){
   document.getElementById('numberSelect').appendChild(opt);
 }
 
-// ============ RENDER POOL ============
+// ============ RENDER POOL - GROUPED BY COLOR ============
 function renderPool(){
   const el=document.getElementById('poolList');
   el.innerHTML='';
-  poolItems.forEach(item=>{
-    let node;
-    if(item.type==='sub'){
-      node=document.createElement('div');
-      node.className='pool-sub-header';
-      node.dataset.id=item.id;
-      node.textContent=item.name;
-      node.draggable=true;
-      node.addEventListener('dragstart',e=>onPoolDragStart(e,item));
-      node.addEventListener('touchstart',e=>onTouchStart(e,'pool',null,item),{passive:false});
-    }else{
-      node=document.createElement('div');
+  
+  // Group items by color
+  const groups={
+    [COLORS.blue]:{label:'Team Blue',items:[]},
+    [COLORS.yellow]:{label:'Team Yellow',items:[]},
+    [COLORS.orange]:{label:'Team Orange',items:[]},
+    [COLORS.red]:{label:'Team Red',items:[]},
+    '#ffffff':{label:'Misc',items:[]}
+  };
+  
+  // Separate subs from pool items and sort into groups
+  const subs=poolItems.filter(p=>p.type==='sub');
+  const workers=poolItems.filter(p=>p.type!=='sub');
+  
+  workers.forEach(item=>{
+    const color=item.color||'#ffffff';
+    if(groups[color]){
+      groups[color].items.push(item);
+    }
+  });
+  
+  // Render each group
+  Object.entries(groups).forEach(([color,group])=>{
+    if(group.items.length===0&&color!==COLORS.blue)return; // Only show non-empty groups
+    
+    // Group header
+    const header=document.createElement('div');
+    header.style.cssText='padding:8px 8px 4px;font-size:10px;font-weight:700;color:#93c5fd;text-transform:uppercase;background:rgba(59,130,246,0.1);border-left:3px solid '+color+';margin-top:8px;margin-bottom:2px';
+    header.textContent=group.label;
+    el.appendChild(header);
+    
+    // Group items
+    group.items.forEach(item=>{
+      const node=document.createElement('div');
       node.className='pool-item';
       node.dataset.id=item.id;
+      node.dataset.color=color;
       node.draggable=true;
       node.textContent=item.name;
       
-      // Add color class based on hex color
-      if(item.color==COLORS.blue)node.classList.add('blue');
-      else if(item.color==COLORS.yellow)node.classList.add('yellow');
-      else if(item.color==COLORS.orange)node.classList.add('orange');
-      else if(item.color==COLORS.red)node.classList.add('red');
+      // Add color class
+      if(color==COLORS.blue)node.classList.add('blue');
+      else if(color==COLORS.yellow)node.classList.add('yellow');
+      else if(color==COLORS.orange)node.classList.add('orange');
+      else if(color==COLORS.red)node.classList.add('red');
       else node.classList.add('white');
       
       node.addEventListener('dragstart',e=>onPoolDragStart(e,item));
       node.addEventListener('touchstart',e=>onTouchStart(e,'pool',null,item),{passive:false});
-    }
-    el.appendChild(node);
+      el.appendChild(node);
+    });
   });
 }
 
@@ -792,20 +815,23 @@ poolEl.addEventListener('drop',e=>{
     removeItemFromSource(item.id,dragData.source,dragData.zoneId);
   }
   
-  // Step 2: Add items back to pool
+  // Step 2: Add items back to pool, sorted into their color groups
   for(const item of dragData.items){
     poolItems.push({id:item.id,name:item.name,color:item.color,type:item.type});
   }
   
-  // Step 3: Clear drag state
+  // Step 3: Sort pool items by color to maintain grouping
+  sortPoolByColor();
+  
+  // Step 4: Clear drag state
   dragData=null;
   
-  // Step 4: Single render pass
+  // Step 5: Single render pass
   renderPool();
   renderZones();
   renderStandby();
   
-  // Step 5: Restore selection
+  // Step 6: Restore selection
   setTimeout(()=>{
     document.querySelectorAll('#poolList .pool-item').forEach(el=>{
       if(prevSelected.has(el.dataset.id)){
@@ -814,6 +840,19 @@ poolEl.addEventListener('drop',e=>{
     });
   },0);
 });
+
+function sortPoolByColor(){
+  const colorOrder=[COLORS.blue,COLORS.yellow,COLORS.orange,COLORS.red,'#ffffff'];
+  poolItems.sort((a,b)=>{
+    const colorA=a.color||'#ffffff';
+    const colorB=b.color||'#ffffff';
+    const indexA=colorOrder.indexOf(colorA);
+    const indexB=colorOrder.indexOf(colorB);
+    if(indexA!==indexB)return indexA-indexB;
+    // Same color group, maintain original order
+    return 0;
+  });
+}
 
 // ============ DROP INDICATORS ============
 function showDropIndicator(body,e){
@@ -1169,7 +1208,14 @@ document.getElementById('newSubInput').addEventListener('keydown',e=>{
 document.getElementById('downloadBtn').addEventListener('click',async()=>{
   const canvas=document.getElementById('a4Canvas');
   try{
-    const c=await html2canvas(canvas,{scale:2,useCORS:true,backgroundColor:'#ffffff'});
+    const c=await html2canvas(canvas,{
+      scale:2,
+      useCORS:true,
+      backgroundColor:'#ffffff',
+      logging:false,
+      allowTaint:true,
+      foreignObjectRendering:true
+    });
     const link=document.createElement('a');
     link.download='crew-report-day'+document.getElementById('numberSelect').value+'.jpg';
     link.href=c.toDataURL('image/jpeg',0.95);
@@ -1298,5 +1344,5 @@ renderZones();
 
 lucide.createIcons();
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef35041d527a5d8',t:'MTc3NjY3OTM0Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef35a90c5e53df4',t:'MTc3NjY3OTc3MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
