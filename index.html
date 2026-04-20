@@ -12,1598 +12,972 @@
   <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif}
-body{background:#000033;color:#fff}
-.app-wrap{display:flex;height:100%;overflow:hidden}
-.sidebar-left{width:240px;min-width:240px;background:#000044;border-right:1px solid #1a1a5e;display:flex;flex-direction:column;height:100%;overflow:hidden}
-.sidebar-right{width:220px;min-width:220px;background:#000044;border-left:1px solid #1a1a5e;display:flex;flex-direction:column;height:100%;overflow:hidden}
-.center-area{flex:1;overflow:auto;display:flex;justify-content:center;align-items:flex-start;padding:20px;min-width:0}
-
-/* ===== A4 CANVAS (Fixed Size - Flex-Based Layout) ===== */
-#a4-canvas {
-    width: 794px !important;
-    height: 1123px !important;
-    background-color: #ffffff !important;
-    color: #000 !important;
-    margin: 40px auto !important;
-    padding: 30px !important;
-    position: relative !important;
-    box-sizing: border-box !important;
-    display: flex !important;
-    flex-direction: column !important;
-    flex-shrink: 0 !important;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-    overflow: hidden !important;
-    gap: 0;
-}
-
-/* ===== INNER CONTENT (Fixed Layout with Flex Structure) ===== */
-#inner-content {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    width: 100%;
-    height: 100%;
-    position: relative;
-    overflow: hidden;
-    box-sizing: border-box;
-}
-
-/* Zone container wrapper - Auto-shrink area */
-#zone-container-wrapper {
-    flex: 1 1 auto !important;
-    overflow: hidden !important;
-    display: block !important;
-    transform-origin: top center !important;
-    min-height: 0;
-}
-
-/* Main scrollable content area */
-#main-content-area {
-    overflow: visible;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    min-height: 0;
-}
-
-/* ===== HEADER ===== */
-.a4-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 24px;
-    margin-bottom: 12px;
-    flex-shrink: 0;
-}
-
-.a4-header img {
-    height: 80px;
-    object-fit: contain;
-}
-
-.a4-header-title {
-    flex: 1;
-    text-align: center;
-    padding-top: 8px;
-}
-
-.a4-header-title-main {
-    font-size: 40px;
-    font-weight: 800;
-    line-height: 1.1;
-    color: #000;
-}
-
-.a4-header-day {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    justify-content: center;
-}
-
-.a4-header-day span,
-.a4-header-day select {
-    font-size: 40px;
-    font-weight: 800;
-    color: #000;
-}
-
-.a4-header-day select {
-    border: none;
-    background: transparent;
-    appearance: none;
-    width: 70px;
-    cursor: pointer;
-    text-align: center;
-    padding: 0;
-    margin: 0;
-}
-
-.a4-header-date {
-    padding-top: 8px;
-    text-align: right;
-    position: relative;
-    display: inline-block;
-}
-
-.a4-header-date-label {
-    color: #ef4444;
-    font-size: 24px;
-    font-weight: bold;
-    display: block;
-    height: 28px;
-    line-height: 28px;
-    pointer-events: none;
-}
-
-.a4-header-date-input {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: transparent;
-    border: none;
-    color: transparent;
-    font-size: 24px;
-    font-weight: bold;
-    cursor: pointer;
-    padding: 0 8px;
-    outline: none;
-    opacity: 0.001;
-    width: 100%;
-    height: 100%;
-}
-
-/* ===== ZONES CONTAINER (Scrollable Area) ===== */
-.zones-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    justify-content: flex-start;
-    flex-shrink: 1;
-    margin-bottom: 12px;
-    padding: 0;
-    max-height: 500px;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
-.zone-box {
-    width: calc(33.333% - 4px);
-    border: 2px solid #ddd;
-    border-radius: 6px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    break-inside: avoid;
-    position: relative;
-}
-
-.zone-label {
-    background: #6b7280;
-    color: #fff;
-    padding: 3px 8px;
-    font-weight: 700;
-    font-size: 24px;
-    cursor: text;
-    display: block;
-    flex-shrink: 0;
-    position: relative;
-}
-
-.zone-delete-btn {
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: transparent;
-    border: none;
-    color: #fff;
-    font-weight: bold;
-    font-size: 18px;
-    cursor: pointer;
-    padding: 2px 6px;
-    line-height: 1;
-    opacity: 0.7;
-    transition: opacity 200ms ease;
-}
-
-.zone-delete-btn:hover {
-    opacity: 1;
-}
-
-.zone-inner {
-    padding: 4px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-}
-
-.zone-title {
-    color: #2563eb;
-    font-weight: 700;
-    font-size: 13px;
-    cursor: text;
-    outline: none;
-    min-height: 16px;
-    flex-shrink: 0;
-}
-
-.zone-subtitle {
-    color: #ef4444;
-    font-weight: 700;
-    font-style: italic;
-    font-size: 11px;
-    cursor: text;
-    outline: none;
-    min-height: 14px;
-    flex-shrink: 0;
-}
-
-.zone-names {
-    min-height: 30px;
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-    padding: 0 4px;
-    flex: 1;
-}
-
-/* ===== CANVAS NAMES (Worker Items - Teks Tengah Sempurna dengan Flexbox) ===== */
-.canvas-name {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    text-align: left !important;
-    height: 30px !important;
-    padding: 0 8px !important;
-    margin: 2px 0 !important;
-    border-radius: 3px;
-    font-size: 10px !important;
-    font-weight: 600 !important;
-    color: #fff !important;
-    cursor: grab;
-    user-select: none;
-    gap: 4px !important;
-    line-height: normal !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    text-transform: uppercase !important;
-    flex-shrink: 0;
-    transition: transform 300ms cubic-bezier(0.34,1.56,0.64,1), opacity 200ms ease, background-color 200ms ease, color 200ms ease;
-}
-
-.canvas-name:active {
-    cursor: grabbing;
-}
-
-.canvas-name .num {
-    min-width: 12px !important;
-    text-align: right !important;
-    opacity: .8;
-    font-size: 9px !important;
-    flex-shrink: 0 !important;
-}
-
-.canvas-name .nm {
-    flex: 1;
-    text-transform: uppercase !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    line-height: normal !important;
-}
-
-.canvas-name .del {
-    opacity: 0;
-    cursor: pointer;
-    font-size: 10px;
-    padding: 0 2px;
-    flex-shrink: 0;
-}
-
-.canvas-name:hover .del {
-    opacity: .7;
-}
-
-/* ===== PLACEHOLDER ===== */
-.canvas-placeholder {
-    height: 28px;
-    background: #3b82f6;
-    border: 2px dashed #60a5fa;
-    border-radius: 4px;
-    margin: 4px 0;
-    opacity: 0.4;
-    transition: opacity 200ms ease;
-    pointer-events: none;
-    flex-shrink: 0;
-}
-
-/* ===== SUBHEADING (Teks Tengah dengan Flexbox) ===== */
-.canvas-subheading {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    text-align: left !important;
-    height: 30px !important;
-    padding: 0 10px !important;
-    margin: 2px 0 !important;
-    border-radius: 3px;
-    font-size: 11px !important;
-    font-weight: 700 !important;
-    color: #000 !important;
-    background: #9ca3af !important;
-    user-select: none;
-    gap: 4px !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    cursor: grab;
-    border: none;
-    transition: transform 200ms cubic-bezier(0.25,0.46,0.45,0.94), opacity 200ms ease;
-    text-transform: uppercase !important;
-    flex-shrink: 0;
-    line-height: normal !important;
-}
-
-.canvas-subheading:active {
-    cursor: grabbing;
-}
-
-.canvas-subheading .num {
-    display: none;
-}
-
-.canvas-subheading .nm {
-    flex: 1;
-    font-style: italic;
-    text-transform: uppercase !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    line-height: normal !important;
-}
-
-.canvas-subheading .del {
-    opacity: 0;
-    cursor: pointer;
-    font-size: 10px;
-    padding: 0 2px;
-    flex-shrink: 0;
-}
-
-.canvas-subheading:hover .del {
-    opacity: .7;
-}
-
-/* ===== STANDBY ===== */
-.standby-box {
-    border: 2px solid #999;
-    border-radius: 6px;
-    min-height: 60px;
-    margin-top: 12px;
-    margin-bottom: 12px;
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    width: calc(33.333% - 4px);
-}
-
-.standby-header {
-    background: #6b7280;
-    color: #fff;
-    padding: 3px 8px;
-    font-weight: 700;
-    font-size: 11px;
-    flex-shrink: 0;
-}
-
-.standby-names {
-    min-height: 30px;
-    padding: 4px;
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-    flex: 1;
-}
-
-.standby-names .canvas-name {
-    background: #E5E7EB !important;
-    color: #000 !important;
-    font-weight: 700;
-    border: 1px solid #d1d5db;
-    padding: 4px 8px;
-}
-
-.standby-names .canvas-name:hover .del {
-    opacity: .5;
-}
-
-.standby-names .canvas-subheading {
-    background: #9ca3af;
-    color: #000;
-    border: 1px solid #9ca3af;
-}
-
-/* ===== FOOTER COUNTER WRAPPER (Flex-Based - Locked to Bottom) ===== */
-#footer-group {
-    display: flex !important;
-    flex-direction: column !important;
-    border-top: 2px solid #ff0000 !important;
-    padding-top: 15px !important;
-    padding-bottom: 10px !important;
-    background: white !important;
-    margin-top: auto !important;
-    flex-shrink: 0;
-    gap: 4px !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-}
-
-.counter-item {
-    display: block !important;
-    font-weight: bold !important;
-    font-size: 14px !important;
-    margin: 0 !important;
-    line-height: 1.3 !important;
-    color: #000 !important;
-}
-
-/* ===== COUNTER ===== */
-.a4-counter {
-    display: contents;
-}
-
-/* ===== POOL ITEMS ===== */
-.pool-item {
-    padding: 5px 10px;
-    margin: 2px 6px;
-    border-radius: 4px;
-    cursor: grab;
-    font-size: 12px;
-    font-weight: 600;
-    color: #fff;
-    user-select: none;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: transform 150ms ease, opacity 150ms ease;
-    text-transform: uppercase !important;
-}
-
-.pool-item:active {
-    cursor: grabbing;
-    opacity: .8;
-}
-
-.pool-item .grip {
-    opacity: .4;
-    font-size: 10px;
-}
-
-.pool-item .nm {
-    text-transform: uppercase !important;
-}
-
-.pool-subheading {
-    padding: 5px 10px;
-    margin: 2px 6px;
-    border-radius: 4px;
-    cursor: grab;
-    font-size: 12px;
-    font-weight: 600;
-    color: #999;
-    user-select: none;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: transparent;
-    border: 1px solid #666;
-    font-style: italic;
-    transition: transform 150ms ease, opacity 150ms ease;
-    text-transform: uppercase !important;
-}
-
-.pool-subheading:active {
-    cursor: grabbing;
-    opacity: .8;
-}
-
-.pool-subheading .grip {
-    opacity: .4;
-    font-size: 10px;
-}
-
-.pool-subheading .nm {
-    flex: 1;
-    outline: none;
-    text-transform: uppercase !important;
-}
-
-/* ===== UTILITIES ===== */
-.drop-hover {
-    background: #e0e7ff !important;
-}
-
-.color-popup {
-    position: fixed;
-    z-index: 9999;
-    background: #1e1e2e;
-    border: 1px solid #444;
-    border-radius: 8px;
-    padding: 8px;
-    display: flex;
-    gap: 6px;
-    box-shadow: 0 8px 24px rgba(0,0,0,.5);
-}
-
-.color-popup .swatch {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: transform .15s;
-}
-
-.color-popup .swatch:hover {
-    transform: scale(1.2);
-    border-color: #fff;
-}
-
-.marquee {
-    position: fixed;
-    border: 2px dashed #3b82f6;
-    background: rgba(59,130,246,0.15);
-    z-index: 9998;
-    pointer-events: none;
-}
-
-.selected-name {
-    background: #fbbf24 !important;
-    border: 2px solid #fff;
-    box-shadow: 0 0 8px rgba(251,191,36,0.8);
-    outline: none !important;
-}
-
-.btn-sm {
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    justify-content: center;
-    transition: background .2s;
-}
-
-.scroll-y {
-    overflow-y: auto;
-    flex: 1;
-    min-height: 0;
-}
-
-.sidebar-title {
-    padding: 10px 12px;
-    font-weight: 700;
-    font-size: 14px;
-    border-bottom: 1px solid #1a1a5e;
-    flex-shrink: 0;
-}
-
-input:focus,
-select:focus {
-    outline: none;
-}
-
-[contenteditable]:focus {
-    outline: 1px dashed #999;
-}
-
-@media print {
-    .sidebar-left, .sidebar-right {
-        display: none;
-    }
-    .center-area {
-        padding: 0;
-    }
-}
+body{background:#000033;color:#e2e8f0}
+.app-wrap{display:flex;height:100%;width:100%;overflow:hidden}
+.sidebar-left{width:240px;min-width:240px;background:#000044;border-right:1px solid #1e3a5f;display:flex;flex-direction:column;height:100%;overflow:hidden}
+.sidebar-right{width:220px;min-width:220px;background:#000044;border-left:1px solid #1e3a5f;display:flex;flex-direction:column;height:100%;overflow:hidden}
+.canvas-area{flex:1;overflow:auto;display:flex;justify-content:center;padding:20px;align-items:flex-start}
+.a4-canvas{width:1189px;min-height:1682px;background:#fff;color:#000;position:relative;box-shadow:0 8px 32px rgba(0,0,0,.5);flex-shrink:0;transform-origin:top center}
+.a4-inner{padding:24px 32px 32px;display:flex;flex-direction:column}
+.canvas-header{display:flex;gap:20px;margin-bottom:20px;border-bottom:2px solid #000;padding-bottom:16px}
+.canvas-logo{flex:0 0 auto;display:flex;align-items:center;justify-content:center;min-height:100px;min-width:120px}
+.canvas-logo img{max-height:100px;max-width:100%;object-fit:contain}
+.canvas-header-center{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.header-title{font-size:48px;font-weight:800;color:#000;margin-bottom:8px}
+.day-selection-row{display:flex;align-items:center;justify-content:center;gap:10px}
+.day-label-group{display:flex;align-items:center;justify-content:center;gap:10px}
+.day-dropdown{background:transparent;border:none;font-size:32px;font-weight:800;color:#000;outline:none;cursor:pointer;padding:0;font-family:inherit;text-align:right;min-width:180px}
+.number-dropdown{background:transparent;border:none;font-size:32px;font-weight:800;color:#000;outline:none;cursor:pointer;padding:0;font-family:inherit;text-align:left;min-width:60px}
+.day-dropdown:hover,.number-dropdown:hover{opacity:.7}
+.canvas-header-right{flex:0 0 auto;display:flex;align-items:center;justify-content:center;min-width:180px}
+.date-display{font-size:20px;font-weight:700;color:#ef4444;text-align:center;cursor:pointer;padding:8px 12px;border-radius:4px;transition:background .2s}
+.date-display:hover{background:rgba(239,68,68,.1)}
+.pool-item{padding:8px 10px;margin:3px 6px;border-radius:5px;cursor:grab;font-size:12px;font-weight:600;color:#fff;display:flex;align-items:center;gap:6px;user-select:none;transition:opacity .15s;border:1px solid #333;font-weight:700}
+.pool-item.blue{background:#2563eb}
+.pool-item.yellow{background:#eab308;color:#000}
+.pool-item.orange{background:#f97316;color:#fff}
+.pool-item.red{background:#ef4444}
+.pool-item.white{background:#fff;color:#000}
+.pool-item:active{cursor:grabbing;opacity:.7}
+.pool-sub-header{padding:8px 10px;margin:6px 6px 3px;border-radius:5px;font-size:11px;font-weight:700;color:#000;background:#6b7280;display:flex;align-items:center;user-select:none}
+.zone-container{border:2px solid #e5e7eb;border-radius:4px;min-height:100px;padding:0;margin:8px;flex:1;max-width:calc(33.333% - 16px);display:flex;flex-direction:column;position:relative}
+.zone-header-outside{font-size:26px;font-weight:700;color:#000;background:#9ca3af;padding:6px 8px;border-radius:3px 3px 0 0;cursor:text;text-align:left}
+.zone-titles{padding:8px;display:flex;flex-direction:column;gap:4px}
+.zone-main-title{font-size:14px;font-weight:700;color:#2563eb;outline:none;text-align:left}
+.zone-sub-title{font-size:12px;font-weight:700;font-style:italic;color:#ef4444;outline:none;text-align:left}
+.zone-body{flex:1;padding:6px;display:flex;flex-direction:column;gap:2px;min-height:150px;width:100%}
+.zone-item{padding:4px 8px;border-radius:3px;font-size:11px;font-weight:600;color:#fff;display:flex;align-items:center;gap:4px;cursor:grab;user-select:none}
+.zone-item:active{cursor:grabbing}
+.zone-item .num{font-size:9px;min-width:18px;text-align:center;background:rgba(0,0,0,.25);border-radius:2px;padding:1px 2px}
+.zone-item .del-btn{margin-left:auto;cursor:pointer;opacity:.5;font-size:10px;padding:0 2px}
+.zone-item .del-btn:hover{opacity:1}
+.drag-over{background:#e0f2fe!important;border-color:#3b82f6!important}
+.drop-indicator{height:2px;background:#3b82f6;border-radius:1px;margin:2px 0;transition:all .1s}
+.standby-container{border:2px solid #e5e7eb;border-radius:4px;min-height:100px;padding:0;margin:8px;flex:1;max-width:calc(33.333% - 16px);display:flex;flex-direction:column;position:relative}
+.standby-header{background:#9ca3af;color:#000;font-size:26px;font-weight:700;padding:6px 8px;border-radius:3px 3px 0 0;cursor:text;text-align:left}
+.standby-body{padding:6px;display:flex;flex-direction:column;gap:2px;min-height:150px;width:100%;flex:1}
+.color-picker-popup{position:fixed;z-index:9999;background:#1e293b;border:1px solid #475569;border-radius:8px;padding:10px;display:none;box-shadow:0 8px 24px rgba(0,0,0,.6)}
+.color-picker-popup .swatch{width:32px;height:32px;border-radius:6px;cursor:pointer;border:2px solid transparent;transition:transform .1s}
+.color-picker-popup .swatch:hover{transform:scale(1.15);border-color:#fff}
+.marquee-box{position:fixed;border:2px dashed #3b82f6;background:rgba(59,130,246,.1);pointer-events:none;z-index:9998;display:none}
+.selected-highlight{outline:2px solid #fbbf24;outline-offset:1px}
+.scroll-pool{flex:1;overflow-y:auto;overflow-x:hidden}
+.scroll-pool::-webkit-scrollbar{width:5px}
+.scroll-pool::-webkit-scrollbar-thumb{background:#334155;border-radius:4px}
+.canvas-area::-webkit-scrollbar{width:8px}
+.canvas-area::-webkit-scrollbar-thumb{background:#334155;border-radius:4px}
+.zone-row{display:flex;flex-wrap:nowrap;margin-bottom:4px;gap:0}
+.footer-counts{margin-top:16px;font-size:14px;font-weight:700;color:#000}
+.footer-counts .working{color:#22c55e}
+.footer-counts .standby{color:#a855f7}
+.calendar-popup{position:fixed;z-index:99999;background:#ffffff;border:2px solid #d1d5db;border-radius:8px;padding:16px;display:none;box-shadow:0 10px 40px rgba(0,0,0,.3),0 1px 3px rgba(0,0,0,.1);min-width:300px}
+.calendar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #e5e7eb}
+.calendar-header button{background:#2563eb;color:#fff;border:none;border-radius:4px;padding:6px 12px;cursor:pointer;font-weight:700;font-size:14px;transition:background .2s}
+.calendar-header button:hover{background:#1d4ed8}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.calendar-day-label{text-align:center;font-weight:700;font-size:12px;padding:8px 4px;color:#1f2937;text-transform:uppercase}
+.calendar-day{text-align:center;padding:10px 8px;border-radius:4px;cursor:pointer;border:1px solid #e5e7eb;font-size:13px;color:#1f2937;background:#fff;font-weight:500;transition:all .15s}
+.calendar-day:hover{background:#f3f4f6;border-color:#9ca3af}
+.calendar-day.selected{background:#2563eb;color:#fff;border-color:#2563eb;font-weight:700}
+@media print{.sidebar-left,.sidebar-right{display:none}}
 </style>
   <style>body { box-sizing: border-box; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
  <body class="h-full">
-  <div class="app-wrap" id="app">
-   <!-- LEFT SIDEBAR -->
+  <div class="app-wrap"><!-- LEFT SIDEBAR -->
    <div class="sidebar-left">
-    <div class="sidebar-title flex items-center gap-2"><i data-lucide="users" style="width:16px;height:16px"></i> Pool List
+    <div style="padding:10px 10px 6px;border-bottom:1px solid #1e3a5f">
+     <h2 style="font-size:14px;font-weight:800;color:#93c5fd;display:flex;align-items:center;gap:6px"><i data-lucide="users" style="width:16px;height:16px"></i> Worker List</h2>
     </div>
-    <div class="scroll-y" id="poolList"></div>
-    <div style="padding:8px;border-top:1px solid #1a1a5e;flex-shrink:0">
-     <form id="addForm" class="flex gap-1">
-      <select id="addType" class="bg-transparent border border-gray-600 rounded px-2 py-1 text-xs text-white" style="cursor:pointer"> <option value="worker">Worker</option> <option value="subheading">Sub-Head</option> </select> <input id="addInput" type="text" placeholder="Add name..." class="flex-1 bg-transparent border border-gray-600 rounded px-2 py-1 text-xs text-white" style="min-width:0"> <button type="submit" class="btn-sm bg-emerald-600 text-white hover:bg-emerald-500"><i data-lucide="plus" style="width:14px;height:14px"></i></button>
-     </form>
+    <div class="scroll-pool" id="poolList"></div>
+    <div style="padding:8px;border-top:1px solid #1e3a5f;display:flex;flex-direction:column;gap:6px">
+     <div style="display:flex;gap:4px">
+      <input id="newNameInput" type="text" placeholder="Worker name..." style="flex:1;padding:6px 8px;border-radius:5px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:12px;outline:none"> <button id="addNameBtn" style="padding:6px 10px;background:#3b82f6;color:#fff;border:none;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer">Add</button>
+     </div>
+     <div style="display:flex;gap:4px">
+      <input id="newSubInput" type="text" placeholder="Sub header..." style="flex:1;padding:6px 8px;border-radius:5px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:12px;outline:none"> <button id="addSubBtn" style="padding:6px 10px;background:#6b7280;color:#fff;border:none;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer">Sub</button>
+     </div>
     </div>
-   </div><!-- CENTER -->
-   <div class="center-area" id="centerScroll">
-    <div id="a4-canvas">
-     <div id="inner-content"><!-- HEADER -->
-      <div class="a4-header">
-       <div style="height:80px;flex-shrink:0"><img src="https://lh3.googleusercontent.com/d/1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" style="height:80px;object-fit:contain" alt="Logo" loading="lazy" onerror="this.style.background='#e5e7eb';this.alt='Logo unavailable';this.style.width='80px'">
+   </div><!-- CANVAS AREA -->
+   <div class="canvas-area" id="canvasScroll">
+    <div class="a4-canvas" id="a4Canvas">
+     <div class="a4-inner" id="a4Inner"><!-- HEADER -->
+      <div class="canvas-header">
+       <div class="canvas-logo">
+        <img src="https://lh3.googleusercontent.com/d/1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" alt="Logo" loading="lazy" onerror="this.style.background='#e5e7eb';this.alt='Logo unavailable';">
        </div>
-       <div class="a4-header-title">
-        <div class="a4-header-title-main">
-         <div id="canvasMainTitle">
-          I.B.O.L
-         </div>
-         <div class="a4-header-day"><span id="canvasDayLabel">DAY</span> <select id="daySelect" class="a4-header-day"></select>
+       <div class="canvas-header-center">
+        <div class="header-title" id="headerTitle">
+         I.B.O.L
+        </div>
+        <div class="day-selection-row">
+         <div class="day-label-group">
+          <select id="dayTypeSelect" class="day-dropdown"> <option value="PREPS DAY">PREPS DAY</option> <option value="SHOOT DAY">SHOOT DAY</option> <option value="BONGKARAN DAY">BONGKARAN DAY</option> </select> <select id="numberSelect" class="number-dropdown"> </select>
          </div>
         </div>
        </div>
-       <div class="a4-header-date"><span class="a4-header-date-label" id="header-date-label">RABU, 31 MARET 26</span> <input type="date" id="header-date-input" class="a4-header-date-input" title="Click to change date">
+       <div class="canvas-header-right">
+        <div class="date-display" id="dateDisplay" title="Click to change date"></div>
        </div>
-      </div><!-- MAIN CONTENT AREA (Zones + Standby) -->
-      <div id="main-content-area"><!-- ZONES CONTAINER -->
-       <div class="zones-container" id="zonesGrid"></div><!-- STANDBY -->
-       <div class="standby-box" id="standbyBox">
+      </div><!-- ZONES AREA -->
+      <div id="zonesArea"></div><!-- STANDBY -->
+      <div id="standbyRow" style="display:flex;flex-wrap:nowrap;margin-bottom:4px;gap:0">
+       <div class="standby-container" id="standbyZone">
         <div class="standby-header">
          STANDBY
         </div>
-        <div class="standby-names" id="standbyNames"></div>
+        <div class="standby-body" id="standbyBody"></div>
        </div>
-      </div><!-- FOOTER COUNTER -->
-      <div id="footer-group">
-       <div class="counter-item"><span style="color:#CC0000">TOTAL PEKERJA BEKERJA: <span id="countWork" style="color:#CC0000">0</span></span>
+       <div style="flex:1"></div>
+      </div><!-- FOOTER -->
+      <div class="footer-counts" id="footerCounts">
+       <div><span class="working">TOTAL PEKERJA BEKERJA: <span id="countWorking">0</span></span>
        </div>
-       <div class="counter-item"><span style="color:#7c3aed">TOTAL PEKERJA STANDBY: <span id="countStandby" style="color:#7c3aed">0</span></span>
+       <div><span class="standby">TOTAL PEKERJA STANDBY: <span id="countStandby">0</span></span>
        </div>
       </div>
      </div>
     </div>
    </div><!-- RIGHT SIDEBAR -->
    <div class="sidebar-right">
-    <div class="sidebar-title flex items-center gap-2"><i data-lucide="layout" style="width:16px;height:16px"></i> Zone &amp; Export
+    <div style="padding:10px;border-bottom:1px solid #1e3a5f">
+     <h2 style="font-size:14px;font-weight:800;color:#93c5fd;display:flex;align-items:center;gap:6px"><i data-lucide="layout" style="width:16px;height:16px"></i> Zone &amp; Export</h2>
     </div>
-    <div class="scroll-y" style="padding:10px;display:flex;flex-direction:column;gap:8px">
-     <button id="btnAddZone" class="btn-sm bg-blue-600 text-white hover:bg-blue-500 w-full"><i data-lucide="plus-square" style="width:14px;height:14px"></i> Add Zone</button> <button id="btnExport" class="btn-sm bg-amber-600 text-white hover:bg-amber-500 w-full"><i data-lucide="download" style="width:14px;height:14px"></i> Download JPEG</button>
-     <div class="text-xs text-gray-400 mt-4">
-      <p class="mb-2">• Drag names from pool to zones</p>
-      <p class="mb-2">• Double-click name on canvas to change color</p>
-      <p class="mb-2">• Click &amp; drag on canvas for marquee select</p>
-      <p class="mb-2">• Max 3 zones per row</p>
+    <div style="padding:10px;display:flex;flex-direction:column;gap:8px"><button id="addZoneBtn" style="padding:8px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px"><i data-lucide="plus-square" style="width:14px;height:14px"></i> Add Zone</button> <button id="downloadBtn" style="padding:8px;background:#059669;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px"><i data-lucide="download" style="width:14px;height:14px"></i> Download JPEG</button>
+     <hr style="border-color:#1e3a5f">
+     <div style="font-size:11px;color:#94a3b8">
+      <p style="margin-bottom:4px"><strong>Tips:</strong></p>
+      <p>• Drag names from pool into zones</p>
+      <p>• Double-click name in zone to change color</p>
+      <p>• Names auto-number by color group</p>
+      <p>• Click &amp; drag to marquee-select</p>
      </div>
     </div>
    </div>
-  </div><!-- COLOR POPUP -->
-  <div id="colorPopup" class="color-popup" style="display:none"></div><!-- MARQUEE -->
-  <div id="marquee" class="marquee" style="display:none"></div>
+  </div><!-- COLOR PICKER POPUP -->
+  <div class="color-picker-popup" id="colorPicker">
+   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px" id="swatchGrid"></div>
+  </div><!-- CALENDAR POPUP -->
+  <div class="calendar-popup" id="calendarPopup">
+   <div class="calendar-header">
+    <button id="prevMonth">◀ Bulan Sebelumnya</button>
+    <div id="monthYear" style="font-weight:700;text-align:center;flex:1;font-size:16px;color:#1f2937"></div><button id="nextMonth">Bulan Berikutnya ▶</button>
+   </div>
+   <div class="calendar-grid" id="calendarGrid"></div>
+  </div><!-- MARQUEE -->
+  <div class="marquee-box" id="marqueeBox"></div>
   <script>
-// ---- DATA ----
-const COLORS = {
-  blue:'#2563eb', yellow:'#FFD700', orange:'#FF8C00', red:'#CC0000',
-  green:'#16a34a', pink:'#db2777', gray:'#6b7280', purple:'#a855f7'
+// ============ DATA ============
+const COLORS={
+  blue:'#2563eb',yellow:'#eab308',orange:'#ff6b00',red:'#dc2626',
+  green:'#22c55e',pink:'#ec4899',gray:'#6b7280'
 };
-const COLOR_LIST = ['red','blue','yellow','green','pink','orange'];
-const COLOR_HEX = COLOR_LIST.map(c=>COLORS[c]);
-
-// Calculate text color based on background contrast (WCAG)
-function getContrastTextColor(bgHex) {
-  const rgb = parseInt(bgHex.slice(1), 16);
-  const r = (rgb >> 16) & 255;
-  const g = (rgb >> 8) & 255;
-  const b = rgb & 255;
-  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-  
-  // For dark backgrounds (luminance < 0.5), use white text
-  // For light backgrounds (luminance >= 0.5), use black text
-  return luminance < 0.5 ? '#ffffff' : '#000000';
-}
-
-const INITIAL_POOL = [
-  {cat:'blue',names:['Fredy Chidotz','Deni Sandy','Hamdan','Iman Udeng','Pingki Sopian']},
-  {cat:'yellow',names:['Adi Susanto','Alif','Ikhwani','Yudi','Fahmi','Aditya Arisandi','Kikin','Samsul Hidayat']},
-  {cat:'orange',names:['Supriyadi','Hendri','Basori','Acep','Edi','Sudarmansyah','Ryan Hermawan','Iwan A. setiawan']},
-  {cat:'red',names:['Heri Suherman','Ismail','Rahmat','Rendi','Dafa','Anggi Yanuar','Caryana','Pryambudi','Asep A. Setiawan','Sandi permana','Aditiya A. Aziz','Wawan Kurniawan','Rizki N. Huda','M. Dian Saputra']}
+const PICKER_COLORS=[
+  {name:'Red',hex:'#dc2626'},{name:'Blue',hex:'#2563eb'},{name:'Yellow',hex:'#eab308'},
+  {name:'Green',hex:'#22c55e'},{name:'Pink',hex:'#ec4899'},{name:'Orange',hex:'#ff6b00'}
 ];
 
-let poolNames = [];
-let nextId = 1;
-let zoneCount = 0;
-let dragData = null;
-let colorTarget = null;
-let marqueeActive = false;
-let marqueeStart = null;
-let selectedIds = new Set();
+const initialPool=[
+  {name:'Fredy Chidotz',color:COLORS.blue},{name:'Deni Sandy',color:COLORS.blue},{name:'Hamdan',color:COLORS.blue},{name:'Iman Udeng',color:COLORS.blue},{name:'Pingki Sopian',color:COLORS.blue},
+  {name:'Adi Susanto',color:COLORS.yellow},{name:'Alif',color:COLORS.yellow},{name:'Ikhwani',color:COLORS.yellow},{name:'Yudi',color:COLORS.yellow},{name:'Fahmi',color:COLORS.yellow},{name:'Aditya Arisandi',color:COLORS.yellow},{name:'Kikin',color:COLORS.yellow},{name:'Samsul Hidayat',color:COLORS.yellow},
+  {name:'Supriyadi',color:COLORS.orange},{name:'Hendri',color:COLORS.orange},{name:'Basori',color:COLORS.orange},{name:'Acep',color:COLORS.orange},{name:'Edi',color:COLORS.orange},{name:'Sudarmansyah',color:COLORS.orange},{name:'Ryan Hermawan',color:COLORS.orange},{name:'Iwan A. Setiawan',color:COLORS.orange},
+  {name:'Heri Suherman',color:COLORS.red},{name:'Ismail',color:COLORS.red},{name:'Rahmat',color:COLORS.red},{name:'Rendi',color:COLORS.red},{name:'Dafa',color:COLORS.red},{name:'Anggi Yanuar',color:COLORS.red},{name:'Caryana',color:COLORS.red},{name:'Pryambudi',color:COLORS.red},{name:'Asep A. Setiawan',color:COLORS.red},{name:'Sandi Permana',color:COLORS.red},{name:'Aditiya A. Aziz',color:COLORS.red},{name:'Wawan Kurniawan',color:COLORS.red},{name:'Rizki N. Huda',color:COLORS.red},{name:'M. Dian Saputra',color:COLORS.red},
+  // 35 new RED workers
+  {name:'Budi',color:COLORS.red},{name:'Citra',color:COLORS.red},{name:'Doni',color:COLORS.red},{name:'Edo',color:COLORS.red},{name:'Fajar',color:COLORS.red},
+  {name:'Guntur',color:COLORS.red},{name:'Hendra',color:COLORS.red},{name:'Iqbal',color:COLORS.red},{name:'Jaka',color:COLORS.red},{name:'Kurnia',color:COLORS.red},
+  {name:'Luki',color:COLORS.red},{name:'Mardian',color:COLORS.red},{name:'Nando',color:COLORS.red},{name:'Oki',color:COLORS.red},{name:'Priyo',color:COLORS.red},
+  {name:'Qori',color:COLORS.red},{name:'Rudi',color:COLORS.red},{name:'Sapto',color:COLORS.red},{name:'Tedjo',color:COLORS.red},{name:'Udi',color:COLORS.red},
+  {name:'Vicky',color:COLORS.red},{name:'Wahyu',color:COLORS.red},{name:'Xeno',color:COLORS.red},{name:'Yanto',color:COLORS.red},{name:'Zaki',color:COLORS.red},
+  {name:'Ardhi',color:COLORS.red},{name:'Bayar',color:COLORS.red},{name:'Chandra',color:COLORS.red},{name:'Dwi',color:COLORS.red},{name:'Ejon',color:COLORS.red},
+  {name:'Farhan',color:COLORS.red},{name:'Gradi',color:COLORS.red},{name:'Hartono',color:COLORS.red},{name:'Iwan',color:COLORS.red},{name:'Jendra',color:COLORS.red}
+];
 
-function uid(){return 'd'+(nextId++)}
+let poolItems=[...initialPool.map((p,i)=>({...p,id:'p'+i}))];
+let nextId=poolItems.length;
 
-// Init pool
-INITIAL_POOL.forEach(g=>{
-  g.names.forEach(n=>{
-    poolNames.push({id:uid(), name:n, type:'worker', color:COLORS[g.cat]});
-  });
-});
+// zones: [{id,labelTitle,mainTitle,subTitle,items:[{id,name,color}]}]
+let zones=[];
+let standbyItems=[];
+let zoneCounter=0;
 
-// Day selector
-const daySelect = document.getElementById('daySelect');
-for(let i=1;i<=40;i++){const o=document.createElement('option');o.value=i;o.textContent=i;daySelect.appendChild(o);}
+// drag state
+let dragData=null; // {source:'pool'|'zone'|'standby', zoneId?, itemId, items:[]}
+let selectedItems=new Set();
 
-// Date input - set to today and make showPicker work
-const dateInp = document.getElementById('header-date-input');
-const dateLabel = document.getElementById('header-date-label');
+// calendar state
+let currentDate=new Date();
 
-// Format tanggal ke Bahasa Indonesia
-function formatDateIndonesian(dateString) {
-  const date = new Date(dateString + 'T00:00:00');
-  const days = ['MINGGU', 'SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT', 'SABTU'];
-  const months = ['JANUARI', 'FEBRUARI', 'MARET', 'APRIL', 'MEI', 'JUNI', 'JULI', 'AGUSTUS', 'SEPTEMBER', 'OKTOBER', 'NOVEMBER', 'DESEMBER'];
-  
-  const dayName = days[date.getDay()];
-  const dayNum = date.getDate();
-  const monthName = months[date.getMonth()];
-  const yearLast2 = String(date.getFullYear()).slice(-2);
-  
-  return `${dayName}, ${dayNum} ${monthName} ${yearLast2}`;
-}
-
-// Set tanggal hari ini
-const today = new Date().toISOString().split('T')[0];
-dateInp.value = today;
-dateLabel.textContent = formatDateIndonesian(today);
-
-// Update label saat tanggal berubah
-dateInp.addEventListener('change', function() {
-  dateLabel.textContent = formatDateIndonesian(this.value);
-});
-
-// Trigger date picker on click
-dateInp.addEventListener('click', function() {
-  if(this.showPicker) this.showPicker();
-});
-
-// ---- POOL RENDER ----
-function renderPool(){
-  const el = document.getElementById('poolList');
-  const existing = new Map([...el.children].map(c=>[c.dataset.id,c]));
-  const ids = new Set(poolNames.map(p=>p.id));
-  existing.forEach((node,id)=>{if(!ids.has(id))node.remove();});
-  poolNames.forEach(p=>{
-    let node = existing.get(p.id);
-    if(!node){
-      node = document.createElement('div');
-      node.className = p.type === 'subheading' ? 'pool-subheading' : 'pool-item';
-      node.dataset.id=p.id;
-      node.dataset.type=p.type;
-      node.draggable=true;
-      if(p.type === 'subheading'){
-        node.innerHTML='<span class="grip">⠿</span><span class="nm" contenteditable="true" style="user-select:all"></span>';
-        node.querySelector('.nm').addEventListener('click',e=>e.stopPropagation());
-        node.querySelector('.nm').addEventListener('blur',()=>{
-          const newText = node.querySelector('.nm').textContent.trim().toUpperCase();
-          if(newText) p.name = newText;
-          else renderPool(); // Re-render if emptied
-        });
-      } else {
-        node.innerHTML='<span class="grip">⠿</span><span class="nm"></span>';
-      }
-      node.addEventListener('dragstart',onPoolDragStart);
-      node.addEventListener('touchstart',onTouchStart,{passive:false});
-      el.appendChild(node);
-    }
-    node.style.background=p.type === 'subheading' ? 'transparent' : p.color;
-    node.style.color=p.type === 'subheading' ? '' : getContrastTextColor(p.color);
-    node.style.fontWeight=p.type === 'subheading' ? '' : '700';
-    node.querySelector('.nm').textContent=p.name.toUpperCase();
-  });
-}
-
-// ---- ZONE MANAGEMENT ----
-function addZone(){
-  zoneCount++;
-  const zid='zone_'+zoneCount;
-  const grid=document.getElementById('zonesGrid');
-  const box=document.createElement('div');
-  box.className='zone-box';
-  box.dataset.zone=zid;
-  box.innerHTML=`
-    <div class="zone-label" contenteditable="true">
-      ZONE ${zoneCount}
-      <button class="zone-delete-btn" title="Delete zone">✕</button>
-    </div>
-    <div class="zone-inner">
-      <div class="zone-title" contenteditable="true" data-placeholder="Title">Title</div>
-      <div class="zone-subtitle" contenteditable="true" data-placeholder="Sub-title">Sub-title</div>
-      <div class="zone-names" data-zone="${zid}"></div>
-    </div>`;
-  
-  // Add delete button handler
-  const deleteBtn = box.querySelector('.zone-delete-btn');
-  deleteBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    deleteZone(box);
-  });
-  
-  grid.appendChild(box);
-  setupDropZone(box.querySelector('.zone-names'));
-}
-
-function setupDropZone(el){
-  el.addEventListener('dragover',e=>{e.preventDefault();el.classList.add('drop-hover');});
-  el.addEventListener('dragleave',()=>el.classList.remove('drop-hover'));
-  el.addEventListener('drop',e=>{
-    e.preventDefault();el.classList.remove('drop-hover');
-    handleDrop(el,e);
-  });
-}
-
-// Delete zone and return all workers to pool
-function deleteZone(zoneBox){
-  // Get all workers and subheadings in this zone
-  const zoneNames = zoneBox.querySelector('.zone-names');
-  const items = [...zoneNames.querySelectorAll('.canvas-name, .canvas-subheading')];
-  
-  // Return each item to the pool
-  items.forEach(item => {
-    const name = item.querySelector('.nm').textContent.trim();
-    const type = item.dataset.type || 'worker';
-    const originalColor = item.dataset.originalColor || item.dataset.color || COLORS.gray;
-    
-    // Create a new pool entry
-    poolNames.push({
-      id: item.dataset.id,
-      name: name,
-      type: type,
-      color: originalColor
-    });
-  });
-  
-  // Remove the zone box from canvas
-  zoneBox.remove();
-  
-  // Update UI and counts
-  renderPool();
-  updateCounts();
-  renumberAll();
-}
-
-// Setup standby drop
-setupDropZone(document.getElementById('standbyNames'));
-
-// ---- DRAG & DROP ----
-function onPoolDragStart(e){
-  const id=e.currentTarget.dataset.id;
-  
-  // If this item is selected and part of a multi-selection, drag all selected
-  if(selectedIds.size>0 && selectedIds.has(id)){
-    dragData={type:'multi',ids:[...selectedIds],source:'pool'};
-    
-    // Create professional ghost image showing all selected pool items
-    const dragImg = document.createElement('div');
-    dragImg.style.position='fixed';
-    dragImg.style.zIndex='10000';
-    dragImg.style.pointerEvents='none';
-    dragImg.style.opacity='0.9';
-    dragImg.style.background='#1e1e2e';
-    dragImg.style.border='2px solid #3b82f6';
-    dragImg.style.borderRadius='6px';
-    dragImg.style.padding='8px';
-    dragImg.style.minWidth='140px';
-    dragImg.style.boxShadow='0 10px 30px rgba(0,0,0,0.7)';
-    
-    let count=0;
-    dragData.ids.forEach(selId=>{
-      const elem=document.querySelector(`.pool-item[data-id="${selId}"]`);
-      if(elem && count<3){
-        const clone=elem.cloneNode(true);
-        clone.style.margin='3px 0';
-        clone.style.fontSize='11px';
-        clone.style.padding='4px 8px';
-        clone.style.draggable='false';
-        dragImg.appendChild(clone);
-        count++;
-      }
-    });
-    
-    if(dragData.ids.length>3){
-      const more=document.createElement('div');
-      more.textContent=`+${dragData.ids.length-3} more`;
-      more.style.fontSize='10px';
-      more.style.padding='4px 8px';
-      more.style.textAlign='center';
-      more.style.color='#60a5fa';
-      more.style.fontWeight='600';
-      more.style.borderTop='1px solid #444';
-      dragImg.appendChild(more);
-    }
-    
-    document.body.appendChild(dragImg);
-    e.dataTransfer.setDragImage(dragImg,60,20);
-    setTimeout(()=>dragImg.remove(),0);
-  } else {
-    // Single drag
-    dragData={type:'single',id,source:'pool'};
-  }
-  e.dataTransfer.effectAllowed='move';
-}
-
-function onCanvasDragStart(e){
-  const id=e.currentTarget.dataset.id;
-  const src=e.currentTarget.closest('.zone-names,.standby-names');
-  
-  if(selectedIds.size>0 && selectedIds.has(id)){
-    // Multi-select drag: move all selected names together
-    dragData={type:'multi',ids:[...selectedIds],source:'canvas',srcEl:src};
-    
-    // Create professional ghost image showing all selected items
-    const dragImg = document.createElement('div');
-    dragImg.style.position='fixed';
-    dragImg.style.zIndex='10000';
-    dragImg.style.pointerEvents='none';
-    dragImg.style.opacity='0.9';
-    dragImg.style.background='#1e1e2e';
-    dragImg.style.border='2px solid #3b82f6';
-    dragImg.style.borderRadius='6px';
-    dragImg.style.padding='8px';
-    dragImg.style.minWidth='120px';
-    dragImg.style.boxShadow='0 10px 30px rgba(0,0,0,0.7)';
-    
-    let count=0;
-    const shownIds=[];
-    dragData.ids.forEach(selId=>{
-      const elem=document.querySelector(`.canvas-name[data-id="${selId}"]`);
-      if(elem && count<3){
-        const clone=elem.cloneNode(true);
-        clone.style.margin='3px 0';
-        clone.style.fontSize='11px';
-        clone.style.padding='4px 8px';
-        dragImg.appendChild(clone);
-        shownIds.push(selId);
-        count++;
-      }
-    });
-    
-    if(dragData.ids.length>3){
-      const more=document.createElement('div');
-      more.textContent=`+${dragData.ids.length-3} more`;
-      more.style.fontSize='10px';
-      more.style.padding='4px 8px';
-      more.style.textAlign='center';
-      more.style.color='#60a5fa';
-      more.style.fontWeight='600';
-      more.style.borderTop='1px solid #444';
-      dragImg.appendChild(more);
-    }
-    
-    document.body.appendChild(dragImg);
-    e.dataTransfer.setDragImage(dragImg,60,20);
-    setTimeout(()=>dragImg.remove(),0);
-  } else {
-    // Single drag
-    dragData={type:'single',id,source:'canvas',srcEl:src};
-  }
-  e.dataTransfer.effectAllowed='move';
-  
-  // Add live placeholder effect on all drop zones
-  document.addEventListener('dragover',onCanvasDragOver);
-}
-
-function onCanvasDragOver(e){
-  if(!dragData || dragData.source !== 'canvas') return;
-  e.preventDefault();
-  
-  // Find target drop zone
-  const dropZone = e.target.closest('.zone-names, .standby-names');
-  if(!dropZone) return;
-  
-  const children = [...dropZone.children].filter(ch => !ch.classList.contains('canvas-placeholder'));
-  const clientY = e.clientY;
-  
-  // Remove existing placeholder
-  dropZone.querySelectorAll('.canvas-placeholder').forEach(p=>p.remove());
-  
-  // Find insert position and create placeholder
-  let insertBefore = null;
-  for(const ch of children){
-    const cr=ch.getBoundingClientRect();
-    if(clientY < cr.top + cr.height/3){
-      insertBefore=ch;
-      break;
-    }
-  }
-  
-  const placeholder = document.createElement('div');
-  placeholder.className = 'canvas-placeholder';
-  
-  if(insertBefore){
-    dropZone.insertBefore(placeholder, insertBefore);
-  } else {
-    dropZone.appendChild(placeholder);
-  }
-}
-
-function handleDrop(targetEl, e){
-  if(!dragData) return;
-  const ids = dragData.type==='multi' ? dragData.ids : [dragData.id];
-  
-  // Find insert position dengan deteksi area atas yang lebih sensitive
-  const rect = targetEl.getBoundingClientRect();
-  const children = [...targetEl.children].filter(ch => !ch.classList.contains('canvas-placeholder'));
-  let insertBefore = null;
-  const clientY = e.clientY || (e.changedTouches && e.changedTouches[0].clientY) || 0;
-  
-  // Deteksi posisi drop dengan cara:
-  // 1. Jika di atas setengah dari elemen pertama → insert di awal (insertBefore = first child)
-  // 2. Jika di bawah setengah dari elemen, cari elemen berikutnya
-  // 3. Jika tidak ada elemen berikutnya atau di bawah semua → append di akhir (insertBefore = null)
-  
-  for(const ch of children){
-    const cr=ch.getBoundingClientRect();
-    // Gunakan 1/3 dari atas untuk deteksi yang lebih sensitive di area atas
-    if(clientY < cr.top + cr.height/3){
-      insertBefore=ch;
-      break;
-    }
-  }
-
-  const isStandby = targetEl.id === 'standbyNames';
-  
-  // Remove any existing placeholder first
-  document.querySelectorAll('.canvas-placeholder').forEach(p=>p.remove());
-
-  ids.forEach(id=>{
-    let entry;
-    if(dragData.source==='pool'){
-      // Coming from pool list
-      const poolIdx=poolNames.findIndex(p=>p.id===id);
-      if(poolIdx>=0){
-        entry=poolNames.splice(poolIdx,1)[0];
-        // Store original color before changing to standby color
-        if(isStandby && entry.type === 'worker'){
-          if(!entry.originalColor) entry.originalColor = entry.color;
-          entry.inStandby = true;
-        }
-      }
-    } else {
-      // Coming from canvas (zone or standby)
-      const existing=dragData.srcEl?.querySelector(`[data-id="${id}"]`);
-      if(existing){
-        entry={id, name:existing.querySelector('.nm').textContent, color:existing.dataset.color || existing.dataset.originalColor, type:existing.dataset.type, originalColor:existing.dataset.originalColor};
-        if(entry.type === 'worker'){
-          // Track original color for restoration when leaving standby
-          if(isStandby){
-            if(!entry.originalColor) entry.originalColor = entry.color;
-            entry.inStandby = true;
-          } else if(!isStandby && entry.originalColor){
-            entry.inStandby = false;
-          }
-        }
-        existing.remove();
-      }
-    }
-    if(entry){
-      const node=createCanvasName(entry);
-      if(insertBefore) targetEl.insertBefore(node, insertBefore);
-      else targetEl.appendChild(node);
-    }
-  });
-
-  // Remove any lingering placeholders
-  document.querySelectorAll('.canvas-placeholder').forEach(p=>p.remove());
-  
-  selectedIds.clear();
-  renderPool();
-  renumberAll();
-  updateCounts();
-}
-
-function createCanvasName(entry){
-  const d=document.createElement('div');
-  
-  if(entry.type === 'subheading'){
-    d.className='canvas-subheading';
-    d.dataset.id=entry.id;
-    d.dataset.type='subheading';
-    d.draggable=true;
-    d.innerHTML=`<span class="num"></span><span class="nm" contenteditable="true">${entry.name.toUpperCase()}</span><span class="del" title="Remove">✕</span>`;
-    
-    // Allow inline editing
-    d.querySelector('.nm').addEventListener('click',e=>e.stopPropagation());
-    d.querySelector('.nm').addEventListener('blur',()=>{
-      const newText = d.querySelector('.nm').textContent.trim().toUpperCase();
-      if(!newText) d.querySelector('.nm').textContent = entry.name.toUpperCase();
-      else entry.name = newText;
-    });
-    
-    d.addEventListener('dragstart',onCanvasDragStart);
-    d.addEventListener('touchstart',onTouchStart,{passive:false});
-    d.addEventListener('click',e=>{
-      if(e.target.closest('.del'))return;
-      if(e.shiftKey || e.ctrlKey){
-        if(selectedIds.has(entry.id)){
-          selectedIds.delete(entry.id);
-          d.classList.remove('selected-name');
-        } else {
-          selectedIds.add(entry.id);
-          d.classList.add('selected-name');
-        }
-      } else {
-        selectedIds.clear();
-        document.querySelectorAll('.selected-name').forEach(n=>n.classList.remove('selected-name'));
-        selectedIds.add(entry.id);
-        d.classList.add('selected-name');
-      }
-    });
-    d.querySelector('.del').addEventListener('click',()=>{
-      const name=d.querySelector('.nm').textContent;
-      selectedIds.delete(entry.id);
-      d.remove();
-      poolNames.push({id:entry.id, name, type:'subheading', color:entry.color});
-      renderPool();
-      renumberAll();
-      updateCounts();
-    });
-  } else {
-    d.className='canvas-name';
-    d.dataset.id=entry.id;
-    d.dataset.type='worker';
-    d.dataset.originalColor=entry.originalColor || entry.color;
-    d.draggable=true;
-    
-    // Apply color based on whether it's in standby or not
-    const isInStandby = entry.inStandby || false;
-    if(isInStandby){
-      d.style.background='#E5E7EB';
-      d.style.color='#000';
-      d.dataset.color='#E5E7EB';
-    } else {
-      d.style.background=entry.color;
-      d.style.color=getContrastTextColor(entry.color);
-      d.dataset.color=entry.color;
-    }
-    d.style.fontWeight='700';
-    
-    d.innerHTML=`<span class="num"></span><span class="nm">${entry.name}</span><span class="del" title="Remove">✕</span>`;
-    d.addEventListener('dragstart',onCanvasDragStart);
-    d.addEventListener('touchstart',onTouchStart,{passive:false});
-    d.addEventListener('dblclick',e=>{
-      // Prevent color picking while in standby
-      if(isInStandby) return;
-      openColorPicker(e,d);
-    });
-    d.addEventListener('click',e=>{
-      if(e.target.closest('.del'))return;
-      if(e.shiftKey || e.ctrlKey){
-        if(selectedIds.has(entry.id)){
-          selectedIds.delete(entry.id);
-          d.classList.remove('selected-name');
-        } else {
-          selectedIds.add(entry.id);
-          d.classList.add('selected-name');
-        }
-      } else {
-        selectedIds.clear();
-        document.querySelectorAll('.selected-name').forEach(n=>n.classList.remove('selected-name'));
-        selectedIds.add(entry.id);
-        d.classList.add('selected-name');
-      }
-    });
-    d.querySelector('.del').addEventListener('click',()=>{
-      const name=d.querySelector('.nm').textContent;
-      const originalColor=d.dataset.originalColor || d.dataset.color;
-      selectedIds.delete(entry.id);
-      d.remove();
-      
-      // Restore to pool with original color
-      poolNames.push({id:entry.id, name, type:'worker', color:originalColor});
-      
-      // Sort to maintain original category order and within-category insertion order
-      const catOrder={blue:0,yellow:1,orange:2,red:3,green:4,pink:5,purple:6,gray:7};
-      poolNames.sort((a,b)=>{
-        const catA=Object.keys(COLORS).find(k=>COLORS[k]===a.color)||'gray';
-        const catB=Object.keys(COLORS).find(k=>COLORS[k]===b.color)||'gray';
-        const oa=catOrder[catA]||7, ob=catOrder[catB]||7;
-        if(oa!==ob) return oa-ob;
-        
-        // Within same category, maintain insertion order from INITIAL_POOL
-        const originalCat = INITIAL_POOL.find(g=>COLORS[g.cat]===a.color);
-        if(oa===catOrder[catA]){
-          const origIdxA = originalCat?.names.indexOf(a.name) ?? 999;
-          const origIdxB = originalCat?.names.indexOf(b.name) ?? 999;
-          if(origIdxA!==999 && origIdxB!==999) return origIdxA-origIdxB;
-        }
-        return 0;
-      });
-      
-      renderPool();
-      renumberAll();
-      updateCounts();
-    });
-  }
-  return d;
-}
-
-// ---- AUTO NUMBERING ----
-function renumberAll(){
-  document.querySelectorAll('.zone-names').forEach(z=>{
-    const items=[...z.querySelectorAll('.canvas-name')];
-    const groups={};
-    items.forEach(it=>{
-      // Skip subheadings - don't create groups for them
-      if(it.dataset.type === 'subheading') return;
-      const c=it.dataset.color;
-      if(!groups[c])groups[c]=[];
-      groups[c].push(it);
-    });
-    // Number workers by color group, skip subheadings entirely
-    items.forEach(it=>{
-      if(it.dataset.type === 'subheading'){
-        it.querySelector('.num').textContent='';
-        return;
-      }
-      const c=it.dataset.color;
-      const idx=groups[c].indexOf(it);
-      it.querySelector('.num').textContent=(idx+1)+'.';
-    });
-  });
-  // Standby - simple numbering (skip subheadings)
-  const sb=[...document.querySelectorAll('#standbyNames .canvas-name')];
-  sb.forEach((it,i)=>{
-    if(it.dataset.type === 'subheading'){
-      it.querySelector('.num').textContent='';
-    } else {
-      it.querySelector('.num').textContent=(i+1)+'.';
-    }
-  });
-  
-  // Trigger auto-scaling after renumbering
-  fitContentToCanvas();
-}
-
-function updateCounts(){
-  const workNames=document.querySelectorAll('.zone-names .canvas-name:not([data-type="subheading"])');
-  const sbNames=document.querySelectorAll('#standbyNames .canvas-name:not([data-type="subheading"])');
-  document.getElementById('countWork').textContent=workNames.length;
-  document.getElementById('countStandby').textContent=sbNames.length;
-  
-  // Trigger auto-scaling after count update
-  fitContentToCanvas();
-}
-
-    // Auto-shrink zones if content exceeds available space
-function fitContentToCanvas(){
-  const wrapper = document.getElementById('zone-container-wrapper');
-  const canvas = document.getElementById('a4-canvas');
-  const header = document.querySelector('.a4-header');
-  const footer = document.getElementById('footer-group');
-  
-  if(!wrapper || !canvas || !header || !footer) return;
-  
-  // Calculate available space for zones
-  const headerHeight = header.offsetHeight;
-  const footerHeight = footer.offsetHeight;
-  const canvasHeight = canvas.offsetHeight;
-  const availableHeight = canvasHeight - headerHeight - footerHeight - 30; // 30px padding
-  const wrapperHeight = wrapper.offsetHeight;
-  
-  // If wrapper exceeds available space, scale it down
-  if(wrapperHeight > availableHeight){
-    const scale = availableHeight / wrapperHeight;
-    wrapper.style.transform = `scale(${scale})`;
-    wrapper.style.transformOrigin = 'top center';
-  } else {
-    wrapper.style.transform = 'scale(1)';
-  }
-}
-
-const applyA4Fit = fitContentToCanvas; // Alias for compatibility
-
-// ---- COLOR PICKER ----
-function openColorPicker(e,nameEl){
-  e.stopPropagation();
-  colorTarget=nameEl;
-  const popup=document.getElementById('colorPopup');
-  popup.innerHTML='';
-  COLOR_HEX.forEach((hex,i)=>{
-    const s=document.createElement('div');
-    s.className='swatch';
-    s.style.background=hex;
-    s.addEventListener('click',()=>{
-      nameEl.dataset.color=hex;
-      nameEl.style.background=hex;
-      nameEl.style.color=getContrastTextColor(hex);
-      popup.style.display='none';
-      colorTarget=null;
-      renumberAll();
-    });
-    popup.appendChild(s);
-  });
-  popup.style.display='flex';
-  popup.style.left=Math.min(e.clientX, window.innerWidth-200)+'px';
-  popup.style.top=Math.min(e.clientY-40, window.innerHeight-50)+'px';
-}
-document.addEventListener('click',e=>{
-  if(!e.target.closest('.color-popup')&&!e.target.closest('.canvas-name')){
-    document.getElementById('colorPopup').style.display='none';
-  }
-});
-
-// ---- MARQUEE SELECTION (GLOBAL) ----
-let marqueeStartInViewport = null;
-
-document.addEventListener('mousedown',e=>{
-  // Don't start marquee if clicking on interactive elements
-  if(e.target.closest('.canvas-name,.pool-item,.zone-label,.zone-title,.zone-subtitle,[contenteditable],.color-popup,.btn-sm,button,input,select'))return;
-  if(e.button!==0)return;
-  
-  marqueeActive=true;
-  marqueeStartInViewport={x:e.clientX, y:e.clientY};
-  marqueeStart={x:e.clientX, y:e.clientY};
-  
-  // Only clear selection if shift/ctrl not held
-  if(!e.shiftKey && !e.ctrlKey) {
-    selectedIds.clear();
-    document.querySelectorAll('.selected-name').forEach(n=>n.classList.remove('selected-name'));
-  }
-  
-  const m=document.getElementById('marquee');
-  m.style.display='block';
-  m.style.left=marqueeStartInViewport.x+'px';
-  m.style.top=marqueeStartInViewport.y+'px';
-  m.style.width='0';
-  m.style.height='0';
-});
-
-document.addEventListener('mousemove',e=>{
-  if(!marqueeActive)return;
-  const m=document.getElementById('marquee');
-  const x=Math.min(marqueeStartInViewport.x,e.clientX);
-  const y=Math.min(marqueeStartInViewport.y,e.clientY);
-  const w=Math.abs(e.clientX-marqueeStartInViewport.x);
-  const h=Math.abs(e.clientY-marqueeStartInViewport.y);
-  m.style.left=x+'px';
-  m.style.top=y+'px';
-  m.style.width=w+'px';
-  m.style.height=h+'px';
-  
-  // Real-time collision detection for BOTH canvas names AND pool items
-  const mr=m.getBoundingClientRect();
-  const shouldAddMode = e.shiftKey || e.ctrlKey;
-  
-  // Check canvas names (zones + standby)
-  document.querySelectorAll('.canvas-name').forEach(n=>{
-    const r=n.getBoundingClientRect();
-    const isIntersecting=r.left<mr.right&&r.right>mr.left&&r.top<mr.bottom&&r.bottom>mr.top;
-    const isSelected=selectedIds.has(n.dataset.id);
-    
-    if(isIntersecting && !isSelected){
-      selectedIds.add(n.dataset.id);
-      n.classList.add('selected-name');
-    } else if(!isIntersecting && isSelected && !shouldAddMode){
-      selectedIds.delete(n.dataset.id);
-      n.classList.remove('selected-name');
-    }
-  });
-  
-  // Check pool items (sidebar pool list)
-  document.querySelectorAll('.pool-item').forEach(n=>{
-    const r=n.getBoundingClientRect();
-    const isIntersecting=r.left<mr.right&&r.right>mr.left&&r.top<mr.bottom&&r.bottom>mr.top;
-    const isSelected=selectedIds.has(n.dataset.id);
-    
-    if(isIntersecting && !isSelected){
-      selectedIds.add(n.dataset.id);
-      n.classList.add('selected-name');
-    } else if(!isIntersecting && isSelected && !shouldAddMode){
-      selectedIds.delete(n.dataset.id);
-      n.classList.remove('selected-name');
-    }
-  });
-});
-
-document.addEventListener('mouseup',e=>{
-  if(!marqueeActive)return;
-  marqueeActive=false;
-  const m=document.getElementById('marquee');
-  m.style.display='none';
-});
-
-// ---- TOUCH DND ----
-let touchClone=null, touchSource=null, touchId=null;
-function onTouchStart(e){
-  if(e.touches.length!==1)return;
-  const el=e.currentTarget;
-  const touch=e.touches[0];
-  const startX=touch.clientX, startY=touch.clientY;
-  let moved=false;
-
-  const onMove=ev=>{
-    ev.preventDefault();
-    const t=ev.touches[0];
-    if(!moved&&Math.abs(t.clientX-startX)+Math.abs(t.clientY-startY)<8)return;
-    if(!moved){
-      moved=true;
-      const isPool=!!el.closest('#poolList');
-      touchId=el.dataset.id;
-      touchSource=isPool?'pool':'canvas';
-      touchClone=el.cloneNode(true);
-      touchClone.style.position='fixed';
-      touchClone.style.zIndex='9999';
-      touchClone.style.width=el.offsetWidth+'px';
-      touchClone.style.opacity='.8';
-      touchClone.style.pointerEvents='none';
-      document.body.appendChild(touchClone);
-      if(isPool){
-        dragData={type:'single',id:touchId,source:'pool'};
-      } else {
-        dragData={type:'single',id:touchId,source:'canvas',srcEl:el.closest('.zone-names,.standby-names')};
-      }
-    }
-    touchClone.style.left=(t.clientX-40)+'px';
-    touchClone.style.top=(t.clientY-12)+'px';
-  };
-
-  const onEnd=ev=>{
-    document.removeEventListener('touchmove',onMove);
-    document.removeEventListener('touchend',onEnd);
-    if(touchClone){
-      touchClone.remove();touchClone=null;
-      const t=ev.changedTouches[0];
-      const dropEl=document.elementFromPoint(t.clientX,t.clientY);
-      const zone=dropEl?.closest('.zone-names,.standby-names');
-      if(zone && dragData){
-        handleDrop(zone,{clientY:t.clientY});
-      }
-      dragData=null;
-    }
-  };
-  document.addEventListener('touchmove',onMove,{passive:false});
-  document.addEventListener('touchend',onEnd);
-}
-
-// ---- ADD NAME ----
-document.getElementById('addForm').addEventListener('submit',e=>{
-  e.preventDefault();
-  const inp=document.getElementById('addInput');
-  const type=document.getElementById('addType').value;
-  const v=inp.value.trim().toUpperCase();
-  if(!v)return;
-  
-  if(type === 'subheading'){
-    poolNames.push({id:uid(), name:v, type:'subheading', color:COLORS.gray});
-  } else {
-    poolNames.push({id:uid(), name:v, type:'worker', color:COLORS.gray});
-  }
-  inp.value='';
-  renderPool();
-});
-
-// ---- ADD ZONE ----
-document.getElementById('btnAddZone').addEventListener('click',addZone);
-
-// ---- EXPORT JPEG ----
-document.getElementById('btnExport').addEventListener('click',async()=>{
-  const btn=document.getElementById('btnExport');
-  btn.textContent='Exporting...';
-  btn.disabled=true;
-  
-  try{
-    const a4Canvas = document.getElementById('a4-canvas');
-    
-    if(!a4Canvas){
-      console.error('A4 Canvas element not found');
-      throw new Error('Canvas element missing');
-    }
-    
-    // Capture the complete A4 canvas at fixed dimensions
-    const exportCanvas = await html2canvas(a4Canvas, {
-      scale: 2,
-      logging: false,
-      useCORS: true,
-      backgroundColor: '#ffffff',
-      allowTaint: true,
-      ignoreElements: (el) => {
-        // Don't capture sidebar controls in export
-        return el.classList && (el.classList.contains('sidebar-left') || el.classList.contains('sidebar-right'));
-      }
-    });
-    
-    // Download as JPEG
-    const link = document.createElement('a');
-    link.download = 'crew-report.jpg';
-    link.href = exportCanvas.toDataURL('image/jpeg', 0.95);
-    link.click();
-    
-    console.log('Export successful - JPEG downloaded');
-  }catch(err){
-    console.error('Export error:', err);
-    // Show inline error instead of alert (no browser dialogs)
-    const errMsg = document.createElement('div');
-    errMsg.style.cssText = 'position:fixed;top:20px;right:20px;background:#ef4444;color:white;padding:12px 16px;border-radius:6px;z-index:9999;font-weight:600;';
-    errMsg.textContent = 'Export failed. Please try again.';
-    document.body.appendChild(errMsg);
-    setTimeout(()=>errMsg.remove(), 3000);
-  }finally{
-    btn.innerHTML='<i data-lucide="download" style="width:14px;height:14px"></i> Download JPEG';
-    btn.disabled=false;
-    lucide.createIcons();
-  }
-});
-
-// ---- ELEMENT SDK ----
-const defaultConfig = {
-  main_title: 'I.B.O.L',
-  day_label: 'DAY',
-  background_color: '#000033',
-  surface_color: '#000044',
-  text_color: '#ffffff',
-  primary_action_color: '#2563eb',
-  secondary_action_color: '#ca8a04',
-  font_family: 'Inter',
-  font_size: 14
+// ============ CONFIG ============
+const defaultConfig={
+  header_text:'I.B.O.L',
+  workshop_label:'WORKSHOP',
+  set_label:'SET SYUTING',
+  bond_label:'BOND',
+  background_color:'#000033',
+  surface_color:'#000044',
+  text_color:'#93c5fd',
+  accent_color:'#2563eb',
+  font_family:'Inter',
+  font_size:14
 };
 
-function applyConfig(config){
-  document.getElementById('canvasMainTitle').textContent = config.main_title || defaultConfig.main_title;
-  document.getElementById('canvasDayLabel').textContent = config.day_label || defaultConfig.day_label;
-  const bg = config.background_color || defaultConfig.background_color;
-  const sf = config.surface_color || defaultConfig.surface_color;
-  const tx = config.text_color || defaultConfig.text_color;
-  const ff = (config.font_family || defaultConfig.font_family) + ', sans-serif';
-  const fs = config.font_size || defaultConfig.font_size;
-  document.body.style.background = bg;
-  document.body.style.fontFamily = ff;
-  document.querySelector('.sidebar-left').style.background = sf;
-  document.querySelector('.sidebar-right').style.background = sf;
-  document.body.style.color = tx;
-  document.body.style.fontSize = fs + 'px';
+function applyConfig(cfg){
+  document.getElementById('headerTitle').textContent=cfg.header_text||defaultConfig.header_text;
 }
 
 if(window.elementSdk){
   window.elementSdk.init({
     defaultConfig,
-    onConfigChange: async(config)=>applyConfig(config),
-    mapToCapabilities:(config)=>({
+    onConfigChange:async(cfg)=>applyConfig(cfg),
+    mapToCapabilities:(cfg)=>({
       recolorables:[
-        {get:()=>config.background_color||defaultConfig.background_color,set:v=>{config.background_color=v;window.elementSdk.setConfig({background_color:v})}},
-        {get:()=>config.surface_color||defaultConfig.surface_color,set:v=>{config.surface_color=v;window.elementSdk.setConfig({surface_color:v})}},
-        {get:()=>config.text_color||defaultConfig.text_color,set:v=>{config.text_color=v;window.elementSdk.setConfig({text_color:v})}},
-        {get:()=>config.primary_action_color||defaultConfig.primary_action_color,set:v=>{config.primary_action_color=v;window.elementSdk.setConfig({primary_action_color:v})}},
-        {get:()=>config.secondary_action_color||defaultConfig.secondary_action_color,set:v=>{config.secondary_action_color=v;window.elementSdk.setConfig({secondary_action_color:v})}}
+        {get:()=>cfg.background_color||defaultConfig.background_color,set:v=>{cfg.background_color=v;window.elementSdk.setConfig({background_color:v})}},
+        {get:()=>cfg.surface_color||defaultConfig.surface_color,set:v=>{cfg.surface_color=v;window.elementSdk.setConfig({surface_color:v})}},
+        {get:()=>cfg.text_color||defaultConfig.text_color,set:v=>{cfg.text_color=v;window.elementSdk.setConfig({text_color:v})}},
+        {get:()=>cfg.accent_color||defaultConfig.accent_color,set:v=>{cfg.accent_color=v;window.elementSdk.setConfig({accent_color:v})}}
       ],
       borderables:[],
-      fontEditable:{get:()=>config.font_family||defaultConfig.font_family,set:v=>{config.font_family=v;window.elementSdk.setConfig({font_family:v})}},
-      fontSizeable:{get:()=>config.font_size||defaultConfig.font_size,set:v=>{config.font_size=v;window.elementSdk.setConfig({font_size:v})}}
+      fontEditable:{get:()=>cfg.font_family||defaultConfig.font_family,set:v=>{cfg.font_family=v;window.elementSdk.setConfig({font_family:v})}},
+      fontSizeable:{get:()=>cfg.font_size||defaultConfig.font_size,set:v=>{cfg.font_size=v;window.elementSdk.setConfig({font_size:v})}}
     }),
-    mapToEditPanelValues:(config)=>new Map([
-      ['main_title',config.main_title||defaultConfig.main_title],
-      ['day_label',config.day_label||defaultConfig.day_label]
+    mapToEditPanelValues:(cfg)=>new Map([
+      ['header_text',cfg.header_text||defaultConfig.header_text],
+      ['workshop_label',cfg.workshop_label||defaultConfig.workshop_label],
+      ['set_label',cfg.set_label||defaultConfig.set_label],
+      ['bond_label',cfg.bond_label||defaultConfig.bond_label]
     ])
   });
 }
 
-// ---- INIT ----
-renderPool();
-// Add 2 default zones
-addZone();addZone();
-updateCounts();
-lucide.createIcons();
+// ============ DATE & CALENDAR ============
+function updateDateDisplay(){
+  const days=['MINGGU','SENIN','SELASA','RABU','KAMIS','JUMAT','SABTU'];
+  const months=['JANUARI','FEBRUARI','MARET','APRIL','MEI','JUNI','JULI','AGUSTUS','SEPTEMBER','OKTOBER','NOVEMBER','DESEMBER'];
+  const d=currentDate.getDate();
+  const m=months[currentDate.getMonth()];
+  const y=currentDate.getFullYear();
+  const dayName=days[currentDate.getDay()];
+  document.getElementById('dateDisplay').textContent=`${dayName}, ${d} ${m} ${y}`;
+}
 
-// Trigger initial scaling on load with delay
-setTimeout(applyA4Fit, 100);
+function openCalendar(){
+  const popup=document.getElementById('calendarPopup');
+  const grid=document.getElementById('calendarGrid');
+  grid.innerHTML='';
+  
+  const month=currentDate.getMonth();
+  const year=currentDate.getFullYear();
+  document.getElementById('monthYear').textContent=`${['JANUARI','FEBRUARI','MARET','APRIL','MEI','JUNI','JULI','AGUSTUS','SEPTEMBER','OKTOBER','NOVEMBER','DESEMBER'][month]} ${year}`;
+  
+  const days=['MIN','SEN','SEL','RAB','KAM','JUM','SAB'];
+  days.forEach(d=>{
+    const lbl=document.createElement('div');
+    lbl.className='calendar-day-label';
+    lbl.textContent=d;
+    grid.appendChild(lbl);
+  });
+  
+  const first=new Date(year,month,1).getDay();
+  for(let i=0;i<first;i++){
+    grid.appendChild(document.createElement('div'));
+  }
+  
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  for(let d=1;d<=daysInMonth;d++){
+    const day=document.createElement('div');
+    day.className='calendar-day';
+    day.textContent=d;
+    if(currentDate.getDate()===d&&currentDate.getMonth()===month&&currentDate.getFullYear()===year){
+      day.classList.add('selected');
+    }
+    day.addEventListener('click',()=>{
+      currentDate=new Date(year,month,d);
+      updateDateDisplay();
+      popup.style.display='none';
+    });
+    grid.appendChild(day);
+  }
+  
+  popup.style.display='block';
+  popup.style.left=(window.innerWidth-300)/2+'px';
+  popup.style.top=(window.innerHeight-350)/2+'px';
+}
 
-// Auto-scale on window resize
-window.addEventListener('resize', applyA4Fit);
-
-// Clean up drag listeners on drag end
-document.addEventListener('dragend',()=>{
-  dragData=null;
-  document.removeEventListener('dragover',onCanvasDragOver);
-  document.querySelectorAll('.canvas-placeholder').forEach(p=>p.remove());
+document.getElementById('dateDisplay').addEventListener('click',openCalendar);
+document.getElementById('prevMonth').addEventListener('click',()=>{
+  currentDate.setMonth(currentDate.getMonth()-1);
+  openCalendar();
 });
+document.getElementById('nextMonth').addEventListener('click',()=>{
+  currentDate.setMonth(currentDate.getMonth()+1);
+  openCalendar();
+});
+
+updateDateDisplay();
+
+// ============ NUMBER SELECTOR ============
+for(let i=1;i<=40;i++){
+  const opt=document.createElement('option');
+  opt.value=i;
+  opt.textContent=i;
+  document.getElementById('numberSelect').appendChild(opt);
+}
+
+// ============ RENDER POOL ============
+function renderPool(){
+  const el=document.getElementById('poolList');
+  el.innerHTML='';
+  poolItems.forEach(item=>{
+    let node;
+    if(item.type==='sub'){
+      node=document.createElement('div');
+      node.className='pool-sub-header';
+      node.dataset.id=item.id;
+      node.textContent=item.name;
+      node.draggable=true;
+      node.addEventListener('dragstart',e=>onPoolDragStart(e,item));
+      node.addEventListener('touchstart',e=>onTouchStart(e,'pool',null,item),{passive:false});
+    }else{
+      node=document.createElement('div');
+      node.className='pool-item';
+      node.dataset.id=item.id;
+      node.draggable=true;
+      node.textContent=item.name;
+      
+      // Add color class based on hex color
+      if(item.color==COLORS.blue)node.classList.add('blue');
+      else if(item.color==COLORS.yellow)node.classList.add('yellow');
+      else if(item.color==COLORS.orange)node.classList.add('orange');
+      else if(item.color==COLORS.red)node.classList.add('red');
+      else node.classList.add('white');
+      
+      node.addEventListener('dragstart',e=>onPoolDragStart(e,item));
+      node.addEventListener('touchstart',e=>onTouchStart(e,'pool',null,item),{passive:false});
+    }
+    el.appendChild(node);
+  });
+}
+
+// ============ RENDER ZONES ============
+function renderZones(){
+  const area=document.getElementById('zonesArea');
+  area.innerHTML='';
+
+  for(let r=0;r<zones.length;r+=3){
+    const row=document.createElement('div');
+    row.className='zone-row';
+    const chunk=zones.slice(r,r+3);
+    chunk.forEach(zone=>{
+      const zEl=createZoneElement(zone);
+      row.appendChild(zEl);
+    });
+    for(let f=chunk.length;f<3;f++){
+      const spacer=document.createElement('div');
+      spacer.style.cssText='flex:1;max-width:calc(33.333% - 16px);margin:8px';
+      row.appendChild(spacer);
+    }
+    area.appendChild(row);
+  }
+  updateCounts();
+}
+
+function createZoneElement(zone){
+  const container=document.createElement('div');
+  container.className='zone-container';
+  container.dataset.zoneId=zone.id;
+
+  const lbl=document.createElement('div');
+  lbl.className='zone-header-outside';
+  lbl.contentEditable=true;
+  lbl.textContent=zone.labelTitle;
+  lbl.addEventListener('blur',()=>{zone.labelTitle=lbl.textContent});
+  container.appendChild(lbl);
+
+  const titles=document.createElement('div');
+  titles.className='zone-titles';
+  const mt=document.createElement('span');
+  mt.className='zone-main-title';
+  mt.contentEditable=true;
+  mt.textContent=zone.mainTitle;
+  mt.addEventListener('blur',()=>{zone.mainTitle=mt.textContent});
+  const st=document.createElement('span');
+  st.className='zone-sub-title';
+  st.contentEditable=true;
+  st.textContent=zone.subTitle;
+  st.addEventListener('blur',()=>{zone.subTitle=st.textContent});
+  titles.appendChild(mt);
+  titles.appendChild(st);
+  container.appendChild(titles);
+
+  const body=document.createElement('div');
+  body.className='zone-body';
+  body.dataset.zoneId=zone.id;
+
+  // Render workers with numbering (excluding sub-headers)
+  const workers=zone.items.filter(it=>it.type!=='sub');
+  const numbered=computeNumbering(workers);
+  numbered.forEach(ni=>{
+    body.appendChild(createZoneItemElement(ni,zone.id));
+  });
+
+  // Add sub-headers as gray separator blocks (no numbering)
+  zone.items.filter(it=>it.type==='sub').forEach(subItem=>{
+    const subEl=document.createElement('div');
+    subEl.className='zone-item';
+    subEl.style.background='#6b7280';
+    subEl.style.color='#fff';
+    subEl.style.fontWeight='700';
+    subEl.style.textTransform='uppercase';
+    subEl.style.fontSize='11px';
+    subEl.dataset.itemId=subItem.id;
+    subEl.draggable=true;
+    subEl.textContent=subItem.name;
+    
+    const del=document.createElement('span');
+    del.className='del-btn';
+    del.textContent='✕';
+    del.addEventListener('click',e=>{
+      e.stopPropagation();
+      const idx=zone.items.findIndex(it=>it.id===subItem.id);
+      if(idx>-1){
+        poolItems.push(zone.items.splice(idx,1)[0]);
+        renderPool();renderZones();
+      }
+    });
+    subEl.appendChild(del);
+    
+    subEl.addEventListener('dragstart',e=>onZoneDragStart(e,zone.id,subItem));
+    subEl.addEventListener('touchstart',e=>onTouchStart(e,'zone',zone.id,subItem),{passive:false});
+    
+    body.appendChild(subEl);
+  });
+
+  body.addEventListener('dragover',e=>{e.preventDefault();body.classList.add('drag-over');showDropIndicator(body,e)});
+  body.addEventListener('dragleave',()=>{body.classList.remove('drag-over');clearDropIndicators(body)});
+  body.addEventListener('drop',e=>{e.preventDefault();body.classList.remove('drag-over');clearDropIndicators(body);onDropInZone(zone.id,body,e)});
+
+  container.appendChild(body);
+
+  const delZ=document.createElement('div');
+  delZ.style.cssText='position:absolute;top:2px;right:4px;cursor:pointer;font-size:10px;color:#000;opacity:.5';
+  delZ.textContent='✕';
+  delZ.addEventListener('click',()=>{
+    zone.items.forEach(it=>poolItems.push(it));
+    zones=zones.filter(z=>z.id!==zone.id);
+    renderPool();
+    renderZones();
+  });
+  container.appendChild(delZ);
+
+  return container;
+}
+
+function createZoneItemElement(ni,zoneId){
+  const el=document.createElement('div');
+  el.className='zone-item';
+  el.style.background=ni.color;
+  el.dataset.itemId=ni.id;
+  el.draggable=true;
+
+  const num=document.createElement('span');
+  num.className='num';
+  num.textContent=ni.num;
+  el.appendChild(num);
+
+  const txt=document.createElement('span');
+  txt.textContent=ni.name;
+  txt.style.flex='1';
+  el.appendChild(txt);
+
+  const del=document.createElement('span');
+  del.className='del-btn';
+  del.textContent='✕';
+  del.addEventListener('click',e=>{
+    e.stopPropagation();
+    const zone=zones.find(z=>z.id===zoneId);
+    if(zone){
+      const idx=zone.items.findIndex(it=>it.id===ni.id);
+      if(idx>-1){
+        poolItems.push(zone.items.splice(idx,1)[0]);
+        renderPool();renderZones();
+      }
+    }
+  });
+  el.appendChild(del);
+
+  el.addEventListener('dragstart',e=>onZoneDragStart(e,zoneId,ni));
+  el.addEventListener('touchstart',e=>onTouchStart(e,'zone',zoneId,ni),{passive:false});
+  el.addEventListener('dblclick',e=>openColorPicker(e,ni.id,zoneId));
+
+  return el;
+}
+
+// standby rendering
+function renderStandby(){
+  const body=document.getElementById('standbyBody');
+  body.innerHTML='';
+  standbyItems.forEach(item=>{
+    const el=document.createElement('div');
+    el.className='zone-item';
+    el.style.background=item.color;
+    el.dataset.itemId=item.id;
+    el.draggable=true;
+
+    const txt=document.createElement('span');
+    txt.textContent=item.name;
+    txt.style.flex='1';
+    el.appendChild(txt);
+
+    const del=document.createElement('span');
+    del.className='del-btn';
+    del.textContent='✕';
+    del.addEventListener('click',()=>{
+      const idx=standbyItems.findIndex(s=>s.id===item.id);
+      if(idx>-1){poolItems.push(standbyItems.splice(idx,1)[0]);renderPool();renderStandby();updateCounts()}
+    });
+    el.appendChild(del);
+
+    el.addEventListener('dragstart',e=>{
+      dragData={source:'standby',itemId:item.id,items:[item],selectedIds:new Set([item.id])};
+      e.dataTransfer.effectAllowed='move';
+    });
+
+    body.appendChild(el);
+  });
+  updateCounts();
+}
+
+const standbyBody=document.getElementById('standbyBody');
+standbyBody.addEventListener('dragover',e=>{e.preventDefault();standbyBody.classList.add('drag-over')});
+standbyBody.addEventListener('dragleave',()=>standbyBody.classList.remove('drag-over'));
+standbyBody.addEventListener('drop',e=>{
+  e.preventDefault();
+  standbyBody.classList.remove('drag-over');
+  if(!dragData)return;
+  const prevSelected=new Set(dragData.selectedIds);
+  dragData.items.forEach(item=>{
+    removeItemFromSource(item.id,dragData.source,dragData.zoneId);
+    standbyItems.push(item);
+  });
+  dragData=null;
+  selectedItems.clear();
+  selectedItems.addAll=function(set){for(let v of set)this.add(v)};
+  selectedItems.addAll(prevSelected);
+  renderPool();renderZones();renderStandby();
+  // Re-highlight selected items in standby
+  document.querySelectorAll('.standby-body .zone-item').forEach(el=>{
+    if(selectedItems.has(el.dataset.itemId)){
+      el.classList.add('selected-highlight');
+    }
+  });
+});
+
+// ============ NUMBERING ============
+function computeNumbering(items){
+  const colorCount={};
+  return items.map(item=>{
+    if(!colorCount[item.color])colorCount[item.color]=0;
+    colorCount[item.color]++;
+    return{...item,num:colorCount[item.color]};
+  });
+}
+
+// ============ DRAG HANDLERS ============
+function onPoolDragStart(e,item){
+  const items=selectedItems.has(item.id)?poolItems.filter(p=>selectedItems.has(p.id)):[item];
+  dragData={source:'pool',itemId:item.id,items,selectedIds:new Set(items.map(i=>i.id))};
+  e.dataTransfer.effectAllowed='move';
+  // Keep selected items highlighted during drag
+  e.dataTransfer.setDragImage(e.target,0,0);
+}
+
+function onZoneDragStart(e,zoneId,item){
+  // Include all selected zone items if current item is selected
+  let items=[item];
+  if(selectedItems.has(item.id)){
+    const zone=zones.find(z=>z.id===zoneId);
+    if(zone){
+      items=zone.items.filter(it=>selectedItems.has(it.id));
+    }
+  }
+  dragData={source:'zone',zoneId,itemId:item.id,items,selectedIds:new Set(items.map(i=>i.id))};
+  e.dataTransfer.effectAllowed='move';
+  e.dataTransfer.setDragImage(e.target,0,0);
+}
+
+function removeItemFromSource(itemId,source,zoneId){
+  if(source==='pool'){
+    poolItems=poolItems.filter(p=>p.id!==itemId);
+  }else if(source==='zone'&&zoneId){
+    const zone=zones.find(z=>z.id===zoneId);
+    if(zone)zone.items=zone.items.filter(it=>it.id!==itemId);
+  }else if(source==='standby'){
+    standbyItems=standbyItems.filter(s=>s.id!==itemId);
+  }
+}
+
+function onDropInZone(zoneId,body,e){
+  if(!dragData)return;
+  const zone=zones.find(z=>z.id===zoneId);
+  if(!zone)return;
+
+  const dropIndex=getDropIndex(body,e.clientY);
+
+  // Remove from source first
+  dragData.items.forEach(item=>{
+    removeItemFromSource(item.id,dragData.source,dragData.zoneId);
+  });
+
+  // Add to zone with preserved type
+  dragData.items.forEach(item=>{
+    zone.items.splice(dropIndex,0,{id:item.id,name:item.name,color:item.color,type:item.type});
+  });
+  
+  // Keep selected items in their set and maintain highlighting after drop
+  const prevSelected=new Set(dragData.selectedIds);
+  dragData=null;
+  selectedItems.clear();
+  selectedItems.addAll=function(set){for(let v of set)this.add(v)};
+  selectedItems.addAll(prevSelected);
+  
+  // Clear any lingering drag ghost elements
+  document.querySelectorAll('.sortable-ghost').forEach(el=>el.remove());
+  
+  renderPool();renderZones();renderStandby();
+  
+  // Re-highlight selected items in their new location
+  document.querySelectorAll('.zone-item, .pool-item').forEach(el=>{
+    const id=el.dataset.itemId||el.dataset.id;
+    if(selectedItems.has(id)){
+      el.classList.add('selected-highlight');
+    }
+  });
+}
+
+function getDropIndex(body,clientY){
+  const children=[...body.querySelectorAll('.zone-item')];
+  for(let i=0;i<children.length;i++){
+    const rect=children[i].getBoundingClientRect();
+    if(clientY<rect.top+rect.height/2)return i;
+  }
+  return children.length;
+}
+
+const poolEl=document.getElementById('poolList');
+poolEl.addEventListener('dragover',e=>e.preventDefault());
+poolEl.addEventListener('drop',e=>{
+  e.preventDefault();
+  if(!dragData)return;
+  const prevSelected=new Set(dragData.selectedIds);
+  dragData.items.forEach(item=>{
+    removeItemFromSource(item.id,dragData.source,dragData.zoneId);
+    poolItems.push({id:item.id,name:item.name,color:item.color,type:item.type});
+  });
+  dragData=null;
+  selectedItems.clear();
+  selectedItems.addAll=function(set){for(let v of set)this.add(v)};
+  selectedItems.addAll(prevSelected);
+  renderPool();renderZones();renderStandby();
+  // Re-highlight selected items in pool
+  document.querySelectorAll('#poolList .pool-item').forEach(el=>{
+    if(selectedItems.has(el.dataset.id)){
+      el.classList.add('selected-highlight');
+    }
+  });
+});
+
+// ============ DROP INDICATORS ============
+function showDropIndicator(body,e){
+  clearDropIndicators(body);
+  const children=[...body.querySelectorAll('.zone-item')];
+  const idx=getDropIndex(body,e.clientY);
+  const indicator=document.createElement('div');
+  indicator.className='drop-indicator';
+  if(children[idx])body.insertBefore(indicator,children[idx]);
+  else body.appendChild(indicator);
+}
+function clearDropIndicators(body){
+  body.querySelectorAll('.drop-indicator').forEach(d=>d.remove());
+}
+
+// ============ TOUCH DRAG ============
+let touchClone=null;
+let touchStartX=0,touchStartY=0;
+
+function onTouchStart(e,source,zoneId,item){
+  if(e.touches.length!==1)return;
+  const touch=e.touches[0];
+  const target=e.currentTarget;
+
+  let moved=false;
+  touchStartX=touch.clientX;
+  touchStartY=touch.clientY;
+
+  function onMove(ev){
+    ev.preventDefault();
+    const t=ev.touches[0];
+    const dx=Math.abs(t.clientX-touchStartX);
+    const dy=Math.abs(t.clientY-touchStartY);
+    
+    if(!moved&&(dx+dy)<8)return;
+    
+    if(!moved){
+      moved=true;
+      // Include all selected items if current item is selected
+      let items=[item];
+      if(source==='zone'&&zoneId){
+        const zone=zones.find(z=>z.id===zoneId);
+        if(zone&&selectedItems.has(item.id)){
+          items=zone.items.filter(it=>selectedItems.has(it.id));
+        }
+      }else if(source==='pool'&&selectedItems.has(item.id)){
+        items=poolItems.filter(p=>selectedItems.has(p.id));
+      }
+      dragData={source,zoneId,itemId:item.id,items,selectedIds:new Set(items.map(i=>i.id))};
+      touchClone=target.cloneNode(true);
+      touchClone.style.cssText='position:fixed;z-index:10000;pointer-events:none;opacity:.8;transform:scale(1.05)';
+      document.body.appendChild(touchClone);
+    }
+    
+    // Only update position if clone exists
+    if(touchClone){
+      touchClone.style.left=(t.clientX-40)+'px';
+      touchClone.style.top=(t.clientY-12)+'px';
+    }
+  }
+
+  function onEnd(ev){
+    document.removeEventListener('touchmove',onMove);
+    document.removeEventListener('touchend',onEnd);
+    
+    if(touchClone){
+      touchClone.remove();
+      touchClone=null;
+    }
+    
+    if(!moved||!dragData)return;
+    
+    const t=ev.changedTouches[0];
+    const dropEl=document.elementFromPoint(t.clientX,t.clientY);
+    const prevSelected=new Set(dragData.selectedIds);
+    if(dropEl){
+      const zoneBody=dropEl.closest('.zone-body');
+      const stBody=dropEl.closest('.standby-body');
+      const poolArea=dropEl.closest('.scroll-pool');
+      if(zoneBody){
+        const zId=zoneBody.dataset.zoneId;
+        const zone=zones.find(z=>z.id===zId);
+        if(zone){
+          const di=getDropIndex(zoneBody,t.clientY);
+          dragData.items.forEach(it=>removeItemFromSource(it.id,dragData.source,dragData.zoneId));
+          zone.items.splice(di,0,...dragData.items.map(it=>({id:it.id,name:it.name,color:it.color})));
+        }
+      }else if(stBody){
+        dragData.items.forEach(it=>{removeItemFromSource(it.id,dragData.source,dragData.zoneId);standbyItems.push(it)});
+      }else if(poolArea){
+        dragData.items.forEach(it=>{removeItemFromSource(it.id,dragData.source,dragData.zoneId);poolItems.push(it)});
+      }
+    }
+    dragData=null;
+    selectedItems.clear();
+    selectedItems.addAll=function(set){for(let v of set)this.add(v)};
+    selectedItems.addAll(prevSelected);
+    renderPool();renderZones();renderStandby();
+    // Re-highlight selected items
+    document.querySelectorAll('.zone-item, .pool-item, .standby-body .zone-item').forEach(el=>{
+      const id=el.dataset.itemId||el.dataset.id;
+      if(selectedItems.has(id)){
+        el.classList.add('selected-highlight');
+      }
+    });
+  }
+
+  document.addEventListener('touchmove',onMove,{passive:false});
+  document.addEventListener('touchend',onEnd);
+}
+
+// ============ COLOR PICKER ============
+function openColorPicker(e,itemId,zoneId){
+  e.stopPropagation();
+  const popup=document.getElementById('colorPicker');
+  const grid=document.getElementById('swatchGrid');
+  grid.innerHTML='';
+  PICKER_COLORS.forEach(c=>{
+    const s=document.createElement('div');
+    s.className='swatch';
+    s.style.background=c.hex;
+    s.title=c.name;
+    s.addEventListener('click',()=>{
+      const zone=zones.find(z=>z.id===zoneId);
+      if(zone){
+        const item=zone.items.find(it=>it.id===itemId);
+        if(item)item.color=c.hex;
+      }
+      popup.style.display='none';
+      renderZones();
+    });
+    grid.appendChild(s);
+  });
+  popup.style.display='block';
+  popup.style.left=Math.min(e.clientX,window.innerWidth-160)+'px';
+  popup.style.top=Math.min(e.clientY,window.innerHeight-100)+'px';
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.color-picker-popup')&&!e.target.closest('.calendar-popup')&&e.target.id!=='dateDisplay')
+    document.getElementById('colorPicker').style.display='none';
+});
+
+// ============ MARQUEE SELECTION ============
+let marqueeActive=false,marqueeStart={x:0,y:0};
+const marqueeBox=document.getElementById('marqueeBox');
+
+document.addEventListener('mousedown',e=>{
+  // Prevent marquee when clicking on interactive elements
+  if(e.target.closest('.pool-item')||e.target.closest('.zone-item')||e.target.closest('input')||e.target.closest('button')||e.target.closest('select')||e.target.closest('textarea'))return;
+  
+  marqueeActive=true;
+  marqueeStart={x:e.clientX,y:e.clientY};
+  marqueeBox.style.display='block';
+  marqueeBox.style.left=e.clientX+'px';
+  marqueeBox.style.top=e.clientY+'px';
+  marqueeBox.style.width='0';
+  marqueeBox.style.height='0';
+  selectedItems.clear();
+  document.querySelectorAll('.selected-highlight').forEach(el=>el.classList.remove('selected-highlight'));
+});
+
+document.addEventListener('mousemove',e=>{
+  if(!marqueeActive)return;
+  
+  const x=Math.min(e.clientX,marqueeStart.x);
+  const y=Math.min(e.clientY,marqueeStart.y);
+  const w=Math.abs(e.clientX-marqueeStart.x);
+  const h=Math.abs(e.clientY-marqueeStart.y);
+  
+  marqueeBox.style.left=x+'px';
+  marqueeBox.style.top=y+'px';
+  marqueeBox.style.width=w+'px';
+  marqueeBox.style.height=h+'px';
+
+  const mRect={left:x,top:y,right:x+w,bottom:y+h};
+  selectedItems.clear();
+  
+  // Select from pool
+  document.querySelectorAll('#poolList .pool-item').forEach(el=>{
+    const r=el.getBoundingClientRect();
+    const overlap=!(r.right<mRect.left||r.left>mRect.right||r.bottom<mRect.top||r.top>mRect.bottom);
+    if(overlap){
+      selectedItems.add(el.dataset.id);
+      el.classList.add('selected-highlight');
+    }else{
+      el.classList.remove('selected-highlight');
+    }
+  });
+  
+  // Select from zones
+  document.querySelectorAll('.zone-item').forEach(el=>{
+    const r=el.getBoundingClientRect();
+    const overlap=!(r.right<mRect.left||r.left>mRect.right||r.bottom<mRect.top||r.top>mRect.bottom);
+    if(overlap){
+      selectedItems.add(el.dataset.itemId);
+      el.classList.add('selected-highlight');
+    }else{
+      el.classList.remove('selected-highlight');
+    }
+  });
+  
+  // Select from standby
+  document.querySelectorAll('.standby-body .zone-item').forEach(el=>{
+    const r=el.getBoundingClientRect();
+    const overlap=!(r.right<mRect.left||r.left>mRect.right||r.bottom<mRect.top||r.top>mRect.bottom);
+    if(overlap){
+      selectedItems.add(el.dataset.itemId);
+      el.classList.add('selected-highlight');
+    }else{
+      el.classList.remove('selected-highlight');
+    }
+  });
+});
+
+document.addEventListener('mouseup',()=>{
+  if(marqueeActive){
+    marqueeActive=false;
+    marqueeBox.style.display='none';
+  }
+});
+
+// ============ COUNTS ============
+function updateCounts(){
+  let working=0;
+  zones.forEach(z=>working+=z.items.length);
+  document.getElementById('countWorking').textContent=working;
+  document.getElementById('countStandby').textContent=standbyItems.length;
+}
+
+// ============ ADD ZONE ============
+document.getElementById('addZoneBtn').addEventListener('click',()=>{
+  zoneCounter++;
+  zones.push({id:'z'+zoneCounter,labelTitle:'ZONE '+zoneCounter,mainTitle:'Title',subTitle:'Subtitle',items:[]});
+  renderZones();
+});
+
+// ============ ADD NAME ============
+document.getElementById('addNameBtn').addEventListener('click',()=>{
+  const input=document.getElementById('newNameInput');
+  const name=input.value.trim();
+  if(!name)return;
+  poolItems.push({id:'p'+(nextId++),name,color:'#ffffff',type:'item'});
+  input.value='';
+  renderPool();
+});
+
+document.getElementById('addSubBtn').addEventListener('click',()=>{
+  const input=document.getElementById('newSubInput');
+  const name=input.value.trim();
+  if(!name)return;
+  poolItems.push({id:'p'+(nextId++),name,type:'sub'});
+  input.value='';
+  renderPool();
+});
+
+document.getElementById('newNameInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter')document.getElementById('addNameBtn').click();
+});
+document.getElementById('newSubInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter')document.getElementById('addSubBtn').click();
+});
+
+// ============ DOWNLOAD ============
+document.getElementById('downloadBtn').addEventListener('click',async()=>{
+  const canvas=document.getElementById('a4Canvas');
+  try{
+    const c=await html2canvas(canvas,{scale:2,useCORS:true,backgroundColor:'#ffffff'});
+    const link=document.createElement('a');
+    link.download='crew-report-day'+document.getElementById('numberSelect').value+'.jpg';
+    link.href=c.toDataURL('image/jpeg',0.95);
+    link.click();
+  }catch(err){
+    console.error('Export failed:',err);
+  }
+});
+
+// ============ INIT ============
+renderPool();
+renderStandby();
+
+// add 3 default zones with custom labels
+const workshopLabel=window.elementSdk?window.elementSdk.config.workshop_label:defaultConfig.workshop_label;
+const setLabel=window.elementSdk?window.elementSdk.config.set_label:defaultConfig.set_label;
+const bondLabel=window.elementSdk?window.elementSdk.config.bond_label:defaultConfig.bond_label;
+
+zones.push({id:'z1',labelTitle:workshopLabel||'WORKSHOP',mainTitle:'Area Title',subTitle:'Sub-area',items:[]});
+zones.push({id:'z2',labelTitle:setLabel||'SET SYUTING',mainTitle:'Area Title',subTitle:'Sub-area',items:[]});
+zones.push({id:'z3',labelTitle:bondLabel||'BOND',mainTitle:'Area Title',subTitle:'Sub-area',items:[]});
+zoneCounter=3;
+renderZones();
+
+lucide.createIcons();
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef194d305aa888d',t:'MTc3NjY2MTE4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef2c66ce70fce59',t:'MTc3NjY3MzcwMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
