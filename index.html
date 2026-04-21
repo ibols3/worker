@@ -666,101 +666,43 @@ function createZoneElement(zone){
   return container;
 }
 
-function createZoneItemElement(ni,zoneId){
-  const el=document.createElement('div');
-  el.className='zone-item';
-  el.style.background=ni.color;
-  el.style.display='flex';
-  el.style.flexDirection='row';
-  el.style.alignItems='center';
-  el.style.justifyContent='flex-start';
-  el.style.height='44px';
-  el.style.minHeight='44px';
-  el.style.lineHeight='44px';
-  el.style.padding='0 6px';
-  el.style.margin='0 0 0 24px';
-  el.style.borderRadius='3px';
-  el.style.fontSize='18px';
-  el.style.fontWeight='600';
-  el.style.color='#fff';
-  el.style.userSelect='none';
-  el.style.cursor='grab';
-  el.style.gap='3px';
-  el.dataset.itemId=ni.id;
-  el.draggable=true;
-
-  const num=document.createElement('span');
-  num.className='num';
-  num.style.position='absolute';
-  num.style.left='-24px';
-  num.style.width='20px';
-  num.style.height='44px';
-  num.style.display='flex';
-  num.style.alignItems='center';
-  num.style.justifyContent='center';
-  num.style.fontSize='14px';
-  num.style.fontWeight='800';
-  num.style.color='#000000';
-  num.style.textAlign='center';
-  num.style.lineHeight='44px';
-  num.style.padding='0';
-  num.style.margin='0';
-  num.style.WebkitFontSmoothing='antialiased';
-  num.textContent=ni.num;
-  el.appendChild(num);
-
-  const txt=document.createElement('span');
-  txt.style.flex='1';
-  txt.style.display='block';
-  txt.style.height='44px';
-  txt.style.lineHeight='44px';
-  txt.style.padding='0';
-  txt.style.margin='0';
-  txt.style.verticalAlign='middle';
-  txt.style.textTransform='uppercase';
-  txt.style.WebkitFontSmoothing='antialiased';
-  txt.style.backgroundColor=ni.color;
-  txt.style.color='#fff';
-  txt.style.borderRadius='3px';
-  txt.style.fontSize='18px';
-  txt.style.fontWeight='600';
-  txt.textContent=ni.name;
-  el.appendChild(txt);
-
-  const del=document.createElement('span');
-  del.className='del-btn';
-  del.style.marginLeft='auto';
-  del.style.cursor='pointer';
-  del.style.opacity='0.5';
-  del.style.fontSize='8px';
-  del.style.padding='3px 4px';
-  del.style.minWidth='24px';
-  del.style.minHeight='24px';
-  del.style.display='flex';
-  del.style.alignItems='center';
-  del.style.justifyContent='center';
-  del.style.borderRadius='4px';
-  del.textContent='✕';
-  del.addEventListener('click',e=>{
-    e.stopPropagation();
-    const zone=zones.find(z=>z.id===zoneId);
-    if(zone){
-      const idx=zone.items.findIndex(it=>it.id===ni.id);
-      if(idx>-1){
-        poolItems.push(zone.items.splice(idx,1)[0]);
-        renderPool();renderZones();
-      }
-    }
-  });
-  del.addEventListener('mouseenter',()=>del.style.opacity='1');
-  del.addEventListener('mouseleave',()=>del.style.opacity='0.5');
-  el.appendChild(del);
-
-  el.addEventListener('dragstart',e=>onZoneDragStart(e,zoneId,ni));
-  el.addEventListener('touchstart',e=>onTouchStart(e,'zone',zoneId,ni),{passive:false});
-  el.addEventListener('dblclick',e=>openColorPicker(e,ni.id,zoneId));
-
-  return el;
+function createZoneItemElement(ni, zoneId) {
+    const el = document.createElement('div');
+    el.className = 'zone-item';
+    
+    // --- KUNCI ALIGNMENT UTAMA ---
+    el.style.display = 'flex';           // Sejajarkan horizontal
+    el.style.flexDirection = 'row';      // Pastikan baris, bukan kolom
+    el.style.alignItems = 'center';      // Center secara vertikal
+    el.style.justifyContent = 'flex-start'; // Rata kiri
+    el.style.padding = '0 10px';         // Kasih ruang dalam agar tidak nempel tembok
+    el.style.gap = '8px';                // Jarak otomatis antara nomor dan nama
+    
+    // Warna background sesuai team
+    el.style.backgroundColor = ni.color; 
+    el.style.height = '44px';
+    el.style.borderRadius = '3px';
+    el.style.marginBottom = '4px';       // Jarak antar pekerja
+    
+    // --- BAGIAN NOMOR (NUM) ---
+    const num = document.createElement('span');
+    num.className = 'num';
+    num.style.position = 'relative';     // JANGAN pake absolute lagi
+    num.style.fontWeight = '800';
+    num.style.color = '#000';
+    num.style.minWidth = '20px';         // Kunci biar nama di sebelahnya sejajar lurus
+    num.textContent = ni.num + '.';
+    
+    el.appendChild(num);
+    
+    // --- BAGIAN NAMA ---
+    const nameEl = document.createElement('span');
+    nameEl.textContent = ni.name.toUpperCase(); // Pastikan Kapital
+    nameEl.style.fontWeight = '700';
+    
+    el.appendChild(nameEl);
+    
+    return el;
 }
 
 // standby rendering
