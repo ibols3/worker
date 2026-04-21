@@ -666,43 +666,44 @@ function createZoneElement(zone){
   return container;
 }
 
-function createZoneItemElement(ni, zoneId) {
-    const el = document.createElement('div');
-    el.className = 'zone-item';
-    
-    // --- KUNCI ALIGNMENT UTAMA ---
-    el.style.display = 'flex';           // Sejajarkan horizontal
-    el.style.flexDirection = 'row';      // Pastikan baris, bukan kolom
-    el.style.alignItems = 'center';      // Center secara vertikal
-    el.style.justifyContent = 'flex-start'; // Rata kiri
-    el.style.padding = '0 10px';         // Kasih ruang dalam agar tidak nempel tembok
-    el.style.gap = '8px';                // Jarak otomatis antara nomor dan nama
-    
-    // Warna background sesuai team
-    el.style.backgroundColor = ni.color; 
-    el.style.height = '44px';
-    el.style.borderRadius = '3px';
-    el.style.marginBottom = '4px';       // Jarak antar pekerja
-    
-    // --- BAGIAN NOMOR (NUM) ---
-    const num = document.createElement('span');
-    num.className = 'num';
-    num.style.position = 'relative';     // JANGAN pake absolute lagi
-    num.style.fontWeight = '800';
-    num.style.color = '#000';
-    num.style.minWidth = '20px';         // Kunci biar nama di sebelahnya sejajar lurus
-    num.textContent = ni.num + '.';
-    
-    el.appendChild(num);
-    
-    // --- BAGIAN NAMA ---
-    const nameEl = document.createElement('span');
-    nameEl.textContent = ni.name.toUpperCase(); // Pastikan Kapital
-    nameEl.style.fontWeight = '700';
-    
-    el.appendChild(nameEl);
-    
-    return el;
+function createZoneItemElement(ni,zoneId){
+  const el=document.createElement('div');
+  el.className='zone-item';
+  el.style.background=ni.color;
+  el.dataset.itemId=ni.id;
+  el.draggable=true;
+
+  const num=document.createElement('span');
+  num.className='num';
+  num.textContent=ni.num;
+  el.appendChild(num);
+
+  const txt=document.createElement('span');
+  txt.textContent=ni.name;
+  txt.style.flex='1';
+  el.appendChild(txt);
+
+  const del=document.createElement('span');
+  del.className='del-btn';
+  del.textContent='✕';
+  del.addEventListener('click',e=>{
+    e.stopPropagation();
+    const zone=zones.find(z=>z.id===zoneId);
+    if(zone){
+      const idx=zone.items.findIndex(it=>it.id===ni.id);
+      if(idx>-1){
+        poolItems.push(zone.items.splice(idx,1)[0]);
+        renderPool();renderZones();
+      }
+    }
+  });
+  el.appendChild(del);
+
+  el.addEventListener('dragstart',e=>onZoneDragStart(e,zoneId,ni));
+  el.addEventListener('touchstart',e=>onTouchStart(e,'zone',zoneId,ni),{passive:false});
+  el.addEventListener('dblclick',e=>openColorPicker(e,ni.id,zoneId));
+
+  return el;
 }
 
 // standby rendering
@@ -1379,7 +1380,7 @@ async function performExport(){
     throw new Error('Canvas element not found');
   }
   
-  console.log('[Export] Starting snapshot export with inline styles...');
+  console.log('[Export] Starting WYSWYG HD export...');
   
   // Hide UI overlays
   if(marqueeBox)marqueeBox.style.display='none';
@@ -1390,134 +1391,97 @@ async function performExport(){
     container.scrollLeft=0;
   }
   
-  // Lock canvas to A4 width (1189px)
-  const originalWidth=canvas.style.width;
-  canvas.style.width='1189px';
-  canvas.style.minWidth='1189px';
-  canvas.style.maxWidth='1189px';
-  
   // Wait for all images and styles to fully load
-  await new Promise(resolve=>setTimeout(resolve,300));
+  await new Promise(resolve=>setTimeout(resolve,400));
   await new Promise(resolve=>requestAnimationFrame(resolve));
   
   try{
+    // Get exact dimensions - NO STYLE MODIFICATIONS
+    const inner=canvas.querySelector('.a4-inner');
     const captureWidth=1189;
     const captureHeight=1682;
     
-    console.log('[Export] A4 dimensions: '+captureWidth+'x'+captureHeight);
+    console.log('[Export] Capture dimensions: '+captureWidth+'x'+captureHeight);
+    console.log('[Export] Device pixel ratio: '+window.devicePixelRatio);
     
-    // Scale 2 for HD quality with safe memory usage
-    const hdScale=2;
+    // Maximum 4x HD scale
+    const hdScale=4;
     
-    console.log('[Export] Capturing at 2x resolution...');
+    console.log('[Export] Capturing at 4x resolution ('+captureWidth*hdScale+'x'+captureHeight*hdScale+' px)...');
     
-    // SNAPSHOT CAPTURE WITH FORCED INLINE STYLES
+    // WYSWYG capture - NO onclone modifications
     let canvasImg=await html2canvas(canvas,{
-      scale: 1, // Paksa ke 1 biar ukuran gak bengkak
+      scale:hdScale,
       useCORS:true,
       allowTaint:false,
       backgroundColor:'#ffffff',
       logging:false,
       foreignObjectRendering:false,
-      width: 1189, // Samain sama lebar canvas A4 lo
-height: 1682, // Samain sama tinggi canvas A4 lo
-windowWidth: 1189,
-windowHeight: 1682,
+      width:captureWidth,
+      height:captureHeight,
+      windowWidth:captureWidth,
+      windowHeight:captureHeight,
       x:0,
       y:0,
       scrollX:0,
       scrollY:0,
       imageTimeout:8000,
       onclone:(clonedDocument)=>{
-        console.log('[Export] onclone: Forcing all inline styles for export render...');
-        
-        // CRITICAL: Force ALL zone items with inline styles
-        clonedDocument.querySelectorAll('.zone-item').forEach((el)=>{
-          const originalBgColor=window.getComputedStyle(el).backgroundColor;
-          console.log('[Export] Item color: '+originalBgColor);
-         const style = clonedDocument.createElement('style');
-style.innerHTML = `
-  .zone-item { display: flex !important; flex-direction: row !important; align-items: center !important; height: 44px !important; margin-bottom: 4px !important; }
-  .num { position: relative !important; left: 0 !important; margin-right: 8px !important; display: block !important; }
-  .del-btn { display: none !important; }
-`;
-clonedDocument.head.appendChild(style);
+        // Ensure all text is perfectly centered in export
+        const clonedCanvas=clonedDocument.querySelector('.a4-canvas');
+        if(clonedCanvas){
+        // Ensure all zone items to perfect middle alignment
+          clonedDocument.querySelectorAll('.zone-item').forEach(el=>{
+            el.style.display='flex !important';
+            el.style.alignItems='center !important';
+            el.style.justifyContent='flex-start !important';
+            el.style.lineHeight='44px !important';
+            el.style.height='44px !important';
+            el.style.minHeight='44px !important';
+            el.style.padding='0 6px !important';
+            el.style.verticalAlign='middle !important';
+            el.style.margin='0 0 0 24px !important';
+          });
           
-          // Force flex container
-          el.style.setProperty('display', 'flex', 'important');
-el.style.setProperty('flex-direction', 'row', 'important');
-el.style.setProperty('align-items', 'center', 'important');
-el.style.setProperty('justify-content', 'flex-start', 'important');
-          el.style.setProperty('width', '100%', 'important'); 
-el.style.setProperty('max-width', 'none', 'important');
-el.style.setProperty('min-width', '240px', 'important'); // Sesuaikan dengan lebar kotak di layar lo
-          el.style.lineHeight='44px !important';
-          el.style.padding='0 6px !important';
-          el.style.setProperty('margin', '0 0 4px 0', 'important');
-          el.style.backgroundColor='transparent !important';
-          el.style.borderRadius='3px !important';
-          el.style.gap='3px !important';
-          el.style.position='relative !important';
+          // Ensure all sequence numbers to perfect vertical centering
+          clonedDocument.querySelectorAll('.zone-item .num').forEach(el=>{
+            el.style.display='flex !important';
+            el.style.alignItems='center !important';
+            el.style.justifyContent='center !important';
+            el.style.lineHeight='44px !important';
+            el.style.height='44px !important';
+            el.style.top='0 !important';
+            el.style.transform='none !important';
+            el.style.margin='0 !important';
+            el.style.padding='0 !important';
+            el.style.verticalAlign='middle !important';
+          });
           
-          // Force number
-          const numEl=el.querySelector('.num');
-          if(numEl){
-            numEl.style.position='absolute !important';
-            numEl.style.left='-24px !important';
-            numEl.style.width='20px !important';
-            numEl.style.height='44px !important';
-            numEl.style.display='flex !important';
-            numEl.style.alignItems='center !important';
-            numEl.style.justifyContent='center !important';
-            numEl.style.fontSize='14px !important';
-            numEl.style.fontWeight='800 !important';
-            numEl.style.color='#000000 !important';
-            numEl.style.lineHeight='44px !important';
-            numEl.style.padding='0 !important';
-            numEl.style.margin='0 !important';
-            numEl.style.visibility='visible !important';
-            numEl.style.opacity='1 !important';
-            numEl.style.WebkitFontSmoothing='antialiased !important';
-          }
-          
-          // Force name text with explicit background
-          const nameEl=el.querySelector('span:not(.num):not(.del-btn)');
-          if(nameEl){
-            nameEl.style.flex='1 !important';
-            nameEl.style.display='block !important';
-            nameEl.style.height='44px !important';
-            nameEl.style.lineHeight='44px !important';
-            nameEl.style.padding='0 !important';
-            nameEl.style.margin='0 !important';
-            nameEl.style.verticalAlign='middle !important';
-            nameEl.style.textTransform='uppercase !important';
-            nameEl.style.fontSize='18px !important';
-            nameEl.style.fontWeight='600 !important';
-            nameEl.style.color='#ffffff !important';
-            nameEl.style.backgroundColor=originalBgColor+' !important';
-            nameEl.style.borderRadius='3px !important';
-            nameEl.style.WebkitFontSmoothing='antialiased !important';
-            nameEl.style.visibility='visible !important';
-            nameEl.style.opacity='1 !important';
-          }
-          
-          // Hide delete button
-          const delEl=el.querySelector('.del-btn');
-          if(delEl){
-            delEl.style.display='none !important';
-            delEl.style.visibility='hidden !important';
-            delEl.style.width='0 !important';
-            delEl.style.height='0 !important';
-          }
-        });
-        
-        console.log('[Export] onclone: All zone items synchronized');
+          // Ensure pool items
+          clonedDocument.querySelectorAll('.pool-item').forEach(el=>{
+            el.style.display='flex !important';
+            el.style.alignItems='center !important';
+            el.style.justifyContent='center !important';
+            el.style.lineHeight='36px !important';
+            el.style.height='36px !important';
+            el.style.minHeight='36px !important';
+            el.style.padding='0 8px !important';
+            el.style.verticalAlign='middle !important';
+          });
+        }
       }
     });
     
-    console.log('[Export] Capture successful');
+    console.log('[Export] Capture successful: '+canvasImg.width+'x'+canvasImg.height+' px');
     
-    // Convert to maximum quality JPEG
+    // Enable high-quality image smoothing
+    const ctx=canvasImg.getContext('2d');
+    if(ctx){
+      ctx.imageSmoothingEnabled=true;
+      ctx.imageSmoothingQuality='high';
+    }
+    
+    // Convert to maximum quality JPEG blob
     console.log('[Export] Converting to JPEG (98% quality)...');
     const blob=await new Promise((resolve,reject)=>{
       canvasImg.toBlob((blob)=>{
@@ -1530,7 +1494,7 @@ el.style.setProperty('min-width', '240px', 'important'); // Sesuaikan dengan leb
       },'image/jpeg',0.98);
     });
     
-    // Download
+    // Download via blob URL
     console.log('[Export] Initiating download...');
     const url=URL.createObjectURL(blob);
     const link=document.createElement('a');
@@ -1541,6 +1505,7 @@ el.style.setProperty('min-width', '240px', 'important'); // Sesuaikan dengan leb
     document.body.appendChild(link);
     link.click();
     
+    // Cleanup
     setTimeout(()=>{
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
@@ -1551,8 +1516,7 @@ el.style.setProperty('min-width', '240px', 'important'); // Sesuaikan dengan leb
     console.error('[Export] Failed:',err);
     throw err;
   }finally{
-    // Restore canvas width
-    canvas.style.width=originalWidth;
+    // Restore UI
     if(marqueeBox)marqueeBox.style.display='block';
   }
 }
@@ -1707,5 +1671,5 @@ renderZones();
 
 lucide.createIcons();
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef9bb82844c0a12',t:'MTc3Njc0NjY1NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef98fc59630b5ac',t:'MTc3Njc0NDg2My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
