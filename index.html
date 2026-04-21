@@ -1448,9 +1448,9 @@ clonedDocument.head.appendChild(style);
 el.style.setProperty('flex-direction', 'row', 'important');
 el.style.setProperty('align-items', 'center', 'important');
 el.style.setProperty('justify-content', 'flex-start', 'important');
-          el.style.width='100% !important';
-          el.style.height='44px !important';
-          el.style.minHeight='44px !important';
+          el.style.setProperty('width', '100%', 'important'); 
+el.style.setProperty('max-width', 'none', 'important');
+el.style.setProperty('min-width', '240px', 'important'); // Sesuaikan dengan lebar kotak di layar lo
           el.style.lineHeight='44px !important';
           el.style.padding='0 6px !important';
           el.style.setProperty('margin', '0 0 4px 0', 'important');
