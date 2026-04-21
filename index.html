@@ -1198,6 +1198,8 @@ const marqueeBox=document.getElementById('marqueeBox');
 let marqueeReady=false;
 let marqueeReadyIndicator=null;
 let lastMarqueeUpdate=0;
+let marqueeStarted=false;
+const MARQUEE_DRAG_THRESHOLD=8;
 
 function isPopupOpen(){
   const colorPicker=document.getElementById('colorPicker');
@@ -1217,6 +1219,7 @@ function getCanvasContainerRect(){
 function startMarqueeSelection(startX,startY){
   marqueeActive=true;
   marqueeReady=true;
+  marqueeStarted=true;
   marqueeStart={x:startX,y:startY};
   marqueeBox.style.display='block';
   marqueeBox.style.left=startX+'px';
@@ -1324,6 +1327,7 @@ function endMarqueeSelection(){
   if(marqueeActive){
     marqueeActive=false;
     marqueeReady=false;
+    marqueeStarted=false;
     marqueeBox.style.display='none';
   }
   if(marqueeReadyIndicator){
@@ -1332,18 +1336,40 @@ function endMarqueeSelection(){
   }
 }
 
-// ============ MOUSE MARQUEE SELECTION ============
+// ============ MOUSE MARQUEE SELECTION WITH DRAG THRESHOLD ============
+let mouseDownX=0;
+let mouseDownY=0;
+
 document.addEventListener('mousedown',e=>{
   if(isPopupOpen()||isOnInteractiveElement(e.target))return;
-  startMarqueeSelection(e.clientX,e.clientY);
+  mouseDownX=e.clientX;
+  mouseDownY=e.clientY;
+  showMarqueeReadyIndicator(e.clientX,e.clientY);
 });
 
 document.addEventListener('mousemove',e=>{
-  if(!marqueeActive)return;
-  updateMarqueeBox(e.clientX,e.clientY);
+  if(marqueeActive){
+    updateMarqueeBox(e.clientX,e.clientY);
+    return;
+  }
+  
+  // Check if user has moved past threshold
+  const dx=Math.abs(e.clientX-mouseDownX);
+  const dy=Math.abs(e.clientY-mouseDownY);
+  
+  if((dx+dy)>MARQUEE_DRAG_THRESHOLD&&!marqueeStarted){
+    startMarqueeSelection(mouseDownX,mouseDownY);
+    updateMarqueeBox(e.clientX,e.clientY);
+  }
 });
 
-document.addEventListener('mouseup',endMarqueeSelection);
+document.addEventListener('mouseup',e=>{
+  if(marqueeReadyIndicator){
+    marqueeReadyIndicator.remove();
+    marqueeReadyIndicator=null;
+  }
+  endMarqueeSelection();
+});
 
 // ============ COUNTS ============
 function updateCounts(){
@@ -1437,7 +1463,7 @@ async function performExport(){
     throw new Error('Canvas element not found');
   }
   
-  console.log('[Export] Starting snapshot export with inline styles...');
+  console.log('[Export] Starting snapshot export with flexible height...');
   
   // Hide UI overlays
   if(marqueeBox)marqueeBox.style.display='none';
@@ -1448,11 +1474,13 @@ async function performExport(){
     container.scrollLeft=0;
   }
   
-  // Lock canvas to A4 width (1189px)
+  // Lock canvas to width (1189px) but let height be natural
   const originalWidth=canvas.style.width;
+  const originalHeight=canvas.style.height;
   canvas.style.width='1189px';
   canvas.style.minWidth='1189px';
   canvas.style.maxWidth='1189px';
+  canvas.style.height='auto';
   
   // Wait for all images and styles to fully load
   await new Promise(resolve=>setTimeout(resolve,300));
@@ -1460,11 +1488,12 @@ async function performExport(){
   
   try{
     const captureWidth=1189;
-    const captureHeight=1682;
+    // Get actual canvas height after content is rendered
+    const captureHeight=canvas.scrollHeight||canvas.offsetHeight;
     
-    console.log('[Export] A4 dimensions: '+captureWidth+'x'+captureHeight);
+    console.log('[Export] Canvas dimensions: '+captureWidth+'x'+captureHeight);
     
-    // Scale 2 for HD quality with safe memory usage
+    // Scale 2 for HD quality
     const hdScale=2;
     
     console.log('[Export] Capturing at 2x resolution...');
@@ -1602,8 +1631,9 @@ async function performExport(){
     console.error('[Export] Failed:',err);
     throw err;
   }finally{
-    // Restore canvas width
+    // Restore canvas style
     canvas.style.width=originalWidth;
+    canvas.style.height=originalHeight;
     if(marqueeBox)marqueeBox.style.display='block';
   }
 }
@@ -1765,5 +1795,5 @@ if(poolList){
 
 lucide.createIcons();
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9efad344843f03d4',t:'MTc3Njc1ODExNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9efae10c915b4c64',t:'MTc3Njc1ODY3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
