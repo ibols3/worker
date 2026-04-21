@@ -171,8 +171,7 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
  <body class="h-full">
-  <div class="app-wrap">
-   <!-- MOBILE MENU BUTTON --> <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button> <!-- DRAWER OVERLAY -->
+  <div class="app-wrap"><!-- MOBILE MENU BUTTON --> <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button> <!-- DRAWER OVERLAY -->
    <div class="drawer-overlay" id="drawerOverlay"></div><!-- LEFT SIDEBAR -->
    <div class="sidebar-left" id="sidebarLeft">
     <div style="padding:10px 10px 6px;border-bottom:1px solid #1e3a5f">
@@ -180,25 +179,28 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
     </div>
     <div class="scroll-pool" id="poolList"></div>
     <div style="padding:8px;border-top:1px solid #1e3a5f;display:flex;flex-direction:column;gap:6px;position:sticky;bottom:0;background:#000044;z-index:100">
-     <div style="display:flex;gap:4px;flex-wrap:wrap"><input id="newNameInput" type="text" placeholder="Worker name..." style="flex:1;min-width:100px;padding:8px;border-radius:5px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:11px;outline:none;min-height:36px"> <button id="addNameBtn" style="padding:8px 12px;background:#3b82f6;color:#fff;border:none;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;min-width:36px;min-height:36px">Add</button>
+     <div style="display:flex;gap:4px;flex-wrap:wrap">
+      <input id="newNameInput" type="text" placeholder="Worker name..." style="flex:1;min-width:100px;padding:8px;border-radius:5px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:11px;outline:none;min-height:36px"> <button id="addNameBtn" style="padding:8px 12px;background:#3b82f6;color:#fff;border:none;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;min-width:36px;min-height:36px">Add</button>
      </div>
-     <div style="display:flex;gap:4px;flex-wrap:wrap"><input id="newSubInput" type="text" placeholder="Sub header..." style="flex:1;min-width:100px;padding:8px;border-radius:5px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:11px;outline:none;min-height:36px"> <button id="addSubBtn" style="padding:8px 12px;background:#6b7280;color:#fff;border:none;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;min-width:36px;min-height:36px">Sub</button>
+     <div style="display:flex;gap:4px;flex-wrap:wrap">
+      <input id="newSubInput" type="text" placeholder="Sub header..." style="flex:1;min-width:100px;padding:8px;border-radius:5px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:11px;outline:none;min-height:36px"> <button id="addSubBtn" style="padding:8px 12px;background:#6b7280;color:#fff;border:none;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;min-width:36px;min-height:36px">Sub</button>
      </div>
     </div>
    </div><!-- CANVAS AREA -->
    <div class="canvas-area" id="canvasScroll">
     <div class="a4-canvas" id="a4Canvas">
-     <div class="a4-inner" id="a4Inner">
-      <!-- HEADER -->
+     <div class="a4-inner" id="a4Inner"><!-- HEADER -->
       <div class="canvas-header">
-       <div class="canvas-logo"><img src="https://lh3.googleusercontent.com/d/1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" alt="Logo" loading="lazy" onerror="this.style.background='#e5e7eb';this.alt='Logo unavailable';">
+       <div class="canvas-logo">
+        <img src="https://lh3.googleusercontent.com/d/1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" alt="Logo" loading="lazy" onerror="this.style.background='#e5e7eb';this.alt='Logo unavailable';">
        </div>
        <div class="canvas-header-center">
         <div class="header-title" id="headerTitle">
          I.B.O.L
         </div>
         <div class="day-selection-row">
-         <div class="day-label-group"><select id="dayTypeSelect" class="day-dropdown"> <option value="PREPS DAY">PREPS DAY</option> <option value="SHOOT DAY">SHOOT DAY</option> <option value="BONGKARAN DAY">BONGKARAN DAY</option> </select> <select id="numberSelect" class="number-dropdown"> </select>
+         <div class="day-label-group">
+          <select id="dayTypeSelect" class="day-dropdown"> <option value="PREPS DAY">PREPS DAY</option> <option value="SHOOT DAY">SHOOT DAY</option> <option value="BONGKARAN DAY">BONGKARAN DAY</option> </select> <select id="numberSelect" class="number-dropdown"> </select>
          </div>
         </div>
        </div>
@@ -217,11 +219,9 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
        <div style="flex:1"></div>
       </div><!-- FOOTER -->
       <div class="footer-counts" id="footerCounts">
-       <div>
-        <span class="working">TOTAL PEKERJA BEKERJA: <span id="countWorking">0</span></span>
+       <div><span class="working">TOTAL PEKERJA BEKERJA: <span id="countWorking">0</span></span>
        </div>
-       <div>
-        <span class="standby">TOTAL PEKERJA STANDBY: <span id="countStandby">0</span></span>
+       <div><span class="standby">TOTAL PEKERJA STANDBY: <span id="countStandby">0</span></span>
        </div>
       </div>
      </div>
@@ -231,8 +231,7 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
     <div style="padding:10px;border-bottom:1px solid #1e3a5f">
      <h2 style="font-size:14px;font-weight:800;color:#93c5fd;display:flex;align-items:center;gap:6px"><i data-lucide="layout" style="width:16px;height:16px"></i> Zone &amp; Export</h2>
     </div>
-    <div style="padding:10px;display:flex;flex-direction:column;gap:8px">
-     <button id="addZoneBtn" style="padding:10px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px"><i data-lucide="plus-square" style="width:13px;height:13px"></i> Add Zone</button> <button id="downloadBtn" style="padding:10px;background:#059669;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px"><i data-lucide="download" style="width:13px;height:13px"></i> Download</button>
+    <div style="padding:10px;display:flex;flex-direction:column;gap:8px"><button id="addZoneBtn" style="padding:10px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px"><i data-lucide="plus-square" style="width:13px;height:13px"></i> Add Zone</button> <button id="downloadBtn" style="padding:10px;background:#059669;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px"><i data-lucide="download" style="width:13px;height:13px"></i> Download</button>
      <hr style="border-color:#1e3a5f">
      <div style="font-size:10px;color:#94a3b8">
       <p style="margin-bottom:2px"><strong>Tips:</strong></p>
@@ -247,7 +246,8 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px" id="swatchGrid"></div>
   </div><!-- CALENDAR POPUP -->
   <div class="calendar-popup" id="calendarPopup">
-   <div class="calendar-header"><button id="prevMonth">◀ Bulan Sebelumnya</button>
+   <div class="calendar-header">
+    <button id="prevMonth">◀ Bulan Sebelumnya</button>
     <div id="monthYear" style="font-weight:700;text-align:center;flex:1;font-size:16px;color:#1f2937"></div><button id="nextMonth">Bulan Berikutnya ▶</button>
    </div>
    <div class="calendar-grid" id="calendarGrid"></div>
@@ -670,21 +670,76 @@ function createZoneItemElement(ni,zoneId){
   const el=document.createElement('div');
   el.className='zone-item';
   el.style.background=ni.color;
+  el.style.display='flex';
+  el.style.flexDirection='row';
+  el.style.alignItems='center';
+  el.style.justifyContent='flex-start';
+  el.style.height='44px';
+  el.style.minHeight='44px';
+  el.style.lineHeight='44px';
+  el.style.padding='0 6px';
+  el.style.margin='0 0 0 24px';
+  el.style.borderRadius='3px';
+  el.style.fontSize='18px';
+  el.style.fontWeight='600';
+  el.style.color='#fff';
+  el.style.userSelect='none';
+  el.style.cursor='grab';
+  el.style.gap='3px';
   el.dataset.itemId=ni.id;
   el.draggable=true;
 
   const num=document.createElement('span');
   num.className='num';
+  num.style.position='absolute';
+  num.style.left='-24px';
+  num.style.width='20px';
+  num.style.height='44px';
+  num.style.display='flex';
+  num.style.alignItems='center';
+  num.style.justifyContent='center';
+  num.style.fontSize='14px';
+  num.style.fontWeight='800';
+  num.style.color='#000000';
+  num.style.textAlign='center';
+  num.style.lineHeight='44px';
+  num.style.padding='0';
+  num.style.margin='0';
+  num.style.WebkitFontSmoothing='antialiased';
   num.textContent=ni.num;
   el.appendChild(num);
 
   const txt=document.createElement('span');
-  txt.textContent=ni.name;
   txt.style.flex='1';
+  txt.style.display='block';
+  txt.style.height='44px';
+  txt.style.lineHeight='44px';
+  txt.style.padding='0';
+  txt.style.margin='0';
+  txt.style.verticalAlign='middle';
+  txt.style.textTransform='uppercase';
+  txt.style.WebkitFontSmoothing='antialiased';
+  txt.style.backgroundColor=ni.color;
+  txt.style.color='#fff';
+  txt.style.borderRadius='3px';
+  txt.style.fontSize='18px';
+  txt.style.fontWeight='600';
+  txt.textContent=ni.name;
   el.appendChild(txt);
 
   const del=document.createElement('span');
   del.className='del-btn';
+  del.style.marginLeft='auto';
+  del.style.cursor='pointer';
+  del.style.opacity='0.5';
+  del.style.fontSize='8px';
+  del.style.padding='3px 4px';
+  del.style.minWidth='24px';
+  del.style.minHeight='24px';
+  del.style.display='flex';
+  del.style.alignItems='center';
+  del.style.justifyContent='center';
+  del.style.borderRadius='4px';
   del.textContent='✕';
   del.addEventListener('click',e=>{
     e.stopPropagation();
@@ -697,6 +752,8 @@ function createZoneItemElement(ni,zoneId){
       }
     }
   });
+  del.addEventListener('mouseenter',()=>del.style.opacity='1');
+  del.addEventListener('mouseleave',()=>del.style.opacity='0.5');
   el.appendChild(del);
 
   el.addEventListener('dragstart',e=>onZoneDragStart(e,zoneId,ni));
@@ -1380,7 +1437,7 @@ async function performExport(){
     throw new Error('Canvas element not found');
   }
   
-  console.log('[Export] Starting WYSWYG HD export...');
+  console.log('[Export] Starting snapshot export with inline styles...');
   
   // Hide UI overlays
   if(marqueeBox)marqueeBox.style.display='none';
@@ -1391,25 +1448,28 @@ async function performExport(){
     container.scrollLeft=0;
   }
   
+  // Lock canvas to A4 width (1189px)
+  const originalWidth=canvas.style.width;
+  canvas.style.width='1189px';
+  canvas.style.minWidth='1189px';
+  canvas.style.maxWidth='1189px';
+  
   // Wait for all images and styles to fully load
-  await new Promise(resolve=>setTimeout(resolve,400));
+  await new Promise(resolve=>setTimeout(resolve,300));
   await new Promise(resolve=>requestAnimationFrame(resolve));
   
   try{
-    // Get exact dimensions - NO STYLE MODIFICATIONS
-    const inner=canvas.querySelector('.a4-inner');
     const captureWidth=1189;
     const captureHeight=1682;
     
-    console.log('[Export] Capture dimensions: '+captureWidth+'x'+captureHeight);
-    console.log('[Export] Device pixel ratio: '+window.devicePixelRatio);
+    console.log('[Export] A4 dimensions: '+captureWidth+'x'+captureHeight);
     
-    // Scale 2 (safer memory usage while maintaining quality)
+    // Scale 2 for HD quality with safe memory usage
     const hdScale=2;
     
-    console.log('[Export] Capturing at 2x resolution ('+captureWidth*hdScale+'x'+captureHeight*hdScale+' px)...');
+    console.log('[Export] Capturing at 2x resolution...');
     
-    // WYSWYG capture with rigid vertical alignment injection
+    // SNAPSHOT CAPTURE WITH FORCED INLINE STYLES
     let canvasImg=await html2canvas(canvas,{
       scale:hdScale,
       useCORS:true,
@@ -1426,294 +1486,89 @@ async function performExport(){
       scrollX:0,
       scrollY:0,
       imageTimeout:8000,
-      logging:true,
-      useCORS:true,
       onclone:(clonedDocument)=>{
-        console.log('[Export] onclone: Ensuring all worker blocks render with forced visibility...');
+        console.log('[Export] onclone: Forcing all inline styles for export render...');
         
-        // STEP 1: Inject global stylesheet with MAXIMUM visibility enforcement
-        const style=clonedDocument.createElement('style');
-        style.textContent=`
-          /* EXPORT-ONLY VISIBILITY ENFORCEMENT */
-          
-          /* Force ALL elements visible from start */
-          * {
-            visibility: visible !important;
-            opacity: 1 !important;
-            display: block !important;
-            position: static !important;
-            transform: none !important;
-          }
-          
-          /* WORKER ROW - Simple flex layout */
-          .zone-item {
-            display: flex !important;
-            flex-direction: row !important;
-            width: 100% !important;
-            height: 40px !important;
-            min-height: 40px !important;
-            line-height: 40px !important;
-            align-items: center !important;
-            justify-content: flex-start !important;
-            padding: 0 !important;
-            margin: 0 4px !important;
-            background: transparent !important;
-            text-transform: uppercase !important;
-            text-rendering: optimizeLegibility !important;
-            -webkit-font-smoothing: antialiased !important;
-          }
-          
-          /* SEQUENCE NUMBER */
-          .zone-item .num {
-            display: block !important;
-            width: 30px !important;
-            height: 40px !important;
-            line-height: 40px !important;
-            text-align: center !important;
-            vertical-align: middle !important;
-            font-size: 14px !important;
-            font-weight: 800 !important;
-            color: #000000 !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            background: transparent !important;
-            flex-shrink: 0 !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-          }
-          
-          /* NAME TEXT BLOCK - FORCE VISIBLE & COLOR */
-          .zone-item span:not(.del-btn):not(.num) {
-            display: block !important;
-            flex: 1 !important;
-            height: 40px !important;
-            line-height: 40px !important;
-            vertical-align: middle !important;
-            padding: 0 10px !important;
-            margin: 0 !important;
-            font-size: 18px !important;
-            font-weight: 600 !important;
-            color: #ffffff !important;
-            white-space: nowrap !important;
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
-            text-transform: uppercase !important;
-            position: static !important;
-            transform: none !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            border-radius: 4px !important;
-            box-sizing: border-box !important;
-          }
-          
-          /* DELETE BUTTON - COMPLETELY HIDDEN */
-          .zone-item .del-btn {
-            display: none !important;
-            visibility: hidden !important;
-            width: 0 !important;
-            height: 0 !important;
-            margin: 0 !important;
-            padding: 0 !important;
-          }
-          
-          /* STANDBY ITEMS */
-          .standby-body .zone-item {
-            display: flex !important;
-            flex-direction: row !important;
-            width: 100% !important;
-            height: 40px !important;
-            align-items: center !important;
-            margin: 0 4px !important;
-          }
-          
-          .standby-body .zone-item .num {
-            display: none !important;
-            width: 0 !important;
-            height: 0 !important;
-            visibility: hidden !important;
-          }
-          
-          .standby-body .zone-item span:not(.del-btn):not(.num) {
-            display: block !important;
-            flex: 1 !important;
-            height: 40px !important;
-            line-height: 40px !important;
-            padding: 0 10px !important;
-            color: #ffffff !important;
-            font-weight: bold !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-          }
-          
-          .standby-body .zone-item .del-btn {
-            display: none !important;
-          }
-          
-          /* POOL ITEMS */
-          .pool-item {
-            display: block !important;
-            height: 36px !important;
-            line-height: 36px !important;
-            vertical-align: middle !important;
-            padding: 0 8px !important;
-            margin: 3px 5px !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-          }
-          
-          /* POOL SUB-HEADERS */
-          .pool-sub-header {
-            display: block !important;
-            height: 42px !important;
-            line-height: 42px !important;
-            vertical-align: middle !important;
-            padding: 8px 10px !important;
-            margin: 5px 5px 2px !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-          }
-        `;
-        clonedDocument.head.appendChild(style);
-        console.log('[Export] onclone: Global visibility stylesheet injected');
-        
-        // STEP 2: Forcefully sync every worker item with correct background color
-        const clonedCanvas=clonedDocument.querySelector('.a4-canvas');
-        if(!clonedCanvas){
-          console.error('[Export] onclone: .a4-canvas not found');
-          return;
-        }
-        
-        console.log('[Export] onclone: Synchronizing zone items with explicit colors...');
-        let itemCount=0;
-        
+        // CRITICAL: Force ALL zone items with inline styles
         clonedDocument.querySelectorAll('.zone-item').forEach((el)=>{
-          itemCount++;
+          const originalBgColor=window.getComputedStyle(el).backgroundColor;
+          console.log('[Export] Item color: '+originalBgColor);
           
-          // Get original background color from main document
-          const originalColor=window.getComputedStyle(el).backgroundColor;
-          console.log('[Export] Item '+itemCount+': color='+originalColor);
+          // Force flex container
+          el.style.display='flex !important';
+          el.style.flexDirection='row !important';
+          el.style.alignItems='center !important';
+          el.style.justifyContent='flex-start !important';
+          el.style.width='100% !important';
+          el.style.height='44px !important';
+          el.style.minHeight='44px !important';
+          el.style.lineHeight='44px !important';
+          el.style.padding='0 6px !important';
+          el.style.margin='0 0 0 24px !important';
+          el.style.backgroundColor='transparent !important';
+          el.style.borderRadius='3px !important';
+          el.style.gap='3px !important';
+          el.style.position='relative !important';
           
-          // Force flex layout
-          el.style.display='flex';
-          el.style.flexDirection='row';
-          el.style.width='100%';
-          el.style.height='40px';
-          el.style.lineHeight='40px';
-          el.style.alignItems='center';
-          el.style.padding='0';
-          el.style.margin='0 4px';
-          el.style.backgroundColor='transparent';
-          
-          // Force number span
-          const numSpan=el.querySelector('.num');
-          if(numSpan){
-            numSpan.style.display='block';
-            numSpan.style.width='30px';
-            numSpan.style.height='40px';
-            numSpan.style.lineHeight='40px';
-            numSpan.style.textAlign='center';
-            numSpan.style.verticalAlign='middle';
-            numSpan.style.fontSize='14px';
-            numSpan.style.fontWeight='800';
-            numSpan.style.color='#000000';
-            numSpan.style.padding='0';
-            numSpan.style.margin='0';
-            numSpan.style.flexShrink='0';
-            numSpan.style.visibility='visible';
-            numSpan.style.opacity='1';
-            numSpan.textContent=numSpan.textContent.trim();
+          // Force number
+          const numEl=el.querySelector('.num');
+          if(numEl){
+            numEl.style.position='absolute !important';
+            numEl.style.left='-24px !important';
+            numEl.style.width='20px !important';
+            numEl.style.height='44px !important';
+            numEl.style.display='flex !important';
+            numEl.style.alignItems='center !important';
+            numEl.style.justifyContent='center !important';
+            numEl.style.fontSize='14px !important';
+            numEl.style.fontWeight='800 !important';
+            numEl.style.color='#000000 !important';
+            numEl.style.lineHeight='44px !important';
+            numEl.style.padding='0 !important';
+            numEl.style.margin='0 !important';
+            numEl.style.visibility='visible !important';
+            numEl.style.opacity='1 !important';
+            numEl.style.WebkitFontSmoothing='antialiased !important';
           }
           
-          // Force name span with EXPLICIT BACKGROUND COLOR
-          const nameSpans=el.querySelectorAll('span:not(.num):not(.del-btn)');
-          nameSpans.forEach((nameSpan)=>{
-            nameSpan.style.display='block';
-            nameSpan.style.flex='1';
-            nameSpan.style.height='40px';
-            nameSpan.style.lineHeight='40px';
-            nameSpan.style.padding='0 10px';
-            nameSpan.style.margin='0';
-            nameSpan.style.fontSize='18px';
-            nameSpan.style.fontWeight='600';
-            nameSpan.style.color='#ffffff';
-            nameSpan.style.backgroundColor=originalColor; // EXPLICIT COLOR
-            nameSpan.style.whiteSpace='nowrap';
-            nameSpan.style.overflow='hidden';
-            nameSpan.style.textOverflow='ellipsis';
-            nameSpan.style.textTransform='uppercase';
-            nameSpan.style.borderRadius='4px';
-            nameSpan.style.boxSizing='border-box';
-            nameSpan.style.visibility='visible';
-            nameSpan.style.opacity='1';
-            nameSpan.style.position='static';
-            nameSpan.style.transform='none';
-          });
-          
-          // Hide delete buttons
-          el.querySelectorAll('.del-btn').forEach(btn=>{
-            btn.style.display='none';
-            btn.style.visibility='hidden';
-            btn.style.width='0';
-            btn.style.height='0';
-          });
-        });
-        
-        console.log('[Export] onclone: '+itemCount+' items synchronized');
-        
-        // STEP 3: Force standby items
-        console.log('[Export] onclone: Synchronizing standby items...');
-        clonedDocument.querySelectorAll('.standby-body .zone-item').forEach((el)=>{
-          const originalColor=window.getComputedStyle(el).backgroundColor;
-          
-          el.style.display='flex';
-          el.style.flexDirection='row';
-          el.style.width='100%';
-          el.style.height='40px';
-          el.style.lineHeight='40px';
-          el.style.alignItems='center';
-          el.style.margin='0 4px';
-          
-          const numSpan=el.querySelector('.num');
-          if(numSpan){
-            numSpan.style.display='none';
-            numSpan.style.width='0';
-            numSpan.style.height='0';
+          // Force name text with explicit background
+          const nameEl=el.querySelector('span:not(.num):not(.del-btn)');
+          if(nameEl){
+            nameEl.style.flex='1 !important';
+            nameEl.style.display='block !important';
+            nameEl.style.height='44px !important';
+            nameEl.style.lineHeight='44px !important';
+            nameEl.style.padding='0 !important';
+            nameEl.style.margin='0 !important';
+            nameEl.style.verticalAlign='middle !important';
+            nameEl.style.textTransform='uppercase !important';
+            nameEl.style.fontSize='18px !important';
+            nameEl.style.fontWeight='600 !important';
+            nameEl.style.color='#ffffff !important';
+            nameEl.style.backgroundColor=originalBgColor+' !important';
+            nameEl.style.borderRadius='3px !important';
+            nameEl.style.WebkitFontSmoothing='antialiased !important';
+            nameEl.style.visibility='visible !important';
+            nameEl.style.opacity='1 !important';
           }
           
-          const nameSpans=el.querySelectorAll('span:not(.del-btn):not(.num)');
-          nameSpans.forEach(span=>{
-            span.style.display='block';
-            span.style.flex='1';
-            span.style.height='40px';
-            span.style.lineHeight='40px';
-            span.style.padding='0 10px';
-            span.style.color='#ffffff';
-            span.style.fontWeight='bold';
-            span.style.backgroundColor=originalColor;
-            span.style.visibility='visible';
-            span.style.opacity='1';
-          });
-          
-          el.querySelectorAll('.del-btn').forEach(btn=>{
-            btn.style.display='none';
-            btn.style.visibility='hidden';
-          });
+          // Hide delete button
+          const delEl=el.querySelector('.del-btn');
+          if(delEl){
+            delEl.style.display='none !important';
+            delEl.style.visibility='hidden !important';
+            delEl.style.width='0 !important';
+            delEl.style.height='0 !important';
+          }
         });
         
-        console.log('[Export] onclone: Render synchronization complete');
+        console.log('[Export] onclone: All zone items synchronized');
       }
     });
     
-    console.log('[Export] Capture successful: '+canvasImg.width+'x'+canvasImg.height+' px');
+    console.log('[Export] Capture successful');
     
-    // Enable high-quality image smoothing
-    const ctx=canvasImg.getContext('2d');
-    if(ctx){
-      ctx.imageSmoothingEnabled=true;
-      ctx.imageSmoothingQuality='high';
-    }
-    
-    // Convert to maximum quality JPEG blob
+    // Convert to maximum quality JPEG
     console.log('[Export] Converting to JPEG (98% quality)...');
     const blob=await new Promise((resolve,reject)=>{
       canvasImg.toBlob((blob)=>{
@@ -1726,7 +1581,7 @@ async function performExport(){
       },'image/jpeg',0.98);
     });
     
-    // Download via blob URL
+    // Download
     console.log('[Export] Initiating download...');
     const url=URL.createObjectURL(blob);
     const link=document.createElement('a');
@@ -1737,7 +1592,6 @@ async function performExport(){
     document.body.appendChild(link);
     link.click();
     
-    // Cleanup
     setTimeout(()=>{
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
@@ -1748,7 +1602,8 @@ async function performExport(){
     console.error('[Export] Failed:',err);
     throw err;
   }finally{
-    // Restore UI
+    // Restore canvas width
+    canvas.style.width=originalWidth;
     if(marqueeBox)marqueeBox.style.display='block';
   }
 }
@@ -1903,5 +1758,5 @@ renderZones();
 
 lucide.createIcons();
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef9b44b535d0a12',t:'MTc3Njc0NjM1OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef9bb82844c0a12',t:'MTc3Njc0NjY1NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
