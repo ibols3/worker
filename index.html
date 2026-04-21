@@ -1413,16 +1413,16 @@ async function performExport(){
     
     // SNAPSHOT CAPTURE WITH FORCED INLINE STYLES
     let canvasImg=await html2canvas(canvas,{
-      scale:hdScale,
+      scale: 1, // Paksa ke 1 biar ukuran gak bengkak
       useCORS:true,
       allowTaint:false,
       backgroundColor:'#ffffff',
       logging:false,
       foreignObjectRendering:false,
-      width:captureWidth,
-      height:captureHeight,
-      windowWidth:captureWidth,
-      windowHeight:captureHeight,
+      width: 1189, // Samain sama lebar canvas A4 lo
+height: 1682, // Samain sama tinggi canvas A4 lo
+windowWidth: 1189,
+windowHeight: 1682,
       x:0,
       y:0,
       scrollX:0,
@@ -1435,18 +1435,25 @@ async function performExport(){
         clonedDocument.querySelectorAll('.zone-item').forEach((el)=>{
           const originalBgColor=window.getComputedStyle(el).backgroundColor;
           console.log('[Export] Item color: '+originalBgColor);
+         const style = clonedDocument.createElement('style');
+style.innerHTML = `
+  .zone-item { display: flex !important; flex-direction: row !important; align-items: center !important; height: 44px !important; margin-bottom: 4px !important; }
+  .num { position: relative !important; left: 0 !important; margin-right: 8px !important; display: block !important; }
+  .del-btn { display: none !important; }
+`;
+clonedDocument.head.appendChild(style);
           
           // Force flex container
-          el.style.display='flex !important';
-          el.style.flexDirection='row !important';
-          el.style.alignItems='center !important';
-          el.style.justifyContent='flex-start !important';
+          el.style.setProperty('display', 'flex', 'important');
+el.style.setProperty('flex-direction', 'row', 'important');
+el.style.setProperty('align-items', 'center', 'important');
+el.style.setProperty('justify-content', 'flex-start', 'important');
           el.style.width='100% !important';
           el.style.height='44px !important';
           el.style.minHeight='44px !important';
           el.style.lineHeight='44px !important';
           el.style.padding='0 6px !important';
-          el.style.margin='0 0 0 24px !important';
+          el.style.setProperty('margin', '0 0 4px 0', 'important');
           el.style.backgroundColor='transparent !important';
           el.style.borderRadius='3px !important';
           el.style.gap='3px !important';
