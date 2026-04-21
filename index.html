@@ -171,8 +171,7 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
  <body class="h-full">
-  <div class="app-wrap">
-   <!-- MOBILE MENU BUTTON --> <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button> <!-- DRAWER OVERLAY -->
+  <div class="app-wrap"><!-- MOBILE MENU BUTTON --> <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button> <!-- DRAWER OVERLAY -->
    <div class="drawer-overlay" id="drawerOverlay"></div><!-- LEFT SIDEBAR -->
    <div class="sidebar-left" id="sidebarLeft">
     <div style="padding:10px 10px 6px;border-bottom:1px solid #1e3a5f">
@@ -180,25 +179,28 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
     </div>
     <div class="scroll-pool" id="poolList"></div>
     <div style="padding:8px;border-top:1px solid #1e3a5f;display:flex;flex-direction:column;gap:6px;position:sticky;bottom:0;background:#000044;z-index:100">
-     <div style="display:flex;gap:4px;flex-wrap:wrap"><input id="newNameInput" type="text" placeholder="Worker name..." style="flex:1;min-width:100px;padding:8px;border-radius:5px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:11px;outline:none;min-height:36px"> <button id="addNameBtn" style="padding:8px 12px;background:#3b82f6;color:#fff;border:none;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;min-width:36px;min-height:36px">Add</button>
+     <div style="display:flex;gap:4px;flex-wrap:wrap">
+      <input id="newNameInput" type="text" placeholder="Worker name..." style="flex:1;min-width:100px;padding:8px;border-radius:5px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:11px;outline:none;min-height:36px"> <button id="addNameBtn" style="padding:8px 12px;background:#3b82f6;color:#fff;border:none;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;min-width:36px;min-height:36px">Add</button>
      </div>
-     <div style="display:flex;gap:4px;flex-wrap:wrap"><input id="newSubInput" type="text" placeholder="Sub header..." style="flex:1;min-width:100px;padding:8px;border-radius:5px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:11px;outline:none;min-height:36px"> <button id="addSubBtn" style="padding:8px 12px;background:#6b7280;color:#fff;border:none;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;min-width:36px;min-height:36px">Sub</button>
+     <div style="display:flex;gap:4px;flex-wrap:wrap">
+      <input id="newSubInput" type="text" placeholder="Sub header..." style="flex:1;min-width:100px;padding:8px;border-radius:5px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:11px;outline:none;min-height:36px"> <button id="addSubBtn" style="padding:8px 12px;background:#6b7280;color:#fff;border:none;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;min-width:36px;min-height:36px">Sub</button>
      </div>
     </div>
    </div><!-- CANVAS AREA -->
    <div class="canvas-area" id="canvasScroll">
     <div class="a4-canvas" id="a4Canvas">
-     <div class="a4-inner" id="a4Inner">
-      <!-- HEADER -->
+     <div class="a4-inner" id="a4Inner"><!-- HEADER -->
       <div class="canvas-header">
-       <div class="canvas-logo"><img src="https://lh3.googleusercontent.com/d/1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" alt="Logo" loading="lazy" onerror="this.style.background='#e5e7eb';this.alt='Logo unavailable';">
+       <div class="canvas-logo">
+        <img src="https://lh3.googleusercontent.com/d/1V5663PPMmcLtr55UBPIcvIr-p7CW6VaN" alt="Logo" loading="lazy" onerror="this.style.background='#e5e7eb';this.alt='Logo unavailable';">
        </div>
        <div class="canvas-header-center">
         <div class="header-title" id="headerTitle">
          I.B.O.L
         </div>
         <div class="day-selection-row">
-         <div class="day-label-group"><select id="dayTypeSelect" class="day-dropdown"> <option value="PREPS DAY">PREPS DAY</option> <option value="SHOOT DAY">SHOOT DAY</option> <option value="BONGKARAN DAY">BONGKARAN DAY</option> </select> <select id="numberSelect" class="number-dropdown"> </select>
+         <div class="day-label-group">
+          <select id="dayTypeSelect" class="day-dropdown"> <option value="PREPS DAY">PREPS DAY</option> <option value="SHOOT DAY">SHOOT DAY</option> <option value="BONGKARAN DAY">BONGKARAN DAY</option> </select> <select id="numberSelect" class="number-dropdown"> </select>
          </div>
         </div>
        </div>
@@ -217,11 +219,9 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
        <div style="flex:1"></div>
       </div><!-- FOOTER -->
       <div class="footer-counts" id="footerCounts">
-       <div>
-        <span class="working">TOTAL PEKERJA BEKERJA: <span id="countWorking">0</span></span>
+       <div><span class="working">TOTAL PEKERJA BEKERJA: <span id="countWorking">0</span></span>
        </div>
-       <div>
-        <span class="standby">TOTAL PEKERJA STANDBY: <span id="countStandby">0</span></span>
+       <div><span class="standby">TOTAL PEKERJA STANDBY: <span id="countStandby">0</span></span>
        </div>
       </div>
      </div>
@@ -231,8 +231,7 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
     <div style="padding:10px;border-bottom:1px solid #1e3a5f">
      <h2 style="font-size:14px;font-weight:800;color:#93c5fd;display:flex;align-items:center;gap:6px"><i data-lucide="layout" style="width:16px;height:16px"></i> Zone &amp; Export</h2>
     </div>
-    <div style="padding:10px;display:flex;flex-direction:column;gap:8px">
-     <button id="addZoneBtn" style="padding:10px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px"><i data-lucide="plus-square" style="width:13px;height:13px"></i> Add Zone</button> <button id="downloadBtn" style="padding:10px;background:#059669;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px"><i data-lucide="download" style="width:13px;height:13px"></i> Download</button>
+    <div style="padding:10px;display:flex;flex-direction:column;gap:8px"><button id="addZoneBtn" style="padding:10px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px"><i data-lucide="plus-square" style="width:13px;height:13px"></i> Add Zone</button> <button id="downloadBtn" style="padding:10px;background:#059669;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px"><i data-lucide="download" style="width:13px;height:13px"></i> Download</button>
      <hr style="border-color:#1e3a5f">
      <div style="font-size:10px;color:#94a3b8">
       <p style="margin-bottom:2px"><strong>Tips:</strong></p>
@@ -247,7 +246,8 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px" id="swatchGrid"></div>
   </div><!-- CALENDAR POPUP -->
   <div class="calendar-popup" id="calendarPopup">
-   <div class="calendar-header"><button id="prevMonth">◀ Bulan Sebelumnya</button>
+   <div class="calendar-header">
+    <button id="prevMonth">◀ Bulan Sebelumnya</button>
     <div id="monthYear" style="font-weight:700;text-align:center;flex:1;font-size:16px;color:#1f2937"></div><button id="nextMonth">Bulan Berikutnya ▶</button>
    </div>
    <div class="calendar-grid" id="calendarGrid"></div>
@@ -1427,66 +1427,110 @@ async function performExport(){
       scrollY:0,
       imageTimeout:8000,
       onclone:(clonedDocument)=>{
-        // Inject rigid CSS alignment rules ONLY during export
+        // Inject ABSOLUTE POSITIONING alignment rules ONLY during export
         const style=clonedDocument.createElement('style');
         style.textContent=`
-          /* RIGID EXPORT ALIGNMENT - GOLDEN RULE */
+          /* WORKER ROW - RELATIVE CONTAINER */
           .zone-item {
+            position: relative !important;
             display: block !important;
-            height: 44px !important;
-            line-height: 44px !important;
-            vertical-align: baseline !important;
-            padding: 0 6px !important;
-            margin: 0 0 0 24px !important;
+            height: 40px !important;
+            line-height: 40px !important;
+            padding: 0 !important;
+            margin: 0 !important;
             text-align: left !important;
-            white-space: nowrap !important;
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
+            background: transparent !important;
+            overflow: visible !important;
           }
           
-          /* SEQUENCE NUMBER - INLINE-BLOCK WITH LOCKED LINE-HEIGHT */
+          /* SEQUENCE NUMBER - ABSOLUTE LEFT EDGE */
           .zone-item .num {
-            display: inline-block !important;
-            width: 20px !important;
-            height: 44px !important;
-            line-height: 44px !important;
-            vertical-align: middle !important;
-            text-align: center !important;
+            position: absolute !important;
+            left: 0 !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            width: 25px !important;
+            height: 40px !important;
+            line-height: 40px !important;
+            display: block !important;
+            text-align: left !important;
             font-size: 14px !important;
             font-weight: 800 !important;
             color: #000000 !important;
             margin: 0 !important;
             padding: 0 !important;
-            position: static !important;
-            transform: none !important;
+            vertical-align: middle !important;
             background: transparent !important;
             border-radius: 0 !important;
-            top: auto !important;
-            left: auto !important;
             box-shadow: none !important;
             text-rendering: optimizeLegibility !important;
             -webkit-font-smoothing: antialiased !important;
             letter-spacing: 0 !important;
+            z-index: 1 !important;
           }
           
-          /* WORKER NAME BLOCK - INLINE-FLEX WITH CENTER ALIGNMENT */
+          /* WORKER NAME BLOCK - ABSOLUTE POSITIONED WITH COLOR */
           .zone-item span:not(.num):not(.del-btn) {
-            display: inline-flex !important;
+            position: absolute !important;
+            left: 30px !important;
+            right: 5px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            height: 30px !important;
+            line-height: 30px !important;
+            display: flex !important;
             align-items: center !important;
-            height: 32px !important;
-            line-height: 32px !important;
-            vertical-align: middle !important;
-            padding: 0 4px !important;
+            justify-content: flex-start !important;
+            padding: 0 10px !important;
             margin: 0 !important;
             text-transform: uppercase !important;
             white-space: nowrap !important;
             overflow: hidden !important;
             text-overflow: ellipsis !important;
+            vertical-align: middle !important;
+            z-index: 2 !important;
+            background: inherit !important;
+            color: inherit !important;
+            font-size: 18px !important;
+            font-weight: 600 !important;
           }
           
           /* DELETE BUTTON - HIDDEN DURING EXPORT */
           .zone-item .del-btn {
             display: none !important;
+          }
+          
+          /* STANDBY ITEMS - SAME RIGID ALIGNMENT */
+          .standby-body .zone-item {
+            position: relative !important;
+            display: block !important;
+            height: 40px !important;
+            line-height: 40px !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            background: transparent !important;
+            overflow: visible !important;
+          }
+          
+          .standby-body .zone-item .num {
+            display: none !important;
+          }
+          
+          .standby-body .zone-item span:not(.del-btn) {
+            position: absolute !important;
+            left: 0 !important;
+            right: 5px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            height: 30px !important;
+            line-height: 30px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            padding: 0 10px !important;
+            margin: 0 !important;
+            vertical-align: middle !important;
+            z-index: 2 !important;
           }
           
           /* POOL ITEMS */
@@ -1500,26 +1544,6 @@ async function performExport(){
             padding: 0 8px !important;
             margin: 3px 5px !important;
             min-height: 36px !important;
-          }
-          
-          /* STANDBY ITEMS */
-          .standby-body .zone-item {
-            height: 44px !important;
-            line-height: 44px !important;
-            margin: 0 0 0 24px !important;
-            padding: 0 6px !important;
-          }
-          
-          .standby-body .zone-item .num {
-            display: none !important;
-          }
-          
-          .standby-body .zone-item span:not(.del-btn) {
-            display: inline-flex !important;
-            align-items: center !important;
-            height: 32px !important;
-            line-height: 32px !important;
-            vertical-align: middle !important;
           }
           
           /* POOL SUB-HEADERS */
@@ -1542,13 +1566,6 @@ async function performExport(){
             margin-bottom: 0 !important;
           }
           
-          /* PRESERVE EXPLICIT MARGINS FOR LAYOUT */
-          .zone-item {
-            margin: 0 0 0 24px !important;
-            margin-top: 0 !important;
-            margin-bottom: 0 !important;
-          }
-          
           /* FONT RENDERING OPTIMIZATION */
           body, html, .a4-canvas, .a4-inner, .zone-item, .pool-item {
             -webkit-text-size-adjust: 100% !important;
@@ -1561,53 +1578,81 @@ async function performExport(){
         // Additional manual synchronization for critical elements
         const clonedCanvas=clonedDocument.querySelector('.a4-canvas');
         if(clonedCanvas){
-          // Force sync all zone items
+          // Force sync all zone items with absolute positioning
           clonedDocument.querySelectorAll('.zone-item').forEach(el=>{
             el.style.cssText=`
+              position: relative !important;
               display: block !important;
-              height: 44px !important;
-              line-height: 44px !important;
-              vertical-align: baseline !important;
-              padding: 0 6px !important;
-              margin: 0 0 0 24px !important;
+              height: 40px !important;
+              line-height: 40px !important;
+              padding: 0 !important;
+              margin: 0 !important;
               text-align: left !important;
-              white-space: nowrap !important;
-              overflow: hidden !important;
-              text-overflow: ellipsis !important;
-              background: ${el.style.background} !important;
-              color: ${el.style.color} !important;
-              font-size: 18px !important;
-              font-weight: 600 !important;
-              text-transform: uppercase !important;
+              background: transparent !important;
+              overflow: visible !important;
             `;
           });
           
-          // Force sync all numbers with perfect middle alignment
+          // Force sync all numbers - absolute positioned at left edge
           clonedDocument.querySelectorAll('.zone-item .num').forEach(el=>{
             el.style.cssText=`
-              display: inline-block !important;
-              width: 20px !important;
-              height: 44px !important;
-              line-height: 44px !important;
-              vertical-align: middle !important;
-              text-align: center !important;
+              position: absolute !important;
+              left: 0 !important;
+              top: 50% !important;
+              transform: translateY(-50%) !important;
+              width: 25px !important;
+              height: 40px !important;
+              line-height: 40px !important;
+              display: block !important;
+              text-align: left !important;
               font-size: 14px !important;
               font-weight: 800 !important;
               color: #000000 !important;
               margin: 0 !important;
               padding: 0 !important;
-              position: static !important;
-              transform: none !important;
+              vertical-align: middle !important;
               background: transparent !important;
               border-radius: 0 !important;
               box-shadow: none !important;
-              letter-spacing: 0 !important;
               text-rendering: optimizeLegibility !important;
               -webkit-font-smoothing: antialiased !important;
+              letter-spacing: 0 !important;
+              z-index: 1 !important;
             `;
           });
           
-          // Hide delete buttons during export
+          // Force sync name spans - absolute positioned with color box
+          clonedDocument.querySelectorAll('.zone-item span:not(.del-btn):not(.num)').forEach((el,idx)=>{
+            const bgColor=el.parentElement.style.background || '#2563eb';
+            const textColor=el.parentElement.style.color || '#fff';
+            el.style.cssText=`
+              position: absolute !important;
+              left: 30px !important;
+              right: 5px !important;
+              top: 50% !important;
+              transform: translateY(-50%) !important;
+              height: 30px !important;
+              line-height: 30px !important;
+              display: flex !important;
+              align-items: center !important;
+              justify-content: flex-start !important;
+              padding: 0 10px !important;
+              margin: 0 !important;
+              text-transform: uppercase !important;
+              white-space: nowrap !important;
+              overflow: hidden !important;
+              text-overflow: ellipsis !important;
+              vertical-align: middle !important;
+              z-index: 2 !important;
+              background: ${bgColor} !important;
+              color: ${textColor} !important;
+              font-size: 18px !important;
+              font-weight: 600 !important;
+              border-radius: 3px !important;
+            `;
+          });
+          
+          // Hide all delete buttons during export
           clonedDocument.querySelectorAll('.zone-item .del-btn').forEach(el=>{
             el.style.display='none !important';
           });
@@ -1829,5 +1874,5 @@ renderZones();
 
 lucide.createIcons();
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef9988730b2b5ac',t:'MTc3Njc0NTIyMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef99f3fd097b5ac',t:'MTc3Njc0NTQ5Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
