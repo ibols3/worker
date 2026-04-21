@@ -85,7 +85,7 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
 .color-picker-popup .swatch:hover{transform:scale(1.15);border-color:#fff}
 .marquee-box{position:fixed;border:2px dashed #3b82f6;background:rgba(59,130,246,.1);pointer-events:none;z-index:9998;display:none}
 .selected-highlight{outline:2px solid #fbbf24;outline-offset:1px}
-.scroll-pool{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:none}
+.scroll-pool{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:none;display:flex !important;flex-direction:column !important;min-height:0}
 .scroll-pool::-webkit-scrollbar{width:4px}
 .scroll-pool::-webkit-scrollbar-thumb{background:#334155;border-radius:4px}
 .canvas-area::-webkit-scrollbar{width:4px}
@@ -231,7 +231,7 @@ body{background:#000033;color:#e2e8f0;width:100%;height:100%;display:flex;flex-d
     <div style="padding:10px;border-bottom:1px solid #1e3a5f">
      <h2 style="font-size:14px;font-weight:800;color:#93c5fd;display:flex;align-items:center;gap:6px"><i data-lucide="layout" style="width:16px;height:16px"></i> Zone &amp; Export</h2>
     </div>
-    <div style="padding:10px;display:flex;flex-direction:column;gap:8px"><button id="addZoneBtn" style="padding:10px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px"><i data-lucide="plus-square" style="width:13px;height:13px"></i> Add Zone</button> <button id="downloadBtn" style="padding:10px;background:#059669;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px"><i data-lucide="download" style="width:13px;height:13px"></i> Download</button>
+    <div style="padding:10px;display:flex;flex-direction:column;gap:8px"><button id="addZoneBtn" style="padding:10px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px"><i data-lucide="plus-square" style="width:13px;height:13px"></i> Add Zone</button> <button id="downloadBtn" style="padding:10px;background:#eab308;color:#1f2937;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px;transition:background 0.2s"><i data-lucide="download" style="width:13px;height:13px"></i> Download</button>
      <hr style="border-color:#1e3a5f">
      <div style="font-size:10px;color:#94a3b8">
       <p style="margin-bottom:2px"><strong>Tips:</strong></p>
@@ -670,21 +670,76 @@ function createZoneItemElement(ni,zoneId){
   const el=document.createElement('div');
   el.className='zone-item';
   el.style.background=ni.color;
+  el.style.display='flex';
+  el.style.flexDirection='row';
+  el.style.alignItems='center';
+  el.style.justifyContent='flex-start';
+  el.style.height='44px';
+  el.style.minHeight='44px';
+  el.style.lineHeight='44px';
+  el.style.padding='0 6px';
+  el.style.margin='0 0 0 24px';
+  el.style.borderRadius='3px';
+  el.style.fontSize='18px';
+  el.style.fontWeight='600';
+  el.style.color='#fff';
+  el.style.userSelect='none';
+  el.style.cursor='grab';
+  el.style.gap='3px';
   el.dataset.itemId=ni.id;
   el.draggable=true;
 
   const num=document.createElement('span');
   num.className='num';
+  num.style.position='absolute';
+  num.style.left='-24px';
+  num.style.width='20px';
+  num.style.height='44px';
+  num.style.display='flex';
+  num.style.alignItems='center';
+  num.style.justifyContent='center';
+  num.style.fontSize='14px';
+  num.style.fontWeight='800';
+  num.style.color='#000000';
+  num.style.textAlign='center';
+  num.style.lineHeight='44px';
+  num.style.padding='0';
+  num.style.margin='0';
+  num.style.WebkitFontSmoothing='antialiased';
   num.textContent=ni.num;
   el.appendChild(num);
 
   const txt=document.createElement('span');
-  txt.textContent=ni.name;
   txt.style.flex='1';
+  txt.style.display='block';
+  txt.style.height='44px';
+  txt.style.lineHeight='44px';
+  txt.style.padding='0';
+  txt.style.margin='0';
+  txt.style.verticalAlign='middle';
+  txt.style.textTransform='uppercase';
+  txt.style.WebkitFontSmoothing='antialiased';
+  txt.style.backgroundColor=ni.color;
+  txt.style.color='#fff';
+  txt.style.borderRadius='3px';
+  txt.style.fontSize='18px';
+  txt.style.fontWeight='600';
+  txt.textContent=ni.name;
   el.appendChild(txt);
 
   const del=document.createElement('span');
   del.className='del-btn';
+  del.style.marginLeft='auto';
+  del.style.cursor='pointer';
+  del.style.opacity='0.5';
+  del.style.fontSize='8px';
+  del.style.padding='3px 4px';
+  del.style.minWidth='24px';
+  del.style.minHeight='24px';
+  del.style.display='flex';
+  del.style.alignItems='center';
+  del.style.justifyContent='center';
+  del.style.borderRadius='4px';
   del.textContent='✕';
   del.addEventListener('click',e=>{
     e.stopPropagation();
@@ -697,6 +752,8 @@ function createZoneItemElement(ni,zoneId){
       }
     }
   });
+  del.addEventListener('mouseenter',()=>del.style.opacity='1');
+  del.addEventListener('mouseleave',()=>del.style.opacity='0.5');
   el.appendChild(del);
 
   el.addEventListener('dragstart',e=>onZoneDragStart(e,zoneId,ni));
@@ -1380,7 +1437,7 @@ async function performExport(){
     throw new Error('Canvas element not found');
   }
   
-  console.log('[Export] Starting WYSWYG HD export...');
+  console.log('[Export] Starting snapshot export with inline styles...');
   
   // Hide UI overlays
   if(marqueeBox)marqueeBox.style.display='none';
@@ -1391,25 +1448,28 @@ async function performExport(){
     container.scrollLeft=0;
   }
   
+  // Lock canvas to A4 width (1189px)
+  const originalWidth=canvas.style.width;
+  canvas.style.width='1189px';
+  canvas.style.minWidth='1189px';
+  canvas.style.maxWidth='1189px';
+  
   // Wait for all images and styles to fully load
-  await new Promise(resolve=>setTimeout(resolve,400));
+  await new Promise(resolve=>setTimeout(resolve,300));
   await new Promise(resolve=>requestAnimationFrame(resolve));
   
   try{
-    // Get exact dimensions - NO STYLE MODIFICATIONS
-    const inner=canvas.querySelector('.a4-inner');
     const captureWidth=1189;
     const captureHeight=1682;
     
-    console.log('[Export] Capture dimensions: '+captureWidth+'x'+captureHeight);
-    console.log('[Export] Device pixel ratio: '+window.devicePixelRatio);
+    console.log('[Export] A4 dimensions: '+captureWidth+'x'+captureHeight);
     
-    // Maximum 4x HD scale
-    const hdScale=4;
+    // Scale 2 for HD quality with safe memory usage
+    const hdScale=2;
     
-    console.log('[Export] Capturing at 4x resolution ('+captureWidth*hdScale+'x'+captureHeight*hdScale+' px)...');
+    console.log('[Export] Capturing at 2x resolution...');
     
-    // WYSWYG capture - NO onclone modifications
+    // SNAPSHOT CAPTURE WITH FORCED INLINE STYLES
     let canvasImg=await html2canvas(canvas,{
       scale:hdScale,
       useCORS:true,
@@ -1427,61 +1487,88 @@ async function performExport(){
       scrollY:0,
       imageTimeout:8000,
       onclone:(clonedDocument)=>{
-        // Ensure all text is perfectly centered in export
-        const clonedCanvas=clonedDocument.querySelector('.a4-canvas');
-        if(clonedCanvas){
-        // Ensure all zone items to perfect middle alignment
-          clonedDocument.querySelectorAll('.zone-item').forEach(el=>{
-            el.style.display='flex !important';
-            el.style.alignItems='center !important';
-            el.style.justifyContent='flex-start !important';
-            el.style.lineHeight='44px !important';
-            el.style.height='44px !important';
-            el.style.minHeight='44px !important';
-            el.style.padding='0 6px !important';
-            el.style.verticalAlign='middle !important';
-            el.style.margin='0 0 0 24px !important';
-          });
+        console.log('[Export] onclone: Forcing all inline styles for export render...');
+        
+        // CRITICAL: Force ALL zone items with inline styles
+        clonedDocument.querySelectorAll('.zone-item').forEach((el)=>{
+          const originalBgColor=window.getComputedStyle(el).backgroundColor;
+          console.log('[Export] Item color: '+originalBgColor);
           
-          // Ensure all sequence numbers to perfect vertical centering
-          clonedDocument.querySelectorAll('.zone-item .num').forEach(el=>{
-            el.style.display='flex !important';
-            el.style.alignItems='center !important';
-            el.style.justifyContent='center !important';
-            el.style.lineHeight='44px !important';
-            el.style.height='44px !important';
-            el.style.top='0 !important';
-            el.style.transform='none !important';
-            el.style.margin='0 !important';
-            el.style.padding='0 !important';
-            el.style.verticalAlign='middle !important';
-          });
+          // Force flex container
+          el.style.display='flex !important';
+          el.style.flexDirection='row !important';
+          el.style.alignItems='center !important';
+          el.style.justifyContent='flex-start !important';
+          el.style.width='100% !important';
+          el.style.height='44px !important';
+          el.style.minHeight='44px !important';
+          el.style.lineHeight='44px !important';
+          el.style.padding='0 6px !important';
+          el.style.margin='0 0 0 24px !important';
+          el.style.backgroundColor='transparent !important';
+          el.style.borderRadius='3px !important';
+          el.style.gap='3px !important';
+          el.style.position='relative !important';
           
-          // Ensure pool items
-          clonedDocument.querySelectorAll('.pool-item').forEach(el=>{
-            el.style.display='flex !important';
-            el.style.alignItems='center !important';
-            el.style.justifyContent='center !important';
-            el.style.lineHeight='36px !important';
-            el.style.height='36px !important';
-            el.style.minHeight='36px !important';
-            el.style.padding='0 8px !important';
-            el.style.verticalAlign='middle !important';
-          });
-        }
+          // Force number
+          const numEl=el.querySelector('.num');
+          if(numEl){
+            numEl.style.position='absolute !important';
+            numEl.style.left='-24px !important';
+            numEl.style.width='20px !important';
+            numEl.style.height='44px !important';
+            numEl.style.display='flex !important';
+            numEl.style.alignItems='center !important';
+            numEl.style.justifyContent='center !important';
+            numEl.style.fontSize='14px !important';
+            numEl.style.fontWeight='800 !important';
+            numEl.style.color='#000000 !important';
+            numEl.style.lineHeight='44px !important';
+            numEl.style.padding='0 !important';
+            numEl.style.margin='0 !important';
+            numEl.style.visibility='visible !important';
+            numEl.style.opacity='1 !important';
+            numEl.style.WebkitFontSmoothing='antialiased !important';
+          }
+          
+          // Force name text with explicit background
+          const nameEl=el.querySelector('span:not(.num):not(.del-btn)');
+          if(nameEl){
+            nameEl.style.flex='1 !important';
+            nameEl.style.display='block !important';
+            nameEl.style.height='44px !important';
+            nameEl.style.lineHeight='44px !important';
+            nameEl.style.padding='0 !important';
+            nameEl.style.margin='0 !important';
+            nameEl.style.verticalAlign='middle !important';
+            nameEl.style.textTransform='uppercase !important';
+            nameEl.style.fontSize='18px !important';
+            nameEl.style.fontWeight='600 !important';
+            nameEl.style.color='#ffffff !important';
+            nameEl.style.backgroundColor=originalBgColor+' !important';
+            nameEl.style.borderRadius='3px !important';
+            nameEl.style.WebkitFontSmoothing='antialiased !important';
+            nameEl.style.visibility='visible !important';
+            nameEl.style.opacity='1 !important';
+          }
+          
+          // Hide delete button
+          const delEl=el.querySelector('.del-btn');
+          if(delEl){
+            delEl.style.display='none !important';
+            delEl.style.visibility='hidden !important';
+            delEl.style.width='0 !important';
+            delEl.style.height='0 !important';
+          }
+        });
+        
+        console.log('[Export] onclone: All zone items synchronized');
       }
     });
     
-    console.log('[Export] Capture successful: '+canvasImg.width+'x'+canvasImg.height+' px');
+    console.log('[Export] Capture successful');
     
-    // Enable high-quality image smoothing
-    const ctx=canvasImg.getContext('2d');
-    if(ctx){
-      ctx.imageSmoothingEnabled=true;
-      ctx.imageSmoothingQuality='high';
-    }
-    
-    // Convert to maximum quality JPEG blob
+    // Convert to maximum quality JPEG
     console.log('[Export] Converting to JPEG (98% quality)...');
     const blob=await new Promise((resolve,reject)=>{
       canvasImg.toBlob((blob)=>{
@@ -1494,7 +1581,7 @@ async function performExport(){
       },'image/jpeg',0.98);
     });
     
-    // Download via blob URL
+    // Download
     console.log('[Export] Initiating download...');
     const url=URL.createObjectURL(blob);
     const link=document.createElement('a');
@@ -1505,7 +1592,6 @@ async function performExport(){
     document.body.appendChild(link);
     link.click();
     
-    // Cleanup
     setTimeout(()=>{
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
@@ -1516,7 +1602,8 @@ async function performExport(){
     console.error('[Export] Failed:',err);
     throw err;
   }finally{
-    // Restore UI
+    // Restore canvas width
+    canvas.style.width=originalWidth;
     if(marqueeBox)marqueeBox.style.display='block';
   }
 }
@@ -1669,7 +1756,14 @@ zones.push({id:'z3',labelTitle:bondLabel||'BOND',mainTitle:'Area Title',subTitle
 zoneCounter=3;
 renderZones();
 
+// Ensure pool list is visible
+const poolList=document.getElementById('poolList');
+if(poolList){
+  poolList.style.display='flex';
+  poolList.style.flexDirection='column';
+}
+
 lucide.createIcons();
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef98fc59630b5ac',t:'MTc3Njc0NDg2My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9efad344843f03d4',t:'MTc3Njc1ODExNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
